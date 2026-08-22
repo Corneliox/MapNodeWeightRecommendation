@@ -32,7 +32,7 @@
         "15:30"
       ],
       "ticket_price_ntd": 440,
-      "operator": "南海之星 (Penghu PHPT) & 海安快艇 (South Sea Express)",
+      "operator": "南海之星 (PHPT) & 海安快艇 (South Sea Express)",
       "nautical_waypoints": [
         [
           23.5627,
@@ -59,14 +59,112 @@
           119.4284
         ]
       ],
-      "supported_island_nodes": [
-        "GOV_attractions_Attraction_A15010000H_000025",
-        "雙心石滬",
-        "七美雙心石滬",
-        "小台灣",
-        "望夫石",
-        "qimei_twin_heart"
-      ]
+      "island_key": "qimei"
+    },
+    {
+      "route_id": "ferry_magong_tongpan",
+      "name_zh": "馬公 (南海碼頭) ↔ 桶盤嶼 (柱狀玄武岩)",
+      "name_en": "Magong (Nanhai Pier) ↔ Tongpan Island (Basalt Columns)",
+      "name_id": "Magong (Dermaga Nanhai) ↔ Pulau Tongpan (Basalt Columns)",
+      "departure_port_id": "port_nanhai_magong",
+      "departure_port_name_zh": "馬公南海遊客中心",
+      "departure_port_name_en": "Magong Nanhai Visitor Pier",
+      "departure_port_coords": [
+        23.5627,
+        119.5688
+      ],
+      "arrival_port_id": "port_tongpan",
+      "arrival_port_name_zh": "桶盤漁港",
+      "arrival_port_name_en": "Tongpan Harbor",
+      "arrival_port_coords": [
+        23.5132,
+        119.5205
+      ],
+      "duration_minutes": 20,
+      "distance_nautical_miles": 6.0,
+      "operating_hours": "08:00 - 16:30",
+      "first_departure": "08:00",
+      "last_departure": "16:30",
+      "typical_departures": [
+        "08:00",
+        "11:00",
+        "14:00",
+        "16:30"
+      ],
+      "ticket_price_ntd": 120,
+      "operator": "桶盤之星 (Tongpan Star PHPT)",
+      "nautical_waypoints": [
+        [
+          23.5627,
+          119.5688
+        ],
+        [
+          23.545,
+          119.545
+        ],
+        [
+          23.525,
+          119.53
+        ],
+        [
+          23.5132,
+          119.5205
+        ]
+      ],
+      "island_key": "tongpan"
+    },
+    {
+      "route_id": "ferry_magong_hujing",
+      "name_zh": "馬公 (南海碼頭) ↔ 虎井嶼 (北回歸線)",
+      "name_en": "Magong (Nanhai Pier) ↔ Hujing Island (Tropic of Cancer)",
+      "name_id": "Magong (Dermaga Nanhai) ↔ Pulau Hujing (Tropic of Cancer)",
+      "departure_port_id": "port_nanhai_magong",
+      "departure_port_name_zh": "馬公南海遊客中心",
+      "departure_port_name_en": "Magong Nanhai Visitor Pier",
+      "departure_port_coords": [
+        23.5627,
+        119.5688
+      ],
+      "arrival_port_id": "port_hujing",
+      "arrival_port_name_zh": "虎井港",
+      "arrival_port_name_en": "Hujing Port",
+      "arrival_port_coords": [
+        23.4905,
+        119.5262
+      ],
+      "duration_minutes": 25,
+      "distance_nautical_miles": 7.5,
+      "operating_hours": "07:00 - 17:00",
+      "first_departure": "07:00",
+      "last_departure": "17:00",
+      "typical_departures": [
+        "07:00",
+        "09:30",
+        "11:30",
+        "14:30",
+        "17:00"
+      ],
+      "ticket_price_ntd": 120,
+      "operator": "虎井之星 (Hujing Star PHPT)",
+      "nautical_waypoints": [
+        [
+          23.5627,
+          119.5688
+        ],
+        [
+          23.535,
+          119.545
+        ],
+        [
+          23.505,
+          119.535
+        ],
+        [
+          23.4905,
+          119.5262
+        ]
+      ],
+      "island_key": "hujing"
     },
     {
       "route_id": "ferry_baisha_jibei",
@@ -122,11 +220,59 @@
           119.6135
         ]
       ],
-      "supported_island_nodes": [
-        "吉貝沙尾",
-        "吉貝石滬文化館",
-        "jibei_sand_spit"
-      ]
+      "island_key": "jibei"
+    },
+    {
+      "route_id": "ferry_baisha_mudouyu",
+      "name_zh": "白沙 (赤崁碼頭) ↔ 目斗嶼 (百年黑白燈塔)",
+      "name_en": "Baisha (Chikan Pier) ↔ Mudouyu Island (Lighthouse)",
+      "name_id": "Baisha (Dermaga Chikan) ↔ Pulau Mudouyu (Mercusuar)",
+      "departure_port_id": "port_chikan_baisha",
+      "departure_port_name_zh": "白沙赤崁北海遊客中心",
+      "departure_port_name_en": "Baisha Chikan Beihai Pier",
+      "departure_port_coords": [
+        23.6598,
+        119.6012
+      ],
+      "arrival_port_id": "port_mudouyu",
+      "arrival_port_name_zh": "目斗嶼簡易碼頭",
+      "arrival_port_name_en": "Mudouyu Pier",
+      "arrival_port_coords": [
+        23.785,
+        119.601
+      ],
+      "duration_minutes": 35,
+      "distance_nautical_miles": 8.5,
+      "operating_hours": "08:30 - 15:30",
+      "first_departure": "08:30",
+      "last_departure": "15:30",
+      "typical_departures": [
+        "08:30",
+        "10:30",
+        "13:30",
+        "15:30"
+      ],
+      "ticket_price_ntd": 300,
+      "operator": "北海觀光快艇聯盟 (North Sea Tourism Alliance)",
+      "nautical_waypoints": [
+        [
+          23.6598,
+          119.6012
+        ],
+        [
+          23.7,
+          119.605
+        ],
+        [
+          23.75,
+          119.603
+        ],
+        [
+          23.785,
+          119.601
+        ]
+      ],
+      "island_key": "mudouyu"
     },
     {
       "route_id": "ferry_magong_wangan",
@@ -178,12 +324,107 @@
           119.5028
         ]
       ],
-      "supported_island_nodes": [
-        "望安綠蠵龜觀光保育中心",
-        "花宅聚落",
-        "天台山",
-        "wangan_green_turtle"
-      ]
+      "island_key": "wangan"
+    },
+    {
+      "route_id": "ferry_magong_dongji",
+      "name_zh": "馬公 (南海碼頭) ↔ 東吉嶼 (南方四島國家公園)",
+      "name_en": "Magong (Nanhai Pier) ↔ Dongji Island (Marine National Park)",
+      "name_id": "Magong (Dermaga Nanhai) ↔ Pulau Dongji (Taman Nasional Laut)",
+      "departure_port_id": "port_nanhai_magong",
+      "departure_port_name_zh": "馬公南海遊客中心",
+      "departure_port_name_en": "Magong Nanhai Visitor Pier",
+      "departure_port_coords": [
+        23.5627,
+        119.5688
+      ],
+      "arrival_port_id": "port_dongji",
+      "arrival_port_name_zh": "東吉漁港",
+      "arrival_port_name_en": "Dongji Harbor",
+      "arrival_port_coords": [
+        23.2552,
+        119.6685
+      ],
+      "duration_minutes": 60,
+      "distance_nautical_miles": 24.0,
+      "operating_hours": "08:00 - 15:00",
+      "first_departure": "08:00",
+      "last_departure": "15:00",
+      "typical_departures": [
+        "08:00",
+        "13:30",
+        "15:00"
+      ],
+      "ticket_price_ntd": 450,
+      "operator": "得意快艇 (Deyi Boat) & 雙連之星 (Shuanglian Star)",
+      "nautical_waypoints": [
+        [
+          23.5627,
+          119.5688
+        ],
+        [
+          23.49,
+          119.61
+        ],
+        [
+          23.38,
+          119.645
+        ],
+        [
+          23.2552,
+          119.6685
+        ]
+      ],
+      "island_key": "dongji"
+    },
+    {
+      "route_id": "ferry_baisha_niaoyu",
+      "name_zh": "白沙 (岐頭碼頭) ↔ 鳥嶼 (東海玄武岩海崖)",
+      "name_en": "Baisha (Qitou Pier) ↔ Niaoyu Island (East Sea Basalt Cliffs)",
+      "name_id": "Baisha (Dermaga Qitou) ↔ Pulau Niaoyu (Tebing Basalt Laut Timur)",
+      "departure_port_id": "port_qitou_baisha",
+      "departure_port_name_zh": "白沙岐頭遊客中心",
+      "departure_port_name_en": "Baisha Qitou Visitor Pier",
+      "departure_port_coords": [
+        23.6162,
+        119.6178
+      ],
+      "arrival_port_id": "port_niaoyu",
+      "arrival_port_name_zh": "鳥嶼漁港",
+      "arrival_port_name_en": "Niaoyu Harbor",
+      "arrival_port_coords": [
+        23.6625,
+        119.658
+      ],
+      "duration_minutes": 15,
+      "distance_nautical_miles": 4.0,
+      "operating_hours": "08:00 - 17:00",
+      "first_departure": "08:00",
+      "last_departure": "17:00",
+      "typical_departures": [
+        "08:30",
+        "10:30",
+        "13:30",
+        "15:30",
+        "17:00"
+      ],
+      "ticket_price_ntd": 100,
+      "operator": "銀海快艇 (Yinhai Boat) & 晶翔號 (Jingxiang Boat)",
+      "nautical_waypoints": [
+        [
+          23.6162,
+          119.6178
+        ],
+        [
+          23.638,
+          119.638
+        ],
+        [
+          23.6625,
+          119.658
+        ]
+      ],
+      "island_key": "niaoyu"
     }
   ]
 }

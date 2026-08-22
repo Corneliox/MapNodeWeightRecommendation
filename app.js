@@ -27,7 +27,7 @@ let currentWeatherData = {
 
 let ferryRoutesData = [];
 
-// Preset Key Coordinates (Main Island + Outer Island Destinations)
+// Preset Key Coordinates (Main Island + Comprehensive Outer Islands)
 const KEY_PRESET_LOCATIONS = {
   magong_port: { name_zh: "馬公港", name_en: "Magong Port (Rental Hub)", lat: 23.5654, lon: 119.5668, island: "main" },
   magong_airport: { name_zh: "澎湖機場", name_en: "Penghu Airport", lat: 23.5697, lon: 119.6294, island: "main" },
@@ -38,9 +38,16 @@ const KEY_PRESET_LOCATIONS = {
   shanshui_beach: { name_zh: "山水沙灘", name_en: "Shanshui Beach", lat: 23.5136, lon: 119.5912, island: "main" },
   fenggui_cave: { name_zh: "風櫃洞", name_en: "Fenggui Blowholes", lat: 23.5414, lon: 119.5447, island: "main" },
   yuwengdao_lighthouse: { name_zh: "漁翁島燈塔", name_en: "Yuwengdao Lighthouse", lat: 23.5606, lon: 119.4678, island: "main" },
+  
+  // Outer Island Maritime Destinations
   qimei_twin_heart: { name_zh: "七美雙心石滬", name_en: "Qimei Twin-Heart Stone Weir", lat: 23.2201, lon: 119.4447, island: "qimei" },
+  tongpan_basalt: { name_zh: "桶盤嶼柱狀玄武岩", name_en: "Tongpan Island Basalt Columns", lat: 23.5105, lon: 119.5185, island: "tongpan" },
+  hujing_island: { name_zh: "虎井嶼觀音公園", name_en: "Hujing Island Guanyin Park", lat: 23.4920, lon: 119.5240, island: "hujing" },
+  wangan_green_turtle: { name_zh: "望安綠蠵龜保育館", name_en: "Wangan Green Turtle Center", lat: 23.3605, lon: 119.5015, island: "wangan" },
+  dongji_island: { name_zh: "東吉之眼 (南方四島)", name_en: "Dongji Eye (Marine National Park)", lat: 23.2560, lon: 119.6710, island: "dongji" },
   jibei_sand_spit: { name_zh: "吉貝沙尾", name_en: "Jibei Sand Spit", lat: 23.7380, lon: 119.5980, island: "jibei" },
-  wangan_green_turtle: { name_zh: "望安綠蠵龜保育館", name_en: "Wangan Green Turtle Center", lat: 23.3605, lon: 119.5015, island: "wangan" }
+  mudouyu_lighthouse: { name_zh: "目斗嶼黑白燈塔", name_en: "Mudouyu Lighthouse", lat: 23.7845, lon: 119.6015, island: "mudouyu" },
+  niaoyu_island: { name_zh: "鳥嶼玄武岩海崖", name_en: "Niaoyu Basalt Sea Cliffs", lat: 23.6630, lon: 119.6590, island: "niaoyu" }
 };
 
 const SCIENTIFIC_SCHEMES_META = {
@@ -682,21 +689,54 @@ function detectFerryRoute(start, destination) {
   if (!start || !destination || !ferryRoutesData || ferryRoutesData.length === 0) return null;
 
   const destLat = destination.lat !== undefined ? destination.lat : destination.latitude;
+  const destLon = destination.lon !== undefined ? destination.lon : destination.longitude;
   const startLat = start.lat !== undefined ? start.lat : start.latitude;
 
-  // Case 1: Qimei Island (Lat < 23.30)
+  // Direct island key matching
+  const islandKey = destination.island;
+  if (islandKey) {
+    const route = ferryRoutesData.find(r => r.island_key === islandKey);
+    if (route) return route;
+  }
+
+  // 1. Qimei Island (Lat < 23.30)
   if (destLat < 23.30 && startLat > 23.45) {
     return ferryRoutesData.find(r => r.route_id === 'ferry_magong_qimei');
   }
 
-  // Case 2: Jibei Island (Lat > 23.70)
+  // 2. Tongpan Island Basalt Columns (Lat 23.50-23.53, Lon 119.50-119.53)
+  if (destLat >= 23.50 && destLat <= 23.53 && destLon >= 119.50 && destLon <= 119.53 && startLat > 23.54) {
+    return ferryRoutesData.find(r => r.route_id === 'ferry_magong_tongpan');
+  }
+
+  // 3. Hujing Island (Lat 23.47-23.50, Lon 119.51-119.54)
+  if (destLat >= 23.47 && destLat <= 23.50 && destLon >= 119.51 && destLon <= 119.54 && startLat > 23.54) {
+    return ferryRoutesData.find(r => r.route_id === 'ferry_magong_hujing');
+  }
+
+  // 4. Wang'an Island (Lat 23.32 - 23.42)
+  if (destLat >= 23.32 && destLat <= 23.42 && startLat > 23.45) {
+    return ferryRoutesData.find(r => r.route_id === 'ferry_magong_wangan');
+  }
+
+  // 5. Dongji Island / Marine National Park (Lat 23.23-23.28, Lon 119.64-119.70)
+  if (destLat >= 23.23 && destLat <= 23.28 && destLon >= 119.64) {
+    return ferryRoutesData.find(r => r.route_id === 'ferry_magong_dongji');
+  }
+
+  // 6. Mudouyu Lighthouse (Northernmost, Lat > 23.77)
+  if (destLat > 23.77) {
+    return ferryRoutesData.find(r => r.route_id === 'ferry_baisha_mudouyu');
+  }
+
+  // 7. Jibei Island (Lat > 23.70)
   if (destLat > 23.70 && startLat < 23.68) {
     return ferryRoutesData.find(r => r.route_id === 'ferry_baisha_jibei');
   }
 
-  // Case 3: Wang'an Island (Lat 23.32 - 23.42)
-  if (destLat >= 23.32 && destLat <= 23.42 && startLat > 23.45) {
-    return ferryRoutesData.find(r => r.route_id === 'ferry_magong_wangan');
+  // 8. Niaoyu Island (East Sea, Lat 23.64-23.68, Lon 119.64-119.68)
+  if (destLat >= 23.64 && destLat <= 23.68 && destLon >= 119.64) {
+    return ferryRoutesData.find(r => r.route_id === 'ferry_baisha_niaoyu');
   }
 
   return null;

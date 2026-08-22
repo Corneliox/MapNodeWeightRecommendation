@@ -191,18 +191,23 @@
             <div>
               <label data-i18n="dest_label" class="block text-xs font-semibold mb-1.5">Destinasi Wisata (Target POI)</label>
               <select id="select-end" class="w-full dynamic-card-inner border rounded-xl px-3 py-2.5 text-xs focus:outline-none">
-                <optgroup label="🏝️ Pulau Utama (Magong / Baisha / Xiyu)">
+                <optgroup label="🏝️ Daratan Utama Penghu (Magong / Huxi / Baisha / Xiyu)">
                   <option value="tongliang_banyan">🌳 通梁古榕 / Tongliang Great Banyan</option>
                   <option value="penghu_bridge">🌉 澎湖跨海大橋 / Penghu Great Bridge</option>
-                  <option value="daguoye_basalt">🗿 大菓葉柱狀玄武岩 / Daguoye Basalt</option>
+                  <option value="daguoye_basalt">🗿 大菓葉柱狀玄武岩 / Daguoye Basalt (Xiyu)</option>
                   <option value="shanshui_beach">🏖️ 山水沙灘 / Shanshui Beach</option>
                   <option value="fenggui_cave">💨 風櫃洞 / Fenggui Blowholes</option>
                   <option value="yuwengdao_lighthouse">🗼 漁翁島燈塔 / Yuwengdao Lighthouse</option>
                 </optgroup>
-                <optgroup label="🚢 Pulau Seberang (Island-Hopping / Multi-Moda)">
+                <optgroup label="🚢 Destinasi Pulau Seberang (Rute Laut / Island-Hopping)">
                   <option value="qimei_twin_heart">💖 七美雙心石滬 / Qimei Twin-Heart Stone Weir</option>
-                  <option value="jibei_sand_spit">🏖️ 吉貝沙尾 / Jibei Sand Spit</option>
+                  <option value="tongpan_basalt">🗿 桶盤嶼柱狀玄武岩 / Tongpan Basalt Columns</option>
+                  <option value="hujing_island">⛩️ 虎井嶼觀音公園 / Hujing Island (Tropic of Cancer)</option>
                   <option value="wangan_green_turtle">🐢 望安綠蠵龜保育館 / Wangan Green Turtle Center</option>
+                  <option value="dongji_island">🌊 東吉之眼 (南方四島國家公園) / Dongji Island</option>
+                  <option value="jibei_sand_spit">🏖️ 吉貝沙尾 / Jibei Sand Spit</option>
+                  <option value="mudouyu_lighthouse">🗼 目斗嶼黑白燈塔 / Mudouyu Lighthouse</option>
+                  <option value="niaoyu_island">🦅 鳥嶼玄武岩海崖 / Niaoyu Island</option>
                 </optgroup>
               </select>
             </div>
@@ -479,7 +484,7 @@
     </div>
   </div>
 
-  <!-- API Schedule & Quota Overhead Monitor Modal -->
+  <!-- API Schedule & Quota Reset Monitor Modal -->
   <div id="api-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
     <div class="dynamic-sidebar border rounded-3xl max-w-xl w-full p-5 space-y-4 shadow-2xl relative">
       <button onclick="closeApiScheduleModal()" class="absolute top-4 right-4 p-1.5 rounded-full dynamic-card-inner opacity-75 hover:opacity-100">
@@ -491,62 +496,70 @@
           <i data-lucide="activity" class="w-5 h-5"></i>
         </div>
         <div>
-          <h3 data-i18n="api_modal_title" class="text-sm font-extrabold">Monitoring Jadwal API & Manajemen Kuota</h3>
-          <p data-i18n="api_modal_subtitle" class="text-[11px] opacity-70">Pengawasan otomatis untuk mencegah overhead, rate limit & pembengkakan biaya.</p>
+          <h3 class="text-sm font-extrabold">Jadwal & Waktu Reset API</h3>
+          <p class="text-[11px] opacity-70">Daftar layanan data dan siklus reset/sinkronisasi rutin.</p>
         </div>
       </div>
 
-      <div class="space-y-2.5 text-xs max-h-80 overflow-y-auto custom-scrollbar pr-1">
-        <!-- 1. Weather API -->
-        <div class="p-3 rounded-2xl dynamic-card-inner border space-y-1">
-          <div class="flex items-center justify-between">
-            <span class="font-extrabold flex items-center gap-1.5">
+      <div class="space-y-2 text-xs max-h-80 overflow-y-auto custom-scrollbar pr-1">
+        <!-- 1. Open-Meteo -->
+        <div class="p-3 rounded-2xl dynamic-card-inner border flex items-center justify-between gap-3">
+          <div class="space-y-0.5 flex-1">
+            <h4 class="font-extrabold text-xs flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span data-i18n="api_weather_name">Cuaca & UV (Open-Meteo API)</span>
-            </span>
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" data-i18n="api_weather_cost">100% Gratis</span>
+              🌤️ Open-Meteo Weather API
+            </h4>
+            <p class="text-[11px] opacity-75">Suhu Udara, Indeks UV & WBGT Kepulauan Penghu.</p>
           </div>
-          <p class="text-[11px] opacity-80" data-i18n="api_weather_freq">Sinkronisasi Otomatis Tiap 5 Menit</p>
-          <p class="text-[10px] opacity-60 font-mono">Status: Live Active • Terakhir Disinkronkan: Real-Time Browser Loop</p>
+          <div class="text-right shrink-0">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 block mb-0.5">KAPAN RESET</span>
+            <span class="text-xs font-mono font-extrabold text-primary-var">Tiap 5 Menit</span>
+          </div>
         </div>
 
-        <!-- 2. Road Routing OSRM -->
-        <div class="p-3 rounded-2xl dynamic-card-inner border space-y-1">
-          <div class="flex items-center justify-between">
-            <span class="font-extrabold flex items-center gap-1.5">
+        <!-- 2. OSRM Road Routing -->
+        <div class="p-3 rounded-2xl dynamic-card-inner border flex items-center justify-between gap-3">
+          <div class="space-y-0.5 flex-1">
+            <h4 class="font-extrabold text-xs flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-              <span data-i18n="api_routing_name">Rute Jalan (OSRM OpenStreetMap)</span>
-            </span>
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400" data-i18n="api_routing_cost">100% Gratis</span>
+              🛣️ OSRM Road Routing (OpenStreetMap)
+            </h4>
+            <p class="text-[11px] opacity-75">Kalkulasi rute jalan & panduan belokan.</p>
           </div>
-          <p class="text-[11px] opacity-80" data-i18n="api_routing_freq">Sesuai Permintaan (On-Demand saat Pilih Rute)</p>
-          <p class="text-[10px] opacity-60 font-mono">Status: Dual Mirror Fallback (DE & Project-OSRM)</p>
+          <div class="text-right shrink-0">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 block mb-0.5">KAPAN RESET</span>
+            <span class="text-xs font-mono font-extrabold text-primary-var">On-Demand (Per Sesi)</span>
+          </div>
         </div>
 
-        <!-- 3. Google Places API (New) -->
-        <div class="p-3 rounded-2xl dynamic-card-inner border-2 border-primary-var/40 space-y-1">
-          <div class="flex items-center justify-between">
-            <span class="font-extrabold flex items-center gap-1.5">
-              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
-              <span data-i18n="api_google_name">Google Places API (New)</span>
-            </span>
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-600 dark:text-blue-400">Proteksi Hemat</span>
-          </div>
-          <p class="text-[11px] opacity-80" data-i18n="api_google_freq">Backend Pipeline (Manual / Bulanan Sesuai Kebutuhan)</p>
-          <p class="text-[10px] opacity-75 font-mono">Keamanan Biaya: Strict Field Masking ($0.19/eksekusi vs $200 Kredit Gratis Google Bulanan). Tidak pernah dipanggil dari browser klien!</p>
-        </div>
-
-        <!-- 4. GitHub Actions Weekly Cron -->
-        <div class="p-3 rounded-2xl dynamic-card-inner border space-y-1">
-          <div class="flex items-center justify-between">
-            <span class="font-extrabold flex items-center gap-1.5">
+        <!-- 3. Taiwan Gov & Wikipedia -->
+        <div class="p-3 rounded-2xl dynamic-card-inner border flex items-center justify-between gap-3">
+          <div class="space-y-0.5 flex-1">
+            <h4 class="font-extrabold text-xs flex items-center gap-1.5">
               <span class="w-2 h-2 rounded-full bg-purple-500"></span>
-              <span data-i18n="api_gov_name">Taiwan Gov OpenData & Wikipedia Scraper</span>
-            </span>
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400" data-i18n="api_gov_cost">Otomatisasi Cron</span>
+              🏛️ Taiwan Gov OpenData & Wikipedia
+            </h4>
+            <p class="text-[11px] opacity-75">Update POI wisata, halte & foto landmark.</p>
           </div>
-          <p class="text-[11px] opacity-80" data-i18n="api_gov_freq">Otomatis Tiap Senin 03:00 UTC (GitHub Actions)</p>
-          <p class="text-[10px] opacity-60 font-mono">Workflow: .github/workflows/weekly_data_update.yml</p>
+          <div class="text-right shrink-0">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-purple-500/20 text-purple-600 dark:text-purple-400 block mb-0.5">KAPAN RESET</span>
+            <span class="text-xs font-mono font-extrabold text-purple-600 dark:text-purple-400">Senin 03:00 UTC</span>
+          </div>
+        </div>
+
+        <!-- 4. Google Places API -->
+        <div class="p-3 rounded-2xl dynamic-card-inner border flex items-center justify-between gap-3">
+          <div class="space-y-0.5 flex-1">
+            <h4 class="font-extrabold text-xs flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              🔍 Google Cloud Places API (New)
+            </h4>
+            <p class="text-[11px] opacity-75">Rating bintang & ulasan (Backend Pipeline).</p>
+          </div>
+          <div class="text-right shrink-0">
+            <span class="text-[9px] font-bold px-2 py-0.5 rounded bg-blue-500/20 text-blue-600 dark:text-blue-400 block mb-0.5">RESET KUOTA $200</span>
+            <span class="text-xs font-mono font-extrabold text-blue-600 dark:text-blue-400">Tgl 1 Pukul 00:00 UTC</span>
+          </div>
         </div>
       </div>
 
@@ -556,7 +569,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=2.0.9"></script>
+  <script src="app.js?v=2.1.0"></script>
   <script>
     lucide.createIcons();
   </script>
