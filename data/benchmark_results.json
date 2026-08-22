@@ -1,0 +1,194 @@
+[
+  {
+    "route_name": "Beihuan North Ring (Magong -> Penghu Great Bridge)",
+    "distance_km": 9.9,
+    "mode": "scooter",
+    "recommended_shelter": "Tanpa Nama",
+    "schemes": [
+      {
+        "scheme": "Scheme 1: ISO 7243 (WBGT Threshold)",
+        "citation": "ISO 7243:2017 / Budd (2008)",
+        "formula": "T_max = 60 / (WBGT - 27)^1.2",
+        "direct_duration_mins": 17.0,
+        "needs_shelter": true,
+        "recommended_rest_mins": 12.0,
+        "total_itinerary_mins": 29.0,
+        "thermal_strain_reduction_pct": 27.5
+      },
+      {
+        "scheme": "Scheme 2: UTCI Physiological Strain",
+        "citation": "Bröde et al. (2012), Int. J. Biometeorology",
+        "formula": "Phi_UTCI = 1 + 0.7 * ((FeelsLike - 26)/10)^2.4",
+        "direct_duration_mins": 17.0,
+        "needs_shelter": true,
+        "recommended_rest_mins": 15.0,
+        "total_itinerary_mins": 32.0,
+        "thermal_strain_reduction_pct": 58.4
+      },
+      {
+        "scheme": "Scheme 3: Solar Radiation Budget",
+        "citation": "Brown & Gillespie (1995) / Vanos et al. (2010)",
+        "formula": "R_abs = (DNI * 0.85) + (UV * 20)",
+        "direct_duration_mins": 17.0,
+        "needs_shelter": true,
+        "recommended_rest_mins": 10.0,
+        "total_itinerary_mins": 27.0,
+        "thermal_strain_reduction_pct": 72.0
+      },
+      {
+        "scheme": "Scheme 4: Bi-Objective Pareto Router",
+        "citation": "Raith & Ehrgott (2009), Comput. & Oper. Res.",
+        "formula": "Min [w1*T + w2*Strain] s.t. Detour <= 1.20",
+        "direct_duration_mins": 17.0,
+        "needs_shelter": true,
+        "recommended_rest_mins": 12.0,
+        "total_itinerary_mins": 30.3,
+        "thermal_strain_reduction_pct": 64.5
+      }
+    ]
+  },
+  {
+    "route_name": "Xiyu Exploration (Magong -> Daguoye Columnar Basalt)",
+    "distance_km": 6.02,
+    "mode": "scooter",
+    "recommended_shelter": "Tanpa Nama",
+    "schemes": [
+      {
+        "scheme": "Scheme 1: ISO 7243 (WBGT Threshold)",
+        "citation": "ISO 7243:2017 / Budd (2008)",
+        "formula": "T_max = 60 / (WBGT - 27)^1.2",
+        "direct_duration_mins": 10.3,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 10.3,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 2: UTCI Physiological Strain",
+        "citation": "Bröde et al. (2012), Int. J. Biometeorology",
+        "formula": "Phi_UTCI = 1 + 0.7 * ((FeelsLike - 26)/10)^2.4",
+        "direct_duration_mins": 10.3,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 10.3,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 3: Solar Radiation Budget",
+        "citation": "Brown & Gillespie (1995) / Vanos et al. (2010)",
+        "formula": "R_abs = (DNI * 0.85) + (UV * 20)",
+        "direct_duration_mins": 10.3,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 10.3,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 4: Bi-Objective Pareto Router",
+        "citation": "Raith & Ehrgott (2009), Comput. & Oper. Res.",
+        "formula": "Min [w1*T + w2*Strain] s.t. Detour <= 1.20",
+        "direct_duration_mins": 10.3,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 10.3,
+        "thermal_strain_reduction_pct": 0.0
+      }
+    ]
+  },
+  {
+    "route_name": "Huxi Line (Magong Airport -> Kuobishan Moses Parting)",
+    "distance_km": 5.56,
+    "mode": "scooter",
+    "recommended_shelter": "全家便利商店",
+    "schemes": [
+      {
+        "scheme": "Scheme 1: ISO 7243 (WBGT Threshold)",
+        "citation": "ISO 7243:2017 / Budd (2008)",
+        "formula": "T_max = 60 / (WBGT - 27)^1.2",
+        "direct_duration_mins": 9.5,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 9.5,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 2: UTCI Physiological Strain",
+        "citation": "Bröde et al. (2012), Int. J. Biometeorology",
+        "formula": "Phi_UTCI = 1 + 0.7 * ((FeelsLike - 26)/10)^2.4",
+        "direct_duration_mins": 9.5,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 9.5,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 3: Solar Radiation Budget",
+        "citation": "Brown & Gillespie (1995) / Vanos et al. (2010)",
+        "formula": "R_abs = (DNI * 0.85) + (UV * 20)",
+        "direct_duration_mins": 9.5,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 9.5,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 4: Bi-Objective Pareto Router",
+        "citation": "Raith & Ehrgott (2009), Comput. & Oper. Res.",
+        "formula": "Min [w1*T + w2*Strain] s.t. Detour <= 1.20",
+        "direct_duration_mins": 9.5,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 9.5,
+        "thermal_strain_reduction_pct": 0.0
+      }
+    ]
+  },
+  {
+    "route_name": "Magong Historical Walking Tour",
+    "distance_km": 0.46,
+    "mode": "walk",
+    "recommended_shelter": "7-Eleven",
+    "schemes": [
+      {
+        "scheme": "Scheme 1: ISO 7243 (WBGT Threshold)",
+        "citation": "ISO 7243:2017 / Budd (2008)",
+        "formula": "T_max = 60 / (WBGT - 27)^1.2",
+        "direct_duration_mins": 6.1,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 6.1,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 2: UTCI Physiological Strain",
+        "citation": "Bröde et al. (2012), Int. J. Biometeorology",
+        "formula": "Phi_UTCI = 1 + 0.7 * ((FeelsLike - 26)/10)^2.4",
+        "direct_duration_mins": 6.1,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 6.1,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 3: Solar Radiation Budget",
+        "citation": "Brown & Gillespie (1995) / Vanos et al. (2010)",
+        "formula": "R_abs = (DNI * 0.85) + (UV * 20)",
+        "direct_duration_mins": 6.1,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 6.1,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 4: Bi-Objective Pareto Router",
+        "citation": "Raith & Ehrgott (2009), Comput. & Oper. Res.",
+        "formula": "Min [w1*T + w2*Strain] s.t. Detour <= 1.20",
+        "direct_duration_mins": 6.1,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 6.1,
+        "thermal_strain_reduction_pct": 0.0
+      }
+    ]
+  }
+]

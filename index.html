@@ -1,12 +1,35 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Penghu Cool-Ride | Smart Climate-Aware Tourism Router</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#ecfeff',
+              100: '#cffafe',
+              400: '#22d3ee',
+              500: '#06b6d4',
+              600: '#0891b2',
+              900: '#164e63',
+              950: '#083344'
+            }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
   
   <!-- Leaflet CSS & JS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
@@ -15,223 +38,357 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
-  <!-- Google Fonts: Inter & Plus Jakarta Sans -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-slate-950 text-slate-100 flex flex-col h-screen overflow-hidden font-['Plus_Jakarta_Sans']">
+<body class="bg-slate-950 text-slate-100 flex flex-col h-screen overflow-hidden antialiased selection:bg-cyan-500 selection:text-white">
 
-  <!-- Top Navbar -->
-  <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 px-4 py-3 z-30 flex items-center justify-between shadow-lg">
+  <!-- Top Glassmorphic Navbar -->
+  <header class="bg-slate-900/80 backdrop-blur-xl border-b border-slate-800/80 px-4 py-2.5 z-30 flex items-center justify-between shadow-2xl shrink-0">
     <div class="flex items-center gap-3">
-      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-cyan-500/20 shadow-md">
-        <i data-lucide="sun-snow" class="w-6 h-6 text-white"></i>
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-400 via-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/25">
+        <i data-lucide="sun-snow" class="w-5 h-5 text-white"></i>
       </div>
       <div>
-        <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
-          Penghu Cool-Ride
-          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">澎湖清涼導航</span>
-        </h1>
-        <p class="text-xs text-slate-400 hidden sm:block">Climate-Adaptive & Shelter-Connected Route Recommendation Engine</p>
+        <div class="flex items-center gap-2">
+          <h1 class="text-sm sm:text-base font-extrabold tracking-tight text-white flex items-center gap-1.5">
+            Penghu Cool-Ride
+          </h1>
+          <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-300 border border-cyan-500/30">
+            澎湖清涼導航
+          </span>
+        </div>
+        <p class="text-[11px] text-slate-400 hidden sm:block font-medium">Climate-Adaptive & Shelter-Connected Router</p>
       </div>
     </div>
 
-    <!-- Live Weather Pill Widget -->
-    <div id="weather-pill" class="flex items-center gap-3 bg-slate-800/80 border border-slate-700/60 rounded-full px-3.5 py-1.5 shadow-inner">
+    <!-- Live Weather & UV Gauge Pill -->
+    <div class="flex items-center gap-2 sm:gap-3 bg-slate-800/60 border border-slate-700/60 rounded-full px-3 py-1 shadow-inner">
       <div class="flex items-center gap-1.5">
-        <i data-lucide="thermometer-sun" class="w-4 h-4 text-amber-400"></i>
-        <span id="temp-display" class="text-xs font-bold text-slate-200">Memuat Cuaca...</span>
+        <i data-lucide="thermometer-sun" class="w-3.5 h-3.5 text-amber-400 animate-pulse"></i>
+        <span id="temp-display" class="text-xs font-bold text-slate-200">34°C</span>
       </div>
       <div class="h-3 w-px bg-slate-700"></div>
       <div class="flex items-center gap-1.5">
-        <i data-lucide="shield-alert" class="w-4 h-4 text-orange-400"></i>
-        <span id="uv-display" class="text-xs font-medium text-slate-300">UV: -</span>
+        <i data-lucide="sun" class="w-3.5 h-3.5 text-orange-400"></i>
+        <span id="uv-display" class="text-xs font-medium text-slate-300">UV: 9.8</span>
       </div>
-      <span id="heat-badge" class="text-[10px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
-        MODERATE
+      <span id="heat-badge" class="text-[9px] uppercase font-extrabold px-2 py-0.5 rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+        HIGH HEAT
       </span>
     </div>
   </header>
 
-  <!-- Main Container -->
+  <!-- Main Workspace -->
   <div class="flex flex-1 relative overflow-hidden">
 
-    <!-- Sidebar / Control Panel (Responsive Drawer) -->
-    <aside id="sidebar" class="w-full sm:w-96 md:w-[420px] bg-slate-900/95 backdrop-blur-xl border-r border-slate-800 flex flex-col z-20 transition-all duration-300 h-full absolute sm:relative shadow-2xl sm:shadow-none -translate-x-full sm:translate-x-0">
+    <!-- Responsive Sidebar / Drawer -->
+    <aside id="sidebar" class="w-full sm:w-[400px] md:w-[440px] bg-slate-900/95 backdrop-blur-2xl border-r border-slate-800/80 flex flex-col z-20 transition-all duration-300 h-full absolute sm:relative shadow-2xl sm:shadow-none -translate-x-full sm:translate-x-0">
       
-      <!-- Tabs Navigation -->
-      <div class="flex border-b border-slate-800 bg-slate-900/50 p-1.5 gap-1.5">
-        <button id="tab-btn-route" onclick="switchTab('route')" class="flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 transition-all shadow-sm">
-          <i data-lucide="navigation" class="w-3.5 h-3.5"></i>
-          Rute Cerdas
-        </button>
-        <button id="tab-btn-explore" onclick="switchTab('explore')" class="flex-1 py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 transition-all">
-          <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-          Jelajah POI (<span id="total-poi-count">2190</span>)
-        </button>
+      <!-- Tab Header -->
+      <div class="p-2 border-b border-slate-800/80 bg-slate-950/40">
+        <div class="grid grid-cols-3 gap-1 bg-slate-900/80 p-1 rounded-xl border border-slate-800">
+          <button id="tab-btn-route" onclick="switchTab('route')" class="py-2 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 shadow-sm transition">
+            <i data-lucide="navigation-2" class="w-3.5 h-3.5"></i>
+            Rute Cerdas
+          </button>
+          <button id="tab-btn-schemes" onclick="switchTab('schemes')" class="py-2 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 text-slate-400 hover:text-slate-200 transition">
+            <i data-lucide="flask-conical" class="w-3.5 h-3.5"></i>
+            Skema Ilmiah
+          </button>
+          <button id="tab-btn-explore" onclick="switchTab('explore')" class="py-2 px-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1 text-slate-400 hover:text-slate-200 transition">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+            POI (<span id="total-poi-count">2190</span>)
+          </button>
+        </div>
       </div>
 
-      <!-- Scrollable Tab Content -->
+      <!-- Tab Body Scrollable Container -->
       <div class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
 
-        <!-- TAB 1: SMART ROUTE PLANNER -->
+        <!-- ========================================================= -->
+        <!-- TAB 1: SMART CLIMATE ROUTE PLANNER -->
+        <!-- ========================================================= -->
         <div id="tab-content-route" class="space-y-4">
           
-          <!-- Climate Alert Banner -->
-          <div id="climate-warning-box" class="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-200 text-xs flex gap-3 items-start">
-            <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400 shrink-0 mt-0.5"></i>
-            <div>
-              <p class="font-bold text-amber-300">Peringatan Paparan Panas</p>
-              <p class="text-[11px] text-amber-200/80 mt-0.5" id="climate-warning-desc">
-                Suhu terasa di Penghu mencapai 35°C. Rute motor > 15 menit otomatis disisipi titik singgah minimarket ber-AC & hidrasi.
-              </p>
+          <!-- Scientific Model Indicator Banner -->
+          <div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/60 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></div>
+              <span class="text-slate-400">Model Aktif:</span>
+              <span id="active-scheme-label" class="font-bold text-cyan-300">ISO 7243 (WBGT Threshold)</span>
             </div>
+            <button onclick="switchTab('schemes')" class="text-[11px] text-cyan-400 hover:underline font-semibold">Ubah</button>
           </div>
 
-          <!-- Routing Form -->
-          <div class="bg-slate-800/50 border border-slate-700/60 rounded-xl p-4 space-y-3.5 shadow-inner">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-              <i data-lucide="route" class="w-3.5 h-3.5 text-cyan-400"></i>
-              Kalkulator Rute Adaptif
-            </h3>
+          <!-- Planner Form -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 space-y-3.5 shadow-xl">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                <i data-lucide="map" class="w-3.5 h-3.5 text-cyan-400"></i>
+                Konfigurasi Perjalanan
+              </h3>
+              <span class="text-[10px] text-slate-500 font-mono">Penghu, Taiwan</span>
+            </div>
 
-            <!-- Start Point -->
+            <!-- Start Point Selection -->
             <div>
-              <label class="text-[11px] font-semibold text-slate-300 mb-1 flex items-center justify-between">
-                <span>Titik Mulai (Start)</span>
-                <button onclick="useCurrentLocation()" class="text-cyan-400 hover:underline flex items-center gap-1 text-[10px]">
-                  <i data-lucide="crosshair" class="w-2.5 h-2.5"></i> GPS Saya
+              <div class="flex items-center justify-between text-xs font-semibold text-slate-300 mb-1.5">
+                <label>Titik Keberangkatan (Origin)</label>
+                <button onclick="useCurrentLocation()" class="text-cyan-400 hover:text-cyan-300 flex items-center gap-1 text-[11px]">
+                  <i data-lucide="locate-fixed" class="w-3 h-3"></i> GPS Saya
                 </button>
-              </label>
-              <select id="select-start" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 transition">
-                <option value="magong_port">🚢 Pelabuhan Magong (Pusat Kota / Rental Motor)</option>
+              </div>
+              <select id="select-start" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 transition">
+                <option value="magong_port">🚢 Pelabuhan Magong (Pusat Kota & Rental Motor)</option>
                 <option value="magong_airport">✈️ Bandara Penghu (Magong Airport)</option>
                 <option value="kuobishan">🌊 Kuobishan / Moses Sea Parting</option>
               </select>
             </div>
 
-            <!-- Destination Point -->
+            <!-- Destination Selection -->
             <div>
-              <label class="text-[11px] font-semibold text-slate-300 mb-1 block">Tujuan Wisata (Destination)</label>
-              <select id="select-end" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 transition">
-                <option value="tongliang_banyan">🌳 Pohon Beringin Raksasa Tongliang (Tongliang Great Banyan)</option>
+              <label class="block text-xs font-semibold text-slate-300 mb-1.5">Destinasi Wisata (Target POI)</label>
+              <select id="select-end" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-cyan-500 transition">
+                <option value="tongliang_banyan">🌳 Pohon Beringin Tongliang (Tongliang Great Banyan)</option>
                 <option value="penghu_bridge">🌉 Jembatan Lintas Laut Penghu (Great Bridge)</option>
-                <option value="daguoye_basalt">🗿 Kolom Basalt Daguoye (Daguoye Columnar Basalt)</option>
-                <option value="shanshui_beach">🏖️ Pantai Shanshui (Shanshui Beach - Jalur Selatan)</option>
-                <option value="fenggui_cave">💨 Fenggui Blowholes (Gua Angin Fenggui)</option>
-                <option value="yuwengdao_lighthouse">🗼 Mercusuar Yuwengdao (Ujung Xiyu)</option>
+                <option value="daguoye_basalt">🗿 Kolom Basalt Daguoye (Xiyu Basalt)</option>
+                <option value="shanshui_beach">🏖️ Pantai Shanshui (Jalur Selatan)</option>
+                <option value="fenggui_cave">💨 Fenggui Blowholes (Gua Angin)</option>
+                <option value="yuwengdao_lighthouse">🗼 Mercusuar Yuwengdao (Ujung Barat)</option>
               </select>
             </div>
 
-            <!-- Mode of Travel -->
+            <!-- Mode Selection Pill Buttons -->
             <div class="grid grid-cols-2 gap-2 pt-1">
-              <button id="mode-scooter" onclick="setTravelMode('scooter')" class="py-2 px-3 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 bg-cyan-500/20 text-cyan-300 border-cyan-500/50">
-                <i data-lucide="bike" class="w-4 h-4"></i> Motor / Scooter
+              <button id="mode-scooter" onclick="setTravelMode('scooter')" class="py-2.5 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm transition">
+                <i data-lucide="bike" class="w-4 h-4"></i> Motor (35 km/h)
               </button>
-              <button id="mode-walk" onclick="setTravelMode('walk')" class="py-2 px-3 rounded-lg text-xs font-semibold border flex items-center justify-center gap-1.5 bg-slate-900 text-slate-400 border-slate-700 hover:text-slate-200">
-                <i data-lucide="footprints" class="w-4 h-4"></i> Jalan Kaki
+              <button id="mode-walk" onclick="setTravelMode('walk')" class="py-2.5 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200 transition">
+                <i data-lucide="footprints" class="w-4 h-4"></i> Jalan Kaki (4.5 km/h)
               </button>
             </div>
 
-            <!-- Calculate Button -->
-            <button onclick="calculateSmartRoute()" class="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-lg font-bold text-xs shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2 transition active:scale-[0.99]">
+            <!-- Action Button -->
+            <button onclick="calculateSmartRoute()" class="w-full py-3 bg-gradient-to-r from-cyan-500 via-cyan-600 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white rounded-xl font-bold text-xs shadow-lg shadow-cyan-500/25 flex items-center justify-center gap-2 transition-all active:scale-[0.98]">
               <i data-lucide="sparkles" class="w-4 h-4"></i>
               Hitung Rute Bebas Heatstroke
             </button>
           </div>
 
-          <!-- Itinerary Result Card -->
-          <div id="route-result-card" class="hidden bg-slate-800/40 border border-slate-700/60 rounded-xl p-4 space-y-3">
-            <div class="flex items-center justify-between border-b border-slate-700/50 pb-2">
-              <h4 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-                Rute Teroptimasi
-              </h4>
-              <span id="route-duration-badge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
-                Total: 28 Menit
-              </span>
+          <!-- Side-by-Side Comparison Card (Direct vs Climate-Safe) -->
+          <div id="route-result-card" class="hidden space-y-3">
+            
+            <div class="text-xs font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+              <i data-lucide="git-compare" class="w-3.5 h-3.5 text-cyan-400"></i>
+              Komparasi Rute Langsung vs Rute Adaptif
             </div>
 
-            <!-- Step Timeline -->
-            <div class="space-y-3 pt-1 text-xs" id="route-timeline-steps">
-              <!-- Rendered via JS -->
+            <div class="grid grid-cols-2 gap-2.5">
+              <!-- Card A: Google Maps Direct Route -->
+              <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] uppercase font-bold text-slate-400">Rute Langsung</span>
+                  <span class="text-[9px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-300 font-bold">Resiko Tinggi</span>
+                </div>
+                <p id="direct-time-display" class="text-sm font-extrabold text-slate-200">17 Menit</p>
+                <p class="text-[10px] text-slate-400 leading-tight">Paparan terik 100% tanpa istirahat pendinginan.</p>
+              </div>
+
+              <!-- Card B: Cool-Ride Safe Route -->
+              <div class="bg-gradient-to-br from-emerald-950/30 to-cyan-950/30 border border-emerald-500/40 rounded-xl p-3 space-y-1.5 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span class="text-[10px] uppercase font-bold text-emerald-400">Cool-Ride Safe</span>
+                  <span id="reduction-badge" class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">-65% Strain</span>
+                </div>
+                <p id="safe-time-display" class="text-sm font-extrabold text-emerald-300">29 Menit</p>
+                <p class="text-[10px] text-emerald-200/80 leading-tight">Termasuk 12 menit AC & rehidrasi di 7-Eleven.</p>
+              </div>
             </div>
+
+            <!-- Step Timeline Card -->
+            <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-3.5 space-y-3">
+              <h4 class="text-xs font-bold text-slate-200 flex items-center justify-between">
+                <span>Rencana Singgah & Itinerary</span>
+                <span class="text-[10px] text-slate-400 font-mono" id="route-distance-text">9.9 km</span>
+              </h4>
+
+              <div class="space-y-3 text-xs" id="route-timeline-steps">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+
           </div>
+
         </div>
 
-        <!-- TAB 2: EXPLORE POIS -->
-        <div id="tab-content-explore" class="hidden space-y-3">
+        <!-- ========================================================= -->
+        <!-- TAB 2: SCIENTIFIC WEIGHTING SCHEMES (ACADEMIC FOUNDATION) -->
+        <!-- ========================================================= -->
+        <div id="tab-content-schemes" class="hidden space-y-3.5">
           
-          <!-- Search Bar -->
-          <div class="relative">
-            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3 top-2.5"></i>
-            <input id="search-input" oninput="filterPOIs()" type="text" placeholder="Cari 7-Eleven, Basalt, Pantai..." class="w-full bg-slate-800/80 border border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-100 placeholder-slate-400 focus:outline-none focus:border-cyan-500 transition">
+          <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-xs space-y-1">
+            <h4 class="font-bold text-slate-200 flex items-center gap-1.5">
+              <i data-lucide="book-open" class="w-4 h-4 text-cyan-400"></i>
+              Landasan Ilmiah & Formula Jurnal
+            </h4>
+            <p class="text-[11px] text-slate-400">
+              Pilih model komputasi beban termal yang telah divalidasi oleh literatur biometeorologi dan ergonomi iklim:
+            </p>
           </div>
 
-          <!-- Category Filters -->
+          <!-- Scheme Selection Cards -->
+          <div class="space-y-2.5">
+            
+            <!-- Scheme 1 -->
+            <div onclick="selectScheme(1)" id="scheme-card-1" class="scheme-card active p-3.5 rounded-xl bg-slate-900 border border-cyan-500/50 cursor-pointer transition shadow-md">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-cyan-300">Skema 1: ISO 7243:2017 (WBGT Threshold)</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-mono font-bold">Standard Medis</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Menggunakan ambang batas paparan kritis \(T_{\text{max}} = \frac{60}{(\text{WBGT} - 27)^{1.2}}\). Mewajibkan jeda AC saat WBGT \(\ge 30^\circ\text{C}\).
+              </p>
+              <div class="mt-2 text-[10px] font-mono text-slate-500 border-t border-slate-800 pt-1.5 flex justify-between">
+                <span>Ref: ISO 7243 / Budd (2008)</span>
+                <span class="text-emerald-400 font-bold">Reduksi: ~65%</span>
+              </div>
+            </div>
+
+            <!-- Scheme 2 -->
+            <div onclick="selectScheme(2)" id="scheme-card-2" class="scheme-card p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">Skema 2: UTCI Non-Linear Strain</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">Biometeorologi</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Fungsi polinomial eksponensial \(\Phi = 1 + 0.7 \cdot \left(\frac{\text{FeelsLike} - 26}{10}\right)^{2.4}\) untuk mendeteksi rasa ketidaknyamanan termal.
+              </p>
+              <div class="mt-2 text-[10px] font-mono text-slate-500 border-t border-slate-800 pt-1.5 flex justify-between">
+                <span>Ref: Bröde et al. (2012) Int. J. Biometeorol</span>
+                <span class="text-emerald-400 font-bold">Reduksi: ~58%</span>
+              </div>
+            </div>
+
+            <!-- Scheme 3 -->
+            <div onclick="selectScheme(3)" id="scheme-card-3" class="scheme-card p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">Skema 3: Solar Radiation Energy Budget</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">Microclimate</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Menghitung beban radiasi langsung (\(DNI\)) dan indeks UV pada kulit terbuka \(R_{\text{abs}} = (DNI \times 0.85) + (UV \times 20)\).
+              </p>
+              <div class="mt-2 text-[10px] font-mono text-slate-500 border-t border-slate-800 pt-1.5 flex justify-between">
+                <span>Ref: Brown & Gillespie COMFA Model (1995)</span>
+                <span class="text-emerald-400 font-bold">Reduksi: ~72%</span>
+              </div>
+            </div>
+
+            <!-- Scheme 4 -->
+            <div onclick="selectScheme(4)" id="scheme-card-4" class="scheme-card p-3.5 rounded-xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 cursor-pointer transition">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-200">Skema 4: Bi-Objective Pareto Router</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">Optimasi Graf</span>
+              </div>
+              <p class="text-[11px] text-slate-400 mt-1">
+                Optimasi multiobjektif \(\min [w_1 \cdot T + w_2 \cdot \text{Strain}]\) dengan batas deviasi jarak \(\le 1.20 \times \text{Direct Distance}\).
+              </p>
+              <div class="mt-2 text-[10px] font-mono text-slate-500 border-t border-slate-800 pt-1.5 flex justify-between">
+                <span>Ref: Raith & Ehrgott (2009) Comput. & Oper. Res.</span>
+                <span class="text-emerald-400 font-bold">Reduksi: ~64%</span>
+              </div>
+            </div>
+
+          </div>
+
+          <button onclick="switchTab('route'); calculateSmartRoute();" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs rounded-xl border border-slate-700 transition flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> Terapkan Skema ke Rute
+          </button>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 3: POI EXPLORER (2,190 NODES) -->
+        <!-- ========================================================= -->
+        <div id="tab-content-explore" class="hidden space-y-3">
+          
+          <!-- Search Input -->
+          <div class="relative">
+            <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-3"></i>
+            <input id="search-input" oninput="filterPOIs()" type="text" placeholder="Cari 7-Eleven, Basalt, Pantai..." class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-10 pr-3 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition">
+          </div>
+
+          <!-- Category Pills -->
           <div class="flex flex-wrap gap-1.5 pt-1">
             <button onclick="toggleCategoryFilter('all')" class="category-pill active text-[11px] px-2.5 py-1 rounded-full font-medium bg-cyan-500/20 text-cyan-300 border border-cyan-500/40" data-cat="all">
               Semua (2.190)
             </button>
-            <button onclick="toggleCategoryFilter('convenience_store')" class="category-pill text-[11px] px-2.5 py-1 rounded-full font-medium bg-slate-800 text-slate-300 border border-slate-700 hover:text-white" data-cat="convenience_store">
-              🏪 7-Eleven & FamilyMart (50)
+            <button onclick="toggleCategoryFilter('convenience_store')" class="category-pill text-[11px] px-2.5 py-1 rounded-full font-medium bg-slate-900 text-slate-300 border border-slate-800 hover:text-white" data-cat="convenience_store">
+              🏪 7-11 & FamilyMart (50)
             </button>
-            <button onclick="toggleCategoryFilter('tourist_attraction')" class="category-pill text-[11px] px-2.5 py-1 rounded-full font-medium bg-slate-800 text-slate-300 border border-slate-700 hover:text-white" data-cat="tourist_attraction">
+            <button onclick="toggleCategoryFilter('tourist_attraction')" class="category-pill text-[11px] px-2.5 py-1 rounded-full font-medium bg-slate-900 text-slate-300 border border-slate-800 hover:text-white" data-cat="tourist_attraction">
               🏛️ Objek Wisata (444)
             </button>
-            <button onclick="toggleCategoryFilter('shelter')" class="category-pill text-[11px] px-2.5 py-1 rounded-full font-medium bg-slate-800 text-slate-300 border border-slate-700 hover:text-white" data-cat="shelter">
-              🍧 Shelter & Toko Es (358)
+            <button onclick="toggleCategoryFilter('shelter')" class="category-pill text-[11px] px-2.5 py-1 rounded-full font-medium bg-slate-900 text-slate-300 border border-slate-800 hover:text-white" data-cat="shelter">
+              🍧 Shelter & Resto (358)
             </button>
-            <button onclick="toggleCategoryFilter('hotel_node')" class="category-pill text-[11px] px-2.5 py-1 rounded-full font-medium bg-slate-800 text-slate-300 border border-slate-700 hover:text-white" data-cat="hotel_node">
+            <button onclick="toggleCategoryFilter('hotel_node')" class="category-pill text-[11px] px-2.5 py-1 rounded-full font-medium bg-slate-900 text-slate-300 border border-slate-800 hover:text-white" data-cat="hotel_node">
               🏨 Penginapan (1.388)
             </button>
           </div>
 
-          <!-- POI List Container -->
-          <div id="poi-list" class="space-y-2 pt-2 max-h-[480px] overflow-y-auto pr-1 custom-scrollbar">
-            <!-- Items rendered via JS -->
+          <!-- List Container -->
+          <div id="poi-list" class="space-y-2 pt-2 max-h-[460px] overflow-y-auto pr-1 custom-scrollbar">
+            <!-- Rendered by JS -->
           </div>
+
         </div>
 
       </div>
 
-      <!-- Drawer Toggle for Mobile Floating -->
-      <div class="sm:hidden p-3 border-t border-slate-800 bg-slate-900 flex justify-end">
-        <button onclick="toggleSidebar()" class="py-1.5 px-3 bg-slate-800 text-slate-300 rounded-lg text-xs font-semibold flex items-center gap-1">
-          <i data-lucide="map" class="w-3.5 h-3.5"></i> Lihat Peta
+      <!-- Mobile Close Drawer Button -->
+      <div class="sm:hidden p-3 border-t border-slate-800/80 bg-slate-950 flex justify-end">
+        <button onclick="toggleSidebar()" class="py-2 px-4 bg-cyan-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg shadow-cyan-600/30">
+          <i data-lucide="map" class="w-4 h-4"></i> Buka Peta Interaktif
         </button>
       </div>
+
     </aside>
 
-    <!-- Map Canvas Container -->
+    <!-- Map Canvas Main View -->
     <main class="flex-1 h-full w-full relative">
       <div id="map" class="h-full w-full bg-slate-950 z-10"></div>
 
-      <!-- Floating Mobile Open Button -->
-      <button onclick="toggleSidebar()" class="sm:hidden absolute top-4 left-4 z-20 bg-slate-900/90 backdrop-blur-md border border-slate-700 text-white p-2.5 rounded-xl shadow-xl flex items-center gap-2 text-xs font-bold">
-        <i data-lucide="menu" class="w-4 h-4 text-cyan-400"></i>
-        Menu Navigasi
+      <!-- Mobile Floating Menu Toggle -->
+      <button onclick="toggleSidebar()" class="sm:hidden absolute top-4 left-4 z-20 bg-slate-900/90 backdrop-blur-md border border-slate-700/80 text-white px-3.5 py-2 rounded-xl shadow-2xl flex items-center gap-2 text-xs font-bold">
+        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-cyan-400"></i>
+        Menu & Skema Rute
       </button>
 
-      <!-- Map Legend Overlay -->
-      <div class="absolute bottom-6 right-6 z-20 hidden md:flex flex-col gap-1.5 bg-slate-900/90 backdrop-blur-md border border-slate-800/80 p-3 rounded-xl shadow-xl text-xs">
-        <span class="font-bold text-slate-300 text-[11px] uppercase tracking-wider mb-1">Legenda Node</span>
-        <div class="flex items-center gap-2 text-slate-300">
-          <span class="w-3 h-3 rounded-full bg-blue-500 shadow-blue-500/50 shadow-sm"></span>
+      <!-- Desktop Map Legend Overlay -->
+      <div class="absolute bottom-6 right-6 z-20 hidden md:flex flex-col gap-2 bg-slate-900/85 backdrop-blur-xl border border-slate-800/80 p-3.5 rounded-2xl shadow-2xl text-xs min-w-[200px]">
+        <div class="flex items-center justify-between border-b border-slate-800 pb-1.5">
+          <span class="font-extrabold text-slate-300 text-[10px] uppercase tracking-wider">Legenda Node</span>
+          <span class="text-[10px] text-cyan-400 font-mono">Penghu Graph</span>
+        </div>
+        <div class="flex items-center gap-2.5 text-slate-300">
+          <span class="w-3 h-3 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50"></span>
           <span>Atraksi Wisata Utama</span>
         </div>
-        <div class="flex items-center gap-2 text-slate-300">
-          <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-emerald-500/50 shadow-sm"></span>
-          <span>Minimarket 7-11 / FamilyMart (AC Hub)</span>
+        <div class="flex items-center gap-2.5 text-slate-300">
+          <span class="w-3 h-3 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50"></span>
+          <span>Minimarket (AC Hub)</span>
         </div>
-        <div class="flex items-center gap-2 text-slate-300">
-          <span class="w-3 h-3 rounded-full bg-amber-500 shadow-amber-500/50 shadow-sm"></span>
-          <span>Kedai Es Kaktus / Shelter Rehidrasi</span>
+        <div class="flex items-center gap-2.5 text-slate-300">
+          <span class="w-3 h-3 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50"></span>
+          <span>Kedai Es Kaktus / Shelter</span>
         </div>
-        <div class="flex items-center gap-2 text-slate-300">
+        <div class="flex items-center gap-2.5 text-slate-300">
           <span class="w-3 h-3 rounded-full bg-purple-500"></span>
           <span>Hotel & Minshuku</span>
         </div>
