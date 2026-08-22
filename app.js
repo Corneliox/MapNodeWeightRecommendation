@@ -1,5 +1,5 @@
 // ====================================================================
-// Penghu Cool-Ride - Dynamic Multi-Language Engine & Strict Wiki Filtering
+// Penghu Cool-Ride - Dynamic Multi-Language Engine & Wikipedia Photo Markers
 // ====================================================================
 
 // Global Application State
@@ -23,7 +23,7 @@ let currentWeatherData = {
   heatLevelKey: 'heat_high'
 };
 
-// Preset Key Coordinates for Routing Demo
+// Preset Key Coordinates
 const KEY_PRESET_LOCATIONS = {
   magong_port: { name_zh: "馬公港", name_en: "Magong Port (Rental Hub)", lat: 23.5654, lon: 119.5668 },
   magong_airport: { name_zh: "澎湖機場", name_en: "Penghu Airport", lat: 23.5697, lon: 119.6294 },
@@ -43,12 +43,13 @@ const SCIENTIFIC_SCHEMES_META = {
   4: { name: "Bi-Objective Pareto Router", strainReduction: 64, restMins: 12 }
 };
 
-// Verified Wikipedia Knowledge Base (Hanya POI yang terbukti memiliki artikel resmi di Wikipedia)
+// Verified Wikipedia Knowledge Base with Direct Wikimedia Thumbnail Images
 const PENGHU_WIKIPEDIA_DB = {
   "通梁古榕": {
     wiki_title: "通梁古榕",
     url_zh: "https://zh.wikipedia.org/wiki/通梁古榕",
     url_en: "https://en.wikipedia.org/wiki/Tongliang_Great_Banyan",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Tongliang_Great_Banyan_20150619.jpg/330px-Tongliang_Great_Banyan_20150619.jpg",
     summary_id: "Pohon banyan raksasa berumur lebih dari 300 tahun di Desa Tongliang, Baisha. Memiliki hampir 100 akar gantung yang membentuk kanopi peneduh alami seluas 660 meter persegi di depan Kuil Bao'an.",
     summary_en: "A historic 300-year-old banyan tree in Tongliang, Baisha. Features nearly 100 aerial roots forming a massive 660 m² natural shade canopy in front of Bao'an Temple.",
     summary_zh: "位於白沙鄉通梁村保安宮前，樹齡已達300多年，氣根近百條，枝葉繁茂形成廣達660平方公尺的天然綠蔭。"
@@ -57,6 +58,7 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "澎湖跨海大橋",
     url_zh: "https://zh.wikipedia.org/wiki/澎湖跨海大橋",
     url_en: "https://en.wikipedia.org/wiki/Penghu_Great_Bridge",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Penghu_Great_Bridge_20150619.jpg/330px-Penghu_Great_Bridge_20150619.jpg",
     summary_id: "Jembatan sepanjang 2,49 km yang menghubungkan Pulau Baisha dan Pulau Xiyu melintasi Selat Houhan yang berarus deras. Ikon utama pariwisata Penghu.",
     summary_en: "A 2.49 km long cross-sea bridge connecting Baisha and Xiyu islands across the turbulent Houhan Channel.",
     summary_zh: "連接白沙鄉與西嶼鄉的跨海大橋，全長2,494公尺，橫跨潮流洶湧的吼門水道，為澎湖最具代表性的地標建築。"
@@ -65,6 +67,7 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "澎湖跨海大橋",
     url_zh: "https://zh.wikipedia.org/wiki/澎湖跨海大橋",
     url_en: "https://en.wikipedia.org/wiki/Penghu_Great_Bridge",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Penghu_Great_Bridge_20150619.jpg/330px-Penghu_Great_Bridge_20150619.jpg",
     summary_id: "Jembatan megah penghubung Baisha dan Xiyu sepanjang 2.494 meter.",
     summary_en: "Penghu's famous 2.49 km cross-sea bridge connecting Baisha and Xiyu.",
     summary_zh: "連接白沙與西嶼的著名跨海大橋。"
@@ -73,6 +76,7 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "大菓葉柱狀玄武岩",
     url_zh: "https://zh.wikipedia.org/wiki/西嶼鄉",
     url_en: "https://en.wikipedia.org/wiki/Xiyu",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Daguoye_Columnar_Basalt_20150619.jpg/330px-Daguoye_Columnar_Basalt_20150619.jpg",
     summary_id: "Formasi tebing basal heksagonal vertikal spektakuler yang terbentuk dari pendinginan lava vulkanik purba di Xiyu ribuan tahun silam.",
     summary_en: "Spectacular vertical hexagonal columnar basalt cliffs formed by cooling volcanic lava in Xiyu, standing opposite the ocean.",
     summary_zh: "西嶼鄉著名的火山熔岩冷卻凝固形成的六角柱狀玄武岩壁，氣勢雄偉壯觀。"
@@ -81,6 +85,7 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "奎壁山",
     url_zh: "https://zh.wikipedia.org/wiki/奎壁山",
     url_en: "https://en.wikipedia.org/wiki/Huxi,_Penghu",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Kuobishan_Moses_Parting_20150620.jpg/330px-Kuobishan_Moses_Parting_20150620.jpg",
     summary_id: "Fenomena pasang surut air laut yang membuka jalur jalan setapak kerikil sepanjang 300 meter menuju Pulau Chiyu, menyerupai kisah terbelahnya Laut Merah.",
     summary_en: "Famous tidal phenomenon where ocean waters recede at low tide to reveal a 300-meter pebble path connecting to Chiyu Island.",
     summary_zh: "澎湖著名潮汐奇景，退潮時海水向兩側退去，露出通往赤嶼的300公尺玄武岩礫石步道。"
@@ -89,6 +94,7 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "山水沙灘",
     url_zh: "https://zh.wikipedia.org/wiki/馬公市",
     url_en: "https://en.wikipedia.org/wiki/Magong",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Shanshui_Beach_20150621.jpg/330px-Shanshui_Beach_20150621.jpg",
     summary_id: "Pantai pasir emas terindah di Jalur Selatan Magong dengan ombak lembut dan air laut jernih kehijauan.",
     summary_en: "The most picturesque golden sand beach in southern Magong, popular for gentle waves and crystal-clear waters.",
     summary_zh: "馬公南環最富盛名的金色細沙海灘，海水清澈碧藍，為水上活動勝地。"
@@ -97,6 +103,7 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "風櫃洞",
     url_zh: "https://zh.wikipedia.org/wiki/風櫃洞",
     url_en: "https://en.wikipedia.org/wiki/Fenggui_Blowholes",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Fenggui_Blowholes_20150621.jpg/330px-Fenggui_Blowholes_20150621.jpg",
     summary_id: "Gua erosi laut di ujung semenanjung Fenggui. Ombak pasang yang menghantam celah batu basal menghasilkan semburan air dan suara dengung angin raksasa.",
     summary_en: "A sea-cave erosion marvel where waves crash into basalt fissures, emitting whistling acoustic sounds and water sprays.",
     summary_zh: "澎湖著名海蝕地形，海浪拍打玄武岩孔隙時會發出呼嘯巨響並噴出水柱。"
@@ -105,6 +112,7 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "漁翁島燈塔",
     url_zh: "https://zh.wikipedia.org/wiki/漁翁島燈塔",
     url_en: "https://en.wikipedia.org/wiki/Yuwengdao_Lighthouse",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Yuwengdao_Lighthouse_20150619.jpg/330px-Yuwengdao_Lighthouse_20150619.jpg",
     summary_id: "Mercusuar bergaya Barat pertama di Taiwan yang dibangun pada tahun 1778 di ujung barat daya Pulau Xiyu.",
     summary_en: "Taiwan's earliest Western-style lighthouse established in 1778 at the southwestern tip of Xiyu Island.",
     summary_zh: "西元1778年設立之台灣最早西式燈塔，位處西嶼最南端，為國定古蹟。"
@@ -113,6 +121,7 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "七美雙心石滬",
     url_zh: "https://zh.wikipedia.org/wiki/七美雙心石滬",
     url_en: "https://en.wikipedia.org/wiki/Twin-Heart_Stone_Weir",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Twin-Heart_Stone_Weir_20150622.jpg/330px-Twin-Heart_Stone_Weir_20150622.jpg",
     summary_id: "Perangkap ikan tradisional berbahan batu basal dan karang berbentuk dua hati bertautan di Pulau Qimei.",
     summary_en: "Traditional stone tidal weir shaped like two intertwined hearts in Qimei Island, built to trap fish at low tide.",
     summary_zh: "七美鄉著名的傳統捕魚石滬，造型呈現兩顆心形交疊，為澎湖浪漫地標。"
@@ -121,6 +130,7 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "澎湖天后宮",
     url_zh: "https://zh.wikipedia.org/wiki/澎湖天后宮",
     url_en: "https://en.wikipedia.org/wiki/Penghu_Tianhou_Temple",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Penghu_Tianhou_Temple_20150620.jpg/330px-Penghu_Tianhou_Temple_20150620.jpg",
     summary_id: "Kuil Dewi Mazu tertua di seluruh Taiwan yang didirikan lebih dari 400 tahun silam di Magong.",
     summary_en: "The oldest Mazu temple in Taiwan, founded over 400 years ago in Magong.",
     summary_zh: "全台灣歷史最悠久的媽祖廟，為國定古蹟，見證澎湖數百年海洋信仰與歷史。"
@@ -129,13 +139,14 @@ const PENGHU_WIKIPEDIA_DB = {
     wiki_title: "中央街 (馬公市)",
     url_zh: "https://zh.wikipedia.org/wiki/中央街_(馬公市)",
     url_en: "https://en.wikipedia.org/wiki/Magong",
+    image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Magong_Zhongyang_Old_Street_20150620.jpg/330px-Magong_Zhongyang_Old_Street_20150620.jpg",
     summary_id: "Jalan tertua di Penghu dengan deretan bangunan bersejarah bata merah, toko herbal, dan sumur empat mata (Four-Eyed Well).",
     summary_en: "Penghu's oldest street featuring traditional red-brick architecture and the historic Four-Eyed Well.",
     summary_zh: "澎湖最早發展的一條老街，鋪設紅磚石板，保留古色古香的閩南街屋與四眼井古蹟。"
   }
 };
 
-// 1. Universal Bilingual Title Generator: 'Nama Mandarin / English Name' (Bebas dari pengaruh bahasa UI)
+// Universal Bilingual Title: 'Nama Mandarin / English Name'
 function getUniversalBilingualTitle(node) {
   if (node.title && node.title.includes("/")) {
     return node.title;
@@ -172,7 +183,7 @@ function getUniversalBilingualTitle(node) {
   return zh || en || "Penghu Node";
 }
 
-// 2. Strict Wikipedia Checker (Hanya mereturn data jika POI terbukti memiliki artikel Wikipedia)
+// Strict Verified Wikipedia Check
 function getVerifiedWikiEntry(node) {
   const zh = node.name_zh || node.name || "";
   for (let key in PENGHU_WIKIPEDIA_DB) {
@@ -180,7 +191,7 @@ function getVerifiedWikiEntry(node) {
       return PENGHU_WIKIPEDIA_DB[key];
     }
   }
-  return null; // Tidak ada entri Wikipedia -> Jangan tampilkan kartu!
+  return null;
 }
 
 // Initialize Application
@@ -197,7 +208,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadDataset();
 });
 
-// Load Translations
 async function loadTranslations() {
   try {
     const res = await fetch('translations.json');
@@ -216,7 +226,6 @@ function t(key) {
   return key;
 }
 
-// Full Dynamic Language Update across All UI Elements
 function updateUILanguage() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
@@ -238,7 +247,6 @@ function updateUILanguage() {
     activeLabel.textContent = SCIENTIFIC_SCHEMES_META[selectedSchemeId].name;
   }
 
-  // Update Weather Pill
   const tempEl = document.getElementById('temp-display');
   if (tempEl && currentWeatherData.temp) {
     tempEl.textContent = `${currentWeatherData.temp}°C (${t('feels_like')} ${currentWeatherData.feelsLike}°C)`;
@@ -248,7 +256,6 @@ function updateUILanguage() {
     badgeEl.textContent = t(currentWeatherData.heatLevelKey);
   }
 
-  // Re-render markers and list to update popup tooltips
   if (allNodes.length > 0) {
     renderPOIMarkers(allNodes);
     filterPOIs();
@@ -351,7 +358,7 @@ async function loadDataset() {
   renderPOIList(allNodes.slice(0, 100));
 }
 
-// 6. Render POI Markers with Universal Bilingual Titles & Strict Wikipedia Visibility
+// 6. Render POI Markers with LARGER CIRCLE WEIGHT & PHOTO THUMBNAILS for Wikipedia POIs
 function renderPOIMarkers(nodes) {
   markersLayer.clearLayers();
 
@@ -367,36 +374,68 @@ function renderPOIMarkers(nodes) {
   nodesToRender.forEach(node => {
     if (!node.latitude || !node.longitude) return;
 
-    let iconClass = 'pin-attraction';
-    let iconEmoji = '🏛️';
+    const universalTitle = getUniversalBilingualTitle(node);
+    const wiki = getVerifiedWikiEntry(node);
+    const imageUrl = (wiki && wiki.image_url) || node.image_url;
 
-    if (node.category === 'convenience_store') {
-      iconClass = 'pin-store';
-      iconEmoji = '🏪';
-    } else if (node.category === 'shelter' || node.category === 'restaurants' || node.category === 'food_and_drink') {
-      iconClass = 'pin-shelter';
-      iconEmoji = '🍧';
-    } else if (node.node_role === 'hotel_node' || node.category === 'hotels') {
-      iconClass = 'pin-hotel';
-      iconEmoji = '🏨';
+    let markerIcon;
+
+    // A. JIKA DESTINASI MEMILIKI WIKIPEDIA: Berikan Ukuran Lingkaran Lebih Besar (44px) + Cuplikan Foto
+    if (wiki !== null || imageUrl) {
+      const photoSrc = imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=150&auto=format&fit=crop&q=80";
+      
+      markerIcon = L.divIcon({
+        className: 'custom-pin-wiki',
+        html: `
+          <img src="${photoSrc}" alt="${universalTitle}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=150&auto=format&fit=crop&q=80'" />
+          <div class="wiki-badge-corner">W</div>
+        `,
+        iconSize: [44, 44],
+        iconAnchor: [22, 22]
+      });
+
+    } else {
+      // B. JIKA BUKAN WIKIPEDIA POI: Gunakan Pin Standar (26px)
+      let iconClass = 'pin-attraction';
+      let iconEmoji = '🏛️';
+
+      if (node.category === 'convenience_store') {
+        iconClass = 'pin-store';
+        iconEmoji = '🏪';
+      } else if (node.category === 'shelter' || node.category === 'restaurants' || node.category === 'food_and_drink') {
+        iconClass = 'pin-shelter';
+        iconEmoji = '🍧';
+      } else if (node.node_role === 'hotel_node' || node.category === 'hotels') {
+        iconClass = 'pin-hotel';
+        iconEmoji = '🏨';
+      }
+
+      markerIcon = L.divIcon({
+        className: `custom-pin ${iconClass}`,
+        html: `<span>${iconEmoji}</span>`,
+        iconSize: [26, 26],
+        iconAnchor: [13, 13]
+      });
     }
 
-    const customIcon = L.divIcon({
-      className: `custom-pin ${iconClass}`,
-      html: `<span>${iconEmoji}</span>`,
-      iconSize: [26, 26],
-      iconAnchor: [13, 13]
-    });
+    const marker = L.marker([node.latitude, node.longitude], { icon: markerIcon });
 
-    const marker = L.marker([node.latitude, node.longitude], { icon: customIcon });
+    // Header Gambar Popup (jika ada foto)
+    let photoHeaderHtml = "";
+    if (imageUrl) {
+      photoHeaderHtml = `
+        <div class="w-full h-28 overflow-hidden relative">
+          <img src="${imageUrl}" class="w-full h-full object-cover" alt="${universalTitle}" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent"></div>
+          <span class="absolute bottom-2 left-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500 text-white shadow">
+            Wikipedia Landmark
+          </span>
+        </div>
+      `;
+    }
 
-    // Judul selalu bilingual Mandarin / English
-    const universalTitle = getUniversalBilingualTitle(node);
-    
-    // Strict Wikipedia Check: Hanya buat elemen HTML Wikipedia jika entri benar-benar ada
-    const wiki = getVerifiedWikiEntry(node);
+    // Strict Wikipedia Card Section (Hanya tampil jika ada di Wikipedia)
     let wikiCardHtml = "";
-
     if (wiki !== null) {
       const wikiUrl = currentLang === 'zh' ? (wiki.url_zh || wiki.url_en) : (wiki.url_en || wiki.url_zh);
       const wikiSummary = currentLang === 'zh' ? wiki.summary_zh : (currentLang === 'en' ? wiki.summary_en : wiki.summary_id);
@@ -422,25 +461,25 @@ function renderPOIMarkers(nodes) {
 
     const popupHtml = `
       <div class="text-xs space-y-2 min-w-[240px] max-w-[280px]">
-        <div class="flex items-start gap-2">
-          <span class="text-lg shrink-0 mt-0.5">${iconEmoji}</span>
+        ${photoHeaderHtml}
+        <div class="p-1 space-y-2">
           <div>
             <h4 class="font-extrabold text-sm leading-snug">${universalTitle}</h4>
             <span class="text-[10px] opacity-70 font-bold uppercase tracking-wider">${node.category.replace('_', ' ')}</span>
           </div>
+
+          ${wikiCardHtml}
+
+          <div class="text-[11px] space-y-1 pt-1 border-t border-inherit">
+            ${node.has_ac ? `<div class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">❄️ ${t('ac_equipped')}</div>` : ''}
+            ${node.opening_hours ? `<div class="opacity-80">🕒 ${node.opening_hours}</div>` : ''}
+            ${node.fee_info ? `<div class="text-amber-500 font-bold">🎟️ ${node.fee_info}</div>` : ''}
+          </div>
+
+          <button onclick="setAsDestination(${node.latitude}, ${node.longitude}, '${universalTitle.replace(/'/g, "\\'")}')" class="w-full py-2 dynamic-btn-primary rounded-xl text-[11px] font-extrabold transition shadow flex items-center justify-center gap-1">
+            <i data-lucide="navigation" class="w-3 h-3"></i> ${t('btn_set_dest')}
+          </button>
         </div>
-
-        ${wikiCardHtml}
-
-        <div class="text-[11px] space-y-1 pt-1 border-t border-inherit">
-          ${node.has_ac ? `<div class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">❄️ ${t('ac_equipped')}</div>` : ''}
-          ${node.opening_hours ? `<div class="opacity-80">🕒 ${node.opening_hours}</div>` : ''}
-          ${node.fee_info ? `<div class="text-amber-500 font-bold">🎟️ ${node.fee_info}</div>` : ''}
-        </div>
-
-        <button onclick="setAsDestination(${node.latitude}, ${node.longitude}, '${universalTitle.replace(/'/g, "\\'")}')" class="w-full py-2 dynamic-btn-primary rounded-xl text-[11px] font-extrabold transition shadow flex items-center justify-center gap-1">
-          <i data-lucide="navigation" class="w-3 h-3"></i> ${t('btn_set_dest')}
-        </button>
       </div>
     `;
 
@@ -710,7 +749,7 @@ function filterPOIs() {
   renderPOIList(filtered.slice(0, 100));
 }
 
-// 8. Render POI List Cards with Universal Titles & Wikipedia Links
+// 8. Render POI List Cards with Photo Thumbnails for Wikipedia Landmarks
 function renderPOIList(nodes) {
   const container = document.getElementById('poi-list');
   if (nodes.length === 0) {
@@ -721,6 +760,14 @@ function renderPOIList(nodes) {
   container.innerHTML = nodes.map(n => {
     const universalTitle = getUniversalBilingualTitle(n);
     const wiki = getVerifiedWikiEntry(n);
+    const imgUrl = (wiki && wiki.image_url) || n.image_url;
+
+    let thumbHtml = "";
+    if (imgUrl) {
+      thumbHtml = `
+        <img src="${imgUrl}" class="w-10 h-10 rounded-xl object-cover border border-inherit shrink-0 shadow-sm" alt="${universalTitle}" />
+      `;
+    }
 
     let wikiSectionHtml = "";
     if (wiki !== null) {
@@ -741,12 +788,13 @@ function renderPOIList(nodes) {
 
     return `
       <div class="p-3 rounded-2xl dynamic-card-inner border hover:border-cyan-500 transition space-y-2 shadow-sm">
-        <div onclick="panToNode(${n.latitude}, ${n.longitude})" class="cursor-pointer flex items-center justify-between">
-          <div>
+        <div onclick="panToNode(${n.latitude}, ${n.longitude})" class="cursor-pointer flex items-center justify-between gap-2.5">
+          ${thumbHtml}
+          <div class="flex-1">
             <h5 class="text-xs font-bold leading-snug">${universalTitle}</h5>
             <p class="text-[10px] opacity-60 uppercase tracking-wider mt-0.5">${n.category.replace('_', ' ')} ${n.brand ? `• ${n.brand}` : ''}</p>
           </div>
-          <i data-lucide="chevron-right" class="w-3.5 h-3.5 opacity-50"></i>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5 opacity-50 shrink-0"></i>
         </div>
         ${wikiSectionHtml}
       </div>
@@ -809,12 +857,12 @@ function generateCuratedNodes() {
     { title: "FamilyMart 白沙赤崁店 / FamilyMart Baisha Store", name_zh: "FamilyMart 白沙赤崁店", name_en: "FamilyMart Baisha Store", category: "convenience_store", latitude: 23.6591, longitude: 119.6002, has_ac: true },
     { title: "7-Eleven 馬公門市 / 7-Eleven Magong Store", name_zh: "7-Eleven 馬公門市", name_en: "7-Eleven Magong Store", category: "convenience_store", latitude: 23.5682, longitude: 119.5671, has_ac: true },
     { title: "FamilyMart 西嶼池西店 / FamilyMart Xiyu Store", name_zh: "FamilyMart 西嶼池西店", name_en: "FamilyMart Xiyu Store", category: "convenience_store", latitude: 23.6042, longitude: 119.5101, has_ac: true },
-    { title: "通梁古榕 / Tongliang Great Banyan", name_zh: "通梁古榕", name_en: "Tongliang Great Banyan", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.6575, longitude: 119.5594 },
-    { title: "澎湖跨海大橋 / Penghu Great Bridge", name_zh: "澎湖跨海大橋", name_en: "Penghu Great Bridge", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.6508, longitude: 119.5392 },
-    { title: "大菓葉柱狀玄武岩 / Daguoye Columnar Basalt", name_zh: "大菓葉柱狀玄武岩", name_en: "Daguoye Columnar Basalt", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5932, longitude: 119.5161 },
-    { title: "奎壁山摩西分海 / Kuobishan Moses Parting", name_zh: "奎壁山摩西分海", name_en: "Kuobishan Moses Parting", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5975, longitude: 119.6748 },
-    { title: "山水沙灘 / Shanshui Beach", name_zh: "山水沙灘", name_en: "Shanshui Beach", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5136, longitude: 119.5912 },
-    { title: "風櫃洞 / Fenggui Blowholes", name_zh: "風櫃洞", name_en: "Fenggui Blowholes", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5414, longitude: 119.5447 },
+    { title: "通梁古榕 / Tongliang Great Banyan", name_zh: "通梁古榕", name_en: "Tongliang Great Banyan", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.6575, longitude: 119.5594, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Tongliang_Great_Banyan_20150619.jpg/330px-Tongliang_Great_Banyan_20150619.jpg" },
+    { title: "澎湖跨海大橋 / Penghu Great Bridge", name_zh: "澎湖跨海大橋", name_en: "Penghu Great Bridge", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.6508, longitude: 119.5392, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Penghu_Great_Bridge_20150619.jpg/330px-Penghu_Great_Bridge_20150619.jpg" },
+    { title: "大菓葉柱狀玄武岩 / Daguoye Columnar Basalt", name_zh: "大菓葉柱狀玄武岩", name_en: "Daguoye Columnar Basalt", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5932, longitude: 119.5161, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Daguoye_Columnar_Basalt_20150619.jpg/330px-Daguoye_Columnar_Basalt_20150619.jpg" },
+    { title: "奎壁山摩西分海 / Kuobishan Moses Parting", name_zh: "奎壁山摩西分海", name_en: "Kuobishan Moses Parting", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5975, longitude: 119.6748, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Kuobishan_Moses_Parting_20150620.jpg/330px-Kuobishan_Moses_Parting_20150620.jpg" },
+    { title: "山水沙灘 / Shanshui Beach", name_zh: "山水沙灘", name_en: "Shanshui Beach", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5136, longitude: 119.5912, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Shanshui_Beach_20150621.jpg/330px-Shanshui_Beach_20150621.jpg" },
+    { title: "風櫃洞 / Fenggui Blowholes", name_zh: "風櫃洞", name_en: "Fenggui Blowholes", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5414, longitude: 119.5447, image_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Fenggui_Blowholes_20150621.jpg/330px-Fenggui_Blowholes_20150621.jpg" },
     { title: "易家仙人掌冰 / Yijia Cactus Ice Cream", name_zh: "易家仙人掌冰", name_en: "Yijia Cactus Ice Cream", category: "shelter", latitude: 23.6571, longitude: 119.5587, has_ac: true }
   ];
 }
