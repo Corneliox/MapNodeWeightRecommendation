@@ -410,6 +410,11 @@ async function loadDataset() {
   document.getElementById('total-poi-count').textContent = allNodes.length;
   renderPOIMarkers(allNodes);
   renderPOIList(true);
+
+  // Auto-calculate and render the initial road route on load
+  setTimeout(() => {
+    calculateSmartRoute();
+  }, 400);
 }
 
 // 6. High-Performance Marker Rendering (Clustered & Position Safe)
@@ -549,41 +554,45 @@ function renderPOIMarkers(nodes) {
   }
 }
 
-// 7. High-Precision Real Road Network Routing (OSRM Engine)
+// 7. High-Precision Real Road Network Routing (OSRM Multi-Mirror Engine)
 async function fetchRoadRouteOSRM(coords, mode = 'scooter') {
   const profile = mode === 'walk' ? 'routed-foot' : 'routed-car';
   const coordString = coords.map(c => `${c[1].toFixed(6)},${c[0].toFixed(6)}`).join(';');
-  const url = `https://routing.openstreetmap.de/${profile}/route/v1/driving/${coordString}?overview=full&geometries=geojson`;
+  
+  const endpoints = [
+    `https://routing.openstreetmap.de/${profile}/route/v1/driving/${coordString}?overview=full&geometries=geojson`,
+    `https://router.project-osrm.org/route/v1/driving/${coordString}?overview=full&geometries=geojson`
+  ];
 
-  try {
-    const res = await fetch(url);
-    if (res.ok) {
-      const data = await res.json();
-      if (data.routes && data.routes.length > 0) {
-        const route = data.routes[0];
-        // Leaflet expects [lat, lon], GeoJSON returns [lon, lat]
-        const polylineCoords = route.geometry.coordinates.map(c => [c[1], c[0]]);
-        const distanceKm = route.distance / 1000;
-        
-        // Accurate road duration (scooter ~35-45 km/h, walk ~4.5 km/h)
-        let travelMinutes = Math.round(route.duration / 60);
-        if (mode === 'scooter') {
-          // Adjust car model to local Penghu 125cc scooter speeds
-          travelMinutes = Math.max(5, Math.round((distanceKm / 35) * 60));
+  for (const url of endpoints) {
+    try {
+      const res = await fetch(url, { headers: { 'Accept': 'application/json' } });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.routes && data.routes.length > 0) {
+          const route = data.routes[0];
+          // Leaflet expects [lat, lon], GeoJSON returns [lon, lat]
+          const polylineCoords = route.geometry.coordinates.map(c => [c[1], c[0]]);
+          const distanceKm = route.distance / 1000;
+          
+          let travelMinutes = Math.round(route.duration / 60);
+          if (mode === 'scooter') {
+            travelMinutes = Math.max(5, Math.round((distanceKm / 35) * 60));
+          }
+
+          return {
+            coords: polylineCoords,
+            distanceKm,
+            travelMinutes
+          };
         }
-
-        return {
-          coords: polylineCoords,
-          distanceKm,
-          travelMinutes
-        };
       }
+    } catch (err) {
+      console.warn(`Mirror failed (${url}), trying next mirror...`, err);
     }
-  } catch (err) {
-    console.warn('OSRM network fallback used:', err);
   }
 
-  // Fallback direct geometry
+  // Graceful road-aware fallback if all external networks are blocked
   const fallbackDistanceKm = getDistanceKm(coords[0][0], coords[0][1], coords[coords.length - 1][0], coords[coords.length - 1][1]) * 1.25;
   const speed = mode === 'scooter' ? 35 : 4.5;
   return {
