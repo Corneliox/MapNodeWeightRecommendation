@@ -9,8 +9,12 @@ import json
 import time
 import requests
 import pandas as pd
+from dotenv import load_dotenv
 
-# Masukkan Google Maps API Key Anda di sini atau set environment variable GOOGLE_MAPS_API_KEY
+# Load file .env jika ada
+load_dotenv()
+
+# Ambil Google Maps API Key dari file .env atau Environment Variable
 API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "MASUKKAN_GOOGLE_API_KEY_ANDA_DISINI")
 
 # Endpoint Resmi Google Places API (New)
