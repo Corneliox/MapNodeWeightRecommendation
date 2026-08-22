@@ -209,6 +209,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   fetchLiveWeather();
   loadDataset();
   setupInfiniteScroll();
+
+  // 5-Minute Auto-Refresh for Live Weather
+  setInterval(fetchLiveWeather, 5 * 60 * 1000);
+
+  // Refresh immediately when user returns/switches back to the app tab
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      fetchLiveWeather();
+    }
+  });
 });
 
 async function loadTranslations() {
