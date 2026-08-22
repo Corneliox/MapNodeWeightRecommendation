@@ -347,7 +347,7 @@ function initMap() {
 }
 
 async function fetchLiveWeather() {
-  const url = 'https://api.open-meteo.com/v1/forecast?latitude=23.57&longitude=119.57&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,wind_speed_10m&hourly=uv_index,direct_normal_irradiance&timezone=Asia%2FTaipei';
+  const url = 'https://api.open-meteo.com/v1/forecast?latitude=23.57&longitude=119.57&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,wind_speed_10m&hourly=uv_index,direct_normal_irradiance&daily=uv_index_max&timezone=Asia%2FTaipei';
 
   try {
     const res = await fetch(url);
@@ -355,37 +355,67 @@ async function fetchLiveWeather() {
 
     const currentTemp = Math.round(data.current.temperature_2m);
     const feelsLike = Math.round(data.current.apparent_temperature);
-    const currentHour = new Date().getHours();
-    const uvIndex = data.hourly?.uv_index?.[currentHour] || 9.8;
-    const solarDni = data.hourly?.direct_normal_irradiance?.[currentHour] || 850;
+    const isDay = data.current?.is_day === 1;
+
+    // Determine exact current hour index in Taipei timezone
+    const nowTaipei = new Date().toLocaleString("en-US", { timeZone: "Asia/Taipei" });
+    const currentHourTaipei = new Date(nowTaipei).getHours();
+
+    let hourIdx = currentHourTaipei;
+    if (data.hourly && data.hourly.time) {
+      const todayIsoPrefix = new Date(nowTaipei).toISOString().slice(0, 10);
+      const matchIdx = data.hourly.time.findIndex(t => t.startsWith(todayIsoPrefix) && parseInt(t.slice(11, 13)) === currentHourTaipei);
+      if (matchIdx !== -1) hourIdx = matchIdx;
+    }
+
+    // Accurate numeric assignment without falsy zero bugs
+    const rawUv = data.hourly?.uv_index?.[hourIdx];
+    const uvIndex = (typeof rawUv === 'number') ? Number(rawUv.toFixed(1)) : (isDay ? 7.5 : 0.0);
+
+    const rawDni = data.hourly?.direct_normal_irradiance?.[hourIdx];
+    const solarDni = (typeof rawDni === 'number') ? Math.round(rawDni) : (isDay ? 650 : 0);
+
     const approxWbgt = Math.round((feelsLike * 0.75) + (uvIndex * 0.3));
 
     let heatLevelKey = 'heat_low';
     let badgeClass = 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/30';
 
-    if (feelsLike >= 38 || uvIndex >= 11) {
-      heatLevelKey = 'heat_extreme';
-      badgeClass = 'bg-red-500/20 text-red-600 dark:text-red-300 border-red-500/40 animate-pulse';
-    } else if (feelsLike >= 34 || uvIndex >= 8) {
-      heatLevelKey = 'heat_high';
-      badgeClass = 'bg-red-500/20 text-red-600 dark:text-red-300 border-red-500/40';
-    } else if (feelsLike >= 30 || uvIndex >= 6) {
-      heatLevelKey = 'heat_moderate';
-      badgeClass = 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/30';
+    if (!isDay) {
+      // Nighttime Logic
+      if (feelsLike < 30) {
+        heatLevelKey = 'heat_night_cool';
+        badgeClass = 'bg-cyan-500/20 text-cyan-600 dark:text-cyan-300 border-cyan-500/30';
+      } else {
+        heatLevelKey = 'heat_moderate';
+        badgeClass = 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/30';
+      }
+    } else {
+      // Daytime Heat Strain Logic
+      if (feelsLike >= 38 || uvIndex >= 11) {
+        heatLevelKey = 'heat_extreme';
+        badgeClass = 'bg-red-500/20 text-red-600 dark:text-red-300 border-red-500/40 animate-pulse';
+      } else if (feelsLike >= 34 || uvIndex >= 8) {
+        heatLevelKey = 'heat_high';
+        badgeClass = 'bg-red-500/20 text-red-600 dark:text-red-300 border-red-500/40';
+      } else if (feelsLike >= 30 || uvIndex >= 6) {
+        heatLevelKey = 'heat_moderate';
+        badgeClass = 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/30';
+      }
     }
 
-    currentWeatherData = { temp: currentTemp, feelsLike, uvIndex, wbgt: approxWbgt, solarDni, heatLevelKey };
+    currentWeatherData = { temp: currentTemp, feelsLike, uvIndex, wbgt: approxWbgt, solarDni, heatLevelKey, isDay };
 
     document.getElementById('temp-display').textContent = `${currentTemp}°C (${t('feels_like')} ${feelsLike}°C)`;
-    document.getElementById('uv-display').textContent = `UV: ${uvIndex}`;
+    document.getElementById('uv-display').textContent = isDay ? `UV: ${uvIndex} ☀️` : `UV: ${uvIndex} 🌙`;
     
     const badgeEl = document.getElementById('heat-badge');
     badgeEl.textContent = t(heatLevelKey);
     badgeEl.className = `text-[9px] uppercase font-extrabold px-2 py-0.5 rounded-full border ${badgeClass}`;
 
   } catch (err) {
-    document.getElementById('temp-display').textContent = '35°C (Terasa 40°C)';
-    document.getElementById('uv-display').textContent = 'UV: 10.5';
+    console.warn('Weather fallback used:', err);
+    document.getElementById('temp-display').textContent = '28°C (Terasa 30°C)';
+    document.getElementById('uv-display').textContent = 'UV: 0.0 🌙';
   }
 }
 
