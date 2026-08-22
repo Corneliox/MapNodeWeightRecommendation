@@ -549,8 +549,51 @@ function renderPOIMarkers(nodes) {
   }
 }
 
-// 7. Route Computation
-function calculateSmartRoute() {
+// 7. High-Precision Real Road Network Routing (OSRM Engine)
+async function fetchRoadRouteOSRM(coords, mode = 'scooter') {
+  const profile = mode === 'walk' ? 'routed-foot' : 'routed-car';
+  const coordString = coords.map(c => `${c[1].toFixed(6)},${c[0].toFixed(6)}`).join(';');
+  const url = `https://routing.openstreetmap.de/${profile}/route/v1/driving/${coordString}?overview=full&geometries=geojson`;
+
+  try {
+    const res = await fetch(url);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.routes && data.routes.length > 0) {
+        const route = data.routes[0];
+        // Leaflet expects [lat, lon], GeoJSON returns [lon, lat]
+        const polylineCoords = route.geometry.coordinates.map(c => [c[1], c[0]]);
+        const distanceKm = route.distance / 1000;
+        
+        // Accurate road duration (scooter ~35-45 km/h, walk ~4.5 km/h)
+        let travelMinutes = Math.round(route.duration / 60);
+        if (mode === 'scooter') {
+          // Adjust car model to local Penghu 125cc scooter speeds
+          travelMinutes = Math.max(5, Math.round((distanceKm / 35) * 60));
+        }
+
+        return {
+          coords: polylineCoords,
+          distanceKm,
+          travelMinutes
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('OSRM network fallback used:', err);
+  }
+
+  // Fallback direct geometry
+  const fallbackDistanceKm = getDistanceKm(coords[0][0], coords[0][1], coords[coords.length - 1][0], coords[coords.length - 1][1]) * 1.25;
+  const speed = mode === 'scooter' ? 35 : 4.5;
+  return {
+    coords: coords,
+    distanceKm: fallbackDistanceKm,
+    travelMinutes: Math.round((fallbackDistanceKm / speed) * 60)
+  };
+}
+
+async function calculateSmartRoute() {
   const startKey = document.getElementById('select-start').value;
   const endKey = document.getElementById('select-end').value;
 
@@ -559,12 +602,18 @@ function calculateSmartRoute() {
 
   routePolylineLayer.clearLayers();
 
-  const directDistanceKm = getDistanceKm(start.lat, start.lon, destination.lat, destination.lon);
-  const speedKmH = currentTravelMode === 'scooter' ? 35 : 4.5;
-  const directTravelMinutes = Math.round((directDistanceKm / speedKmH) * 60);
+  // 1. Fetch Direct Road Route first
+  const directRouteData = await fetchRoadRouteOSRM(
+    [[start.lat, start.lon], [destination.lat, destination.lon]],
+    currentTravelMode
+  );
+
+  const directDistanceKm = directRouteData.distanceKm;
+  const directTravelMinutes = directRouteData.travelMinutes;
 
   const schemeMeta = SCIENTIFIC_SCHEMES_META[selectedSchemeId];
   
+  // 2. Evaluate Scientific Climate Thresholds
   let needsCoolingStop = false;
   if (selectedSchemeId === 1) { // ISO WBGT
     const tMax = Math.max(12, 60 / Math.pow(Math.max(1, currentWeatherData.wbgt - 27), 1.2));
@@ -578,32 +627,43 @@ function calculateSmartRoute() {
   }
 
   let recommendedShelter = null;
+  let safeRouteData = null;
+
   if (needsCoolingStop) {
     const midLat = (start.lat + destination.lat) / 2;
     const midLon = (start.lon + destination.lon) / 2;
     recommendedShelter = findNearestShelter(midLat, midLon);
+
+    // Fetch multi-waypoint road route (Start -> Shelter -> Destination)
+    safeRouteData = await fetchRoadRouteOSRM(
+      [
+        [start.lat, start.lon],
+        [recommendedShelter.latitude, recommendedShelter.longitude],
+        [destination.lat, destination.lon]
+      ],
+      currentTravelMode
+    );
   }
 
-  let routeCoords = [];
-  if (recommendedShelter) {
-    routeCoords = [
-      [start.lat, start.lon],
-      [recommendedShelter.latitude, recommendedShelter.longitude],
-      [destination.lat, destination.lon]
-    ];
-  } else {
-    routeCoords = [
-      [start.lat, start.lon],
-      [destination.lat, destination.lon]
-    ];
-  }
+  const finalRoute = safeRouteData || directRouteData;
 
-  const polyline = L.polyline(routeCoords, {
-    color: '#00A8B5',
+  // 3. Render High-Contrast Google Maps Style Road Polyline
+  // Underlay shadow casing
+  L.polyline(finalRoute.coords, {
+    color: '#0F172A',
+    weight: 8,
+    opacity: 0.6,
+    lineJoin: 'round',
+    lineCap: 'round'
+  }).addTo(routePolylineLayer);
+
+  // Main Route Core Line
+  const polyline = L.polyline(finalRoute.coords, {
+    color: recommendedShelter ? '#00A8B5' : '#06D6A0',
     weight: 5,
-    opacity: 0.9,
-    dashArray: '8, 8',
-    lineJoin: 'round'
+    opacity: 1,
+    lineJoin: 'round',
+    lineCap: 'round'
   }).addTo(routePolylineLayer);
 
   const startTitle = getUniversalBilingualTitle(start);
@@ -616,16 +676,17 @@ function calculateSmartRoute() {
   }
   addRouteMarker(destination.lat, destination.lon, 'B', destTitle, '#E07A5F');
 
-  map.fitBounds(polyline.getBounds(), { padding: [60, 60] });
+  map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
 
+  // Update UI Metrics with Real Road Distances
   document.getElementById('direct-time-display').textContent = `${directTravelMinutes} Min`;
-  document.getElementById('route-distance-text').textContent = `${directDistanceKm.toFixed(1)} km`;
+  document.getElementById('route-distance-text').textContent = `${finalRoute.distanceKm.toFixed(1)} km`;
 
-  const safeMinutes = recommendedShelter ? (directTravelMinutes + schemeMeta.restMins) : directTravelMinutes;
+  const safeMinutes = recommendedShelter ? (finalRoute.travelMinutes + schemeMeta.restMins) : directTravelMinutes;
   document.getElementById('safe-time-display').textContent = `${safeMinutes} Min`;
   document.getElementById('reduction-badge').textContent = `-${schemeMeta.strainReduction}% ${t('strain_reduced')}`;
 
-  renderRouteTimeline(startTitle, destTitle, recommendedShelter, directDistanceKm, directTravelMinutes, schemeMeta);
+  renderRouteTimeline(startTitle, destTitle, recommendedShelter, finalRoute.distanceKm, finalRoute.travelMinutes, schemeMeta);
   document.getElementById('route-result-card').classList.remove('hidden');
 }
 
