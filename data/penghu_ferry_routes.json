@@ -1,0 +1,189 @@
+{
+  "routes": [
+    {
+      "route_id": "ferry_magong_qimei",
+      "name_zh": "馬公 (南海碼頭) ↔ 七美 (南滬港)",
+      "name_en": "Magong (Nanhai Pier) ↔ Qimei (Nanhu Port)",
+      "name_id": "Magong (Dermaga Nanhai) ↔ Qimei (Pelabuhan Nanhu)",
+      "departure_port_id": "port_nanhai_magong",
+      "departure_port_name_zh": "馬公南海遊客中心",
+      "departure_port_name_en": "Magong Nanhai Visitor Pier",
+      "departure_port_coords": [
+        23.5627,
+        119.5688
+      ],
+      "arrival_port_id": "port_qimei_nanhu",
+      "arrival_port_name_zh": "七美南滬港",
+      "arrival_port_name_en": "Qimei Nanhu Port",
+      "arrival_port_coords": [
+        23.2048,
+        119.4284
+      ],
+      "duration_minutes": 55,
+      "distance_nautical_miles": 22.5,
+      "operating_hours": "07:30 - 15:30",
+      "first_departure": "07:30",
+      "last_departure": "15:30",
+      "typical_departures": [
+        "07:30",
+        "09:00",
+        "09:30",
+        "13:30",
+        "15:30"
+      ],
+      "ticket_price_ntd": 440,
+      "operator": "南海之星 (Penghu PHPT) & 海安快艇 (South Sea Express)",
+      "nautical_waypoints": [
+        [
+          23.5627,
+          119.5688
+        ],
+        [
+          23.535,
+          119.552
+        ],
+        [
+          23.47,
+          119.51
+        ],
+        [
+          23.365,
+          119.48
+        ],
+        [
+          23.25,
+          119.44
+        ],
+        [
+          23.2048,
+          119.4284
+        ]
+      ],
+      "supported_island_nodes": [
+        "GOV_attractions_Attraction_A15010000H_000025",
+        "雙心石滬",
+        "七美雙心石滬",
+        "小台灣",
+        "望夫石",
+        "qimei_twin_heart"
+      ]
+    },
+    {
+      "route_id": "ferry_baisha_jibei",
+      "name_zh": "白沙 (赤崁碼頭) ↔ 吉貝 (遊艇港)",
+      "name_en": "Baisha (Chikan Pier) ↔ Jibei (Yacht Port)",
+      "name_id": "Baisha (Dermaga Chikan) ↔ Jibei (Pelabuhan Jibei)",
+      "departure_port_id": "port_chikan_baisha",
+      "departure_port_name_zh": "白沙赤崁北海遊客中心",
+      "departure_port_name_en": "Baisha Chikan Beihai Pier",
+      "departure_port_coords": [
+        23.6598,
+        119.6012
+      ],
+      "arrival_port_id": "port_jibei_yacht",
+      "arrival_port_name_zh": "吉貝遊艇港",
+      "arrival_port_name_en": "Jibei Yacht Port",
+      "arrival_port_coords": [
+        23.742,
+        119.6135
+      ],
+      "duration_minutes": 18,
+      "distance_nautical_miles": 5.5,
+      "operating_hours": "08:00 - 17:00",
+      "first_departure": "08:00",
+      "last_departure": "17:00",
+      "typical_departures": [
+        "08:30",
+        "09:30",
+        "10:30",
+        "11:30",
+        "13:30",
+        "14:30",
+        "16:00",
+        "17:00"
+      ],
+      "ticket_price_ntd": 150,
+      "operator": "新揚快艇 (Xinyang Boat) & 金八達快艇 (Kingbada Boat)",
+      "nautical_waypoints": [
+        [
+          23.6598,
+          119.6012
+        ],
+        [
+          23.685,
+          119.606
+        ],
+        [
+          23.715,
+          119.61
+        ],
+        [
+          23.742,
+          119.6135
+        ]
+      ],
+      "supported_island_nodes": [
+        "吉貝沙尾",
+        "吉貝石滬文化館",
+        "jibei_sand_spit"
+      ]
+    },
+    {
+      "route_id": "ferry_magong_wangan",
+      "name_zh": "馬公 (南海碼頭) ↔ 望安 (潭門港)",
+      "name_en": "Magong (Nanhai Pier) ↔ Wang'an (Tanmen Port)",
+      "name_id": "Magong (Dermaga Nanhai) ↔ Wang'an (Pelabuhan Tanmen)",
+      "departure_port_id": "port_nanhai_magong",
+      "departure_port_name_zh": "馬公南海遊客中心",
+      "departure_port_name_en": "Magong Nanhai Visitor Pier",
+      "departure_port_coords": [
+        23.5627,
+        119.5688
+      ],
+      "arrival_port_id": "port_wangan_tanmen",
+      "arrival_port_name_zh": "望安潭門港",
+      "arrival_port_name_en": "Wang'an Tanmen Port",
+      "arrival_port_coords": [
+        23.3592,
+        119.5028
+      ],
+      "duration_minutes": 45,
+      "distance_nautical_miles": 16.0,
+      "operating_hours": "07:30 - 16:00",
+      "first_departure": "07:30",
+      "last_departure": "16:00",
+      "typical_departures": [
+        "07:30",
+        "09:30",
+        "14:30",
+        "16:00"
+      ],
+      "ticket_price_ntd": 275,
+      "operator": "南海之星 (Penghu PHPT)",
+      "nautical_waypoints": [
+        [
+          23.5627,
+          119.5688
+        ],
+        [
+          23.51,
+          119.535
+        ],
+        [
+          23.42,
+          119.515
+        ],
+        [
+          23.3592,
+          119.5028
+        ]
+      ],
+      "supported_island_nodes": [
+        "望安綠蠵龜觀光保育中心",
+        "花宅聚落",
+        "天台山",
+        "wangan_green_turtle"
+      ]
+    }
+  ]
+}

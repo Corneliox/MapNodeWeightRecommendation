@@ -25,17 +25,22 @@ let currentWeatherData = {
   heatLevelKey: 'heat_high'
 };
 
-// Preset Key Coordinates
+let ferryRoutesData = [];
+
+// Preset Key Coordinates (Main Island + Outer Island Destinations)
 const KEY_PRESET_LOCATIONS = {
-  magong_port: { name_zh: "馬公港", name_en: "Magong Port (Rental Hub)", lat: 23.5654, lon: 119.5668 },
-  magong_airport: { name_zh: "澎湖機場", name_en: "Penghu Airport", lat: 23.5697, lon: 119.6294 },
-  kuobishan: { name_zh: "奎壁山摩西分海", name_en: "Kuobishan Moses Parting", lat: 23.5975, lon: 119.6748 },
-  tongliang_banyan: { name_zh: "通梁古榕", name_en: "Tongliang Great Banyan", lat: 23.6575, lon: 119.5594 },
-  penghu_bridge: { name_zh: "澎湖跨海大橋", name_en: "Penghu Great Bridge", lat: 23.6508, lon: 119.5392 },
-  daguoye_basalt: { name_zh: "大菓葉柱狀玄武岩", name_en: "Daguoye Columnar Basalt", lat: 23.5932, lon: 119.5161 },
-  shanshui_beach: { name_zh: "山水沙灘", name_en: "Shanshui Beach", lat: 23.5136, lon: 119.5912 },
-  fenggui_cave: { name_zh: "風櫃洞", name_en: "Fenggui Blowholes", lat: 23.5414, lon: 119.5447 },
-  yuwengdao_lighthouse: { name_zh: "漁翁島燈塔", name_en: "Yuwengdao Lighthouse", lat: 23.5606, lon: 119.4678 }
+  magong_port: { name_zh: "馬公港", name_en: "Magong Port (Rental Hub)", lat: 23.5654, lon: 119.5668, island: "main" },
+  magong_airport: { name_zh: "澎湖機場", name_en: "Penghu Airport", lat: 23.5697, lon: 119.6294, island: "main" },
+  kuobishan: { name_zh: "奎壁山摩西分海", name_en: "Kuobishan Moses Parting", lat: 23.5975, lon: 119.6748, island: "main" },
+  tongliang_banyan: { name_zh: "通梁古榕", name_en: "Tongliang Great Banyan", lat: 23.6575, lon: 119.5594, island: "main" },
+  penghu_bridge: { name_zh: "澎湖跨海大橋", name_en: "Penghu Great Bridge", lat: 23.6508, lon: 119.5392, island: "main" },
+  daguoye_basalt: { name_zh: "大菓葉柱狀玄武岩", name_en: "Daguoye Columnar Basalt", lat: 23.5932, lon: 119.5161, island: "main" },
+  shanshui_beach: { name_zh: "山水沙灘", name_en: "Shanshui Beach", lat: 23.5136, lon: 119.5912, island: "main" },
+  fenggui_cave: { name_zh: "風櫃洞", name_en: "Fenggui Blowholes", lat: 23.5414, lon: 119.5447, island: "main" },
+  yuwengdao_lighthouse: { name_zh: "漁翁島燈塔", name_en: "Yuwengdao Lighthouse", lat: 23.5606, lon: 119.4678, island: "main" },
+  qimei_twin_heart: { name_zh: "七美雙心石滬", name_en: "Qimei Twin-Heart Stone Weir", lat: 23.2201, lon: 119.4447, island: "qimei" },
+  jibei_sand_spit: { name_zh: "吉貝沙尾", name_en: "Jibei Sand Spit", lat: 23.7380, lon: 119.5980, island: "jibei" },
+  wangan_green_turtle: { name_zh: "望安綠蠵龜保育館", name_en: "Wangan Green Turtle Center", lat: 23.3605, lon: 119.5015, island: "wangan" }
 };
 
 const SCIENTIFIC_SCHEMES_META = {
@@ -220,6 +225,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const savedTheme = localStorage.getItem('penghu_theme') || 'tropical';
   
   await loadTranslations();
+  await loadFerryRoutes();
   setTheme(savedTheme);
   setLanguage(savedLang);
 
@@ -238,6 +244,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 });
+
+// Load Ferry Data
+async function loadFerryRoutes() {
+  try {
+    const res = await fetch('data/penghu_ferry_routes.json');
+    if (res.ok) {
+      const json = await res.json();
+      ferryRoutesData = json.routes || [];
+    }
+  } catch (err) {
+    console.warn('Ferry data load fallback:', err);
+  }
+}
 
 async function loadTranslations() {
   try {
@@ -658,7 +677,64 @@ async function fetchRoadRouteOSRM(coords, mode = 'scooter') {
 }
 
 let currentRouteCache = null;
-let activeRouteView = 'safe';
+// Multi-Modal Ferry Detection & Schedule Engine
+function detectFerryRoute(start, destination) {
+  if (!start || !destination || !ferryRoutesData || ferryRoutesData.length === 0) return null;
+
+  const destLat = destination.lat !== undefined ? destination.lat : destination.latitude;
+  const startLat = start.lat !== undefined ? start.lat : start.latitude;
+
+  // Case 1: Qimei Island (Lat < 23.30)
+  if (destLat < 23.30 && startLat > 23.45) {
+    return ferryRoutesData.find(r => r.route_id === 'ferry_magong_qimei');
+  }
+
+  // Case 2: Jibei Island (Lat > 23.70)
+  if (destLat > 23.70 && startLat < 23.68) {
+    return ferryRoutesData.find(r => r.route_id === 'ferry_baisha_jibei');
+  }
+
+  // Case 3: Wang'an Island (Lat 23.32 - 23.42)
+  if (destLat >= 23.32 && destLat <= 23.42 && startLat > 23.45) {
+    return ferryRoutesData.find(r => r.route_id === 'ferry_magong_wangan');
+  }
+
+  return null;
+}
+
+function checkFerryOperatingStatus(ferryRoute) {
+  if (!ferryRoute) return { isFerry: false };
+
+  const nowTaipei = new Date().toLocaleString("en-US", { timeZone: "Asia/Taipei" });
+  const taipeiDate = new Date(nowTaipei);
+  const currentHour = taipeiDate.getHours();
+  const currentMinute = taipeiDate.getMinutes();
+  const currentTimeMinutes = currentHour * 60 + currentMinute;
+
+  const [lastH, lastM] = ferryRoute.last_departure.split(':').map(Number);
+  const lastDepartureMinutes = lastH * 60 + lastM;
+
+  const [firstH, firstM] = ferryRoute.first_departure.split(':').map(Number);
+  const firstDepartureMinutes = firstH * 60 + firstM;
+
+  const isClosedToday = currentTimeMinutes > lastDepartureMinutes || currentTimeMinutes < (firstDepartureMinutes - 30);
+
+  const alertTitle = isClosedToday 
+    ? t('ferry_closed_alert_title')
+    : t('ferry_active_status').replace('{time}', ferryRoute.last_departure);
+
+  const alertDesc = isClosedToday
+    ? t('ferry_closed_alert_desc').replace('{time}', ferryRoute.last_departure).replace('{morning}', '07:30–09:00')
+    : `Jadwal kapal feri reguler beroperasi setiap hari (${ferryRoute.operating_hours}). Estimasi tiket: NT$ ${ferryRoute.ticket_price_ntd}. Operator: ${ferryRoute.operator}.`;
+
+  return {
+    isFerry: true,
+    isClosedToday,
+    alertTitle,
+    alertDesc,
+    ferryRoute
+  };
+}
 
 // Dynamic Risk Tier for Direct Route (UV >= 6: Red, 3-6: Yellow/Amber, < 3: Green)
 function getDirectRouteRiskConfig() {
@@ -707,43 +783,70 @@ async function calculateSmartRoute() {
 
   routePolylineLayer.clearLayers();
 
-  // 1. Fetch Direct Road Route
-  const directRouteData = await fetchRoadRouteOSRM(
-    [[start.lat, start.lon], [destination.lat, destination.lon]],
-    currentTravelMode
-  );
-
-  const directDistanceKm = directRouteData.distanceKm;
-  const directTravelMinutes = directRouteData.travelMinutes;
+  const ferryRoute = detectFerryRoute(start, destination);
   const schemeMeta = SCIENTIFIC_SCHEMES_META[selectedSchemeId];
-  
-  // 2. Always Compute Road-Corridor Safe Cooling Route
-  const recommendedShelter = findBestCorridorShelter(start, destination);
+  let multiModalData = null;
+  let directRouteData = null;
   let safeRouteData = null;
+  let recommendedShelter = null;
 
-  if (recommendedShelter) {
-    // Multi-waypoint road route (Start -> Shelter -> Destination)
-    safeRouteData = await fetchRoadRouteOSRM(
-      [
-        [start.lat, start.lon],
-        [recommendedShelter.latitude, recommendedShelter.longitude],
-        [destination.lat, destination.lon]
-      ],
+  if (ferryRoute) {
+    // --- MULTI-MODAL ROUTING (Motor -> Ferry -> Island Motor) ---
+    const depPort = { lat: ferryRoute.departure_port_coords[0], lon: ferryRoute.departure_port_coords[1] };
+    const arrPort = { lat: ferryRoute.arrival_port_coords[0], lon: ferryRoute.arrival_port_coords[1] };
+
+    // Leg 1: Road to Departure Pier
+    const leg1Route = await fetchRoadRouteOSRM([[start.lat, start.lon], [depPort.lat, depPort.lon]], currentTravelMode);
+    
+    // Leg 2: Nautical Ferry Line
+    const nauticalCoords = ferryRoute.nautical_waypoints;
+    const nauticalDistKm = ferryRoute.distance_nautical_miles * 1.852;
+    const nauticalMins = ferryRoute.duration_minutes;
+
+    // Leg 3: Island Road from Arrival Pier to Target POI
+    const leg3Route = await fetchRoadRouteOSRM([[arrPort.lat, arrPort.lon], [destination.lat, destination.lon]], currentTravelMode);
+
+    const totalDistanceKm = leg1Route.distanceKm + nauticalDistKm + leg3Route.distanceKm;
+    const totalTravelMinutes = leg1Route.travelMinutes + 15 + nauticalMins + leg3Route.travelMinutes;
+
+    multiModalData = {
+      isMultiModal: true,
+      ferryRoute,
+      status: checkFerryOperatingStatus(ferryRoute),
+      depPort,
+      arrPort,
+      leg1: leg1Route,
+      nautical: { coords: nauticalCoords, distanceKm: nauticalDistKm, minutes: nauticalMins },
+      leg3: leg3Route,
+      distanceKm: totalDistanceKm,
+      travelMinutes: totalTravelMinutes
+    };
+
+    directRouteData = {
+      coords: [...leg1Route.coords, ...nauticalCoords, ...leg3Route.coords],
+      distanceKm: totalDistanceKm,
+      travelMinutes: totalTravelMinutes
+    };
+    safeRouteData = directRouteData;
+
+  } else {
+    // --- STANDARD MAIN ISLAND ROAD ROUTING ---
+    directRouteData = await fetchRoadRouteOSRM(
+      [[start.lat, start.lon], [destination.lat, destination.lon]],
       currentTravelMode
     );
-  }
 
-  // 3. Evaluate Scientific Climate Thresholds
-  let needsCoolingStop = false;
-  if (selectedSchemeId === 1) { // ISO WBGT
-    const tMax = Math.max(12, 60 / Math.pow(Math.max(1, currentWeatherData.wbgt - 27), 1.2));
-    needsCoolingStop = directTravelMinutes >= tMax;
-  } else if (selectedSchemeId === 2) { // UTCI
-    needsCoolingStop = directTravelMinutes >= 14 && currentWeatherData.feelsLike >= 34;
-  } else if (selectedSchemeId === 3) { // Solar Radiation
-    needsCoolingStop = directTravelMinutes >= 15 && currentWeatherData.solarDni >= 600;
-  } else if (selectedSchemeId === 4) { // Pareto
-    needsCoolingStop = directTravelMinutes >= 16;
+    recommendedShelter = findBestCorridorShelter(start, destination);
+    if (recommendedShelter) {
+      safeRouteData = await fetchRoadRouteOSRM(
+        [
+          [start.lat, start.lon],
+          [recommendedShelter.latitude, recommendedShelter.longitude],
+          [destination.lat, destination.lon]
+        ],
+        currentTravelMode
+      );
+    }
   }
 
   const startTitle = getUniversalBilingualTitle(start);
@@ -759,30 +862,29 @@ async function calculateSmartRoute() {
     safeRouteData,
     recommendedShelter,
     schemeMeta,
-    needsCoolingStop
+    multiModalData
   };
 
   // Update Direct Card Risk Styling Based on UV
   const risk = getDirectRouteRiskConfig();
   const directRiskBadge = document.querySelector('#card-route-direct [data-i18n="direct_risk"]');
   if (directRiskBadge) {
-    directRiskBadge.textContent = risk.label;
-    directRiskBadge.className = `text-[9px] px-1.5 py-0.5 rounded font-bold ${risk.badgeClass}`;
+    directRiskBadge.textContent = multiModalData ? "Island Hopper" : risk.label;
+    directRiskBadge.className = `text-[9px] px-1.5 py-0.5 rounded font-bold ${multiModalData ? 'bg-cyan-500/20 text-cyan-600' : risk.badgeClass}`;
   }
   const directDescEl = document.querySelector('#card-route-direct [data-i18n="direct_desc"]');
   if (directDescEl) {
-    directDescEl.textContent = risk.desc;
+    directDescEl.textContent = multiModalData ? "Termasuk pelayaran kapal feri & transit dermaga." : risk.desc;
   }
 
   // Update card metric numbers
-  document.getElementById('direct-time-display').textContent = `${directTravelMinutes} Min`;
-  const safeTotalMinutes = safeRouteData ? (safeRouteData.travelMinutes + schemeMeta.restMins) : directTravelMinutes;
+  document.getElementById('direct-time-display').textContent = `${directRouteData.travelMinutes} Min`;
+  const safeTotalMinutes = safeRouteData ? (safeRouteData.travelMinutes + (recommendedShelter ? schemeMeta.restMins : 0)) : directRouteData.travelMinutes;
   document.getElementById('safe-time-display').textContent = `${safeTotalMinutes} Min`;
   document.getElementById('reduction-badge').textContent = `-${schemeMeta.strainReduction}% ${t('strain_reduced')}`;
 
   document.getElementById('route-result-card').classList.remove('hidden');
 
-  // Default to Safe Route view if available, else Direct
   activeRouteView = 'safe';
   renderSelectedRouteView(activeRouteView);
 }
@@ -797,7 +899,7 @@ function toggleRouteView(type) {
 function renderSelectedRouteView(type) {
   if (!currentRouteCache) return;
 
-  const { start, destination, startTitle, destTitle, directRouteData, safeRouteData, recommendedShelter, schemeMeta } = currentRouteCache;
+  const { start, destination, startTitle, destTitle, directRouteData, safeRouteData, recommendedShelter, schemeMeta, multiModalData } = currentRouteCache;
 
   routePolylineLayer.clearLayers();
 
@@ -807,13 +909,60 @@ function renderSelectedRouteView(type) {
   const safeBadge = document.getElementById('badge-safe-active');
   const risk = getDirectRouteRiskConfig();
 
-  let activeRouteData;
+  if (multiModalData) {
+    // ==========================================
+    // MULTI-MODAL RENDERING (MOTOR + FERRY)
+    // ==========================================
+    if (directCard && safeCard) {
+      safeCard.className = 'route-card-option dynamic-card-inner border-2 border-cyan-500 rounded-2xl p-3 space-y-1.5 cursor-pointer shadow-md';
+      directCard.className = 'route-card-option dynamic-card border border-inherit rounded-2xl p-3 space-y-1.5 cursor-pointer opacity-75 hover:opacity-100 transition-all';
+      if (safeBadge) safeBadge.classList.remove('hidden');
+      if (directBadge) directBadge.classList.add('hidden');
+    }
 
-  if (type === 'direct' || !safeRouteData) {
-    // --- 1. DISPLAY DIRECT ROUTE ON MAP ---
-    activeRouteData = directRouteData;
+    // Leg 1: Road to Pier (Solid Cyan)
+    L.polyline(multiModalData.leg1.coords, {
+      color: '#00A8B5',
+      weight: 5,
+      opacity: 1,
+      lineJoin: 'round',
+      lineCap: 'round'
+    }).addTo(routePolylineLayer);
 
-    // Visual Card Selection with Conditional UV Colors
+    // Leg 2: Nautical Ocean Ferry Line (Ocean Blue Dashed)
+    const nauticalLine = L.polyline(multiModalData.nautical.coords, {
+      color: '#0284C7',
+      weight: 5,
+      opacity: 0.9,
+      dashArray: '8, 10',
+      lineJoin: 'round',
+      lineCap: 'round'
+    }).addTo(routePolylineLayer);
+
+    // Leg 3: Island Road (Emerald Green)
+    L.polyline(multiModalData.leg3.coords, {
+      color: '#06D6A0',
+      weight: 5,
+      opacity: 1,
+      lineJoin: 'round',
+      lineCap: 'round'
+    }).addTo(routePolylineLayer);
+
+    // Route Markers
+    addRouteMarker(start.lat, start.lon, 'A', startTitle, '#00A8B5');
+    addRouteMarker(multiModalData.depPort.lat, multiModalData.depPort.lon, '🚢', multiModalData.ferryRoute.departure_port_name_zh, '#0284C7');
+    addRouteMarker(multiModalData.arrPort.lat, multiModalData.arrPort.lon, '⚓', multiModalData.ferryRoute.arrival_port_name_zh, '#0284C7');
+    addRouteMarker(destination.lat, destination.lon, 'B', destTitle, '#E07A5F');
+
+    map.fitBounds(nauticalLine.getBounds(), { padding: [50, 50] });
+
+    document.getElementById('route-distance-text').textContent = `${multiModalData.distanceKm.toFixed(1)} km (Multi-Moda)`;
+    renderMultiModalTimeline(startTitle, destTitle, multiModalData);
+
+  } else if (type === 'direct' || !safeRouteData) {
+    // ==========================================
+    // 1. DISPLAY DIRECT ROUTE ON MAP
+    // ==========================================
     if (directCard && safeCard) {
       directCard.className = `route-card-option dynamic-card-inner border-2 ${risk.activeBorderClass} rounded-2xl p-3 space-y-1.5 cursor-pointer shadow-md`;
       safeCard.className = 'route-card-option dynamic-card border border-inherit rounded-2xl p-3 space-y-1.5 cursor-pointer opacity-75 hover:opacity-100 transition-all';
@@ -850,10 +999,9 @@ function renderSelectedRouteView(type) {
     renderDirectTimeline(startTitle, destTitle, directRouteData, risk);
 
   } else {
-    // --- 2. DISPLAY COOL-RIDE SAFE ROUTE ON MAP ---
-    activeRouteData = safeRouteData;
-
-    // Visual Card Selection
+    // ==========================================
+    // 2. DISPLAY COOL-RIDE SAFE ROUTE ON MAP
+    // ==========================================
     if (directCard && safeCard) {
       safeCard.className = 'route-card-option dynamic-card-inner border-2 border-emerald-500 rounded-2xl p-3 space-y-1.5 cursor-pointer shadow-md';
       directCard.className = 'route-card-option dynamic-card border border-inherit rounded-2xl p-3 space-y-1.5 cursor-pointer opacity-75 hover:opacity-100 transition-all';
@@ -889,6 +1037,82 @@ function renderSelectedRouteView(type) {
   }
 
   lucide.createIcons();
+}
+
+// Multi-Modal Timeline with Ferry Schedule Alert
+function renderMultiModalTimeline(startTitle, destTitle, multiModalData) {
+  const container = document.getElementById('route-timeline-steps');
+  const status = multiModalData.status;
+  const ferry = multiModalData.ferryRoute;
+
+  const alertClass = status.isClosedToday 
+    ? 'border-2 border-red-500/70 bg-red-500/10 text-red-600 dark:text-red-300' 
+    : 'border-2 border-cyan-500/70 bg-cyan-500/10 text-cyan-700 dark:text-cyan-300';
+
+  container.innerHTML = `
+    <!-- Ferry Operating Schedule Alert Banner (Hero Highlight) -->
+    <div class="p-3 rounded-2xl ${alertClass} space-y-1 shadow-sm">
+      <div class="flex items-center justify-between">
+        <p class="font-extrabold text-xs flex items-center gap-1.5">
+          ${status.alertTitle}
+        </p>
+        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/10">NT$ ${ferry.ticket_price_ntd}</span>
+      </div>
+      <p class="text-[11px] opacity-90 leading-relaxed font-normal">
+        ${status.alertDesc}
+      </p>
+    </div>
+
+    <!-- Step 1: Ride to Departure Pier -->
+    <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
+      <span class="w-6 h-6 rounded-full dynamic-btn-primary font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</span>
+      <div class="space-y-0.5 flex-1">
+        <p class="font-extrabold text-xs leading-snug">Berkendara ke <span class="text-primary-var">${ferry.departure_port_name_zh}</span></p>
+        <p class="text-[11px] opacity-75">
+          Menempuh <b>${multiModalData.leg1.distanceKm.toFixed(1)} km</b> (${multiModalData.leg1.travelMinutes} menit).
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 2: Pier AC Lounge & Boarding Transit -->
+    <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border border-cyan-500/40">
+      <span class="w-6 h-6 rounded-full bg-cyan-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">❄️</span>
+      <div class="space-y-0.5 flex-1">
+        <p class="font-extrabold text-xs leading-snug">${t('step_ferry_wait')}</p>
+        <p class="text-[11px] opacity-75">
+          Istirahat 15 menit di ruang tunggu ber-AC ${ferry.departure_port_name_zh}, beli tiket & hidrasi sebelum naik kapal.
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 3: Sailing via Ferry across Ocean -->
+    <div class="flex items-start gap-3 p-3 rounded-2xl dynamic-card-inner border-2 border-blue-500/50 shadow-sm">
+      <span class="w-6 h-6 rounded-full bg-blue-600 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">🚢</span>
+      <div class="space-y-1 flex-1">
+        <div class="flex items-center justify-between">
+          <p class="font-extrabold text-xs text-blue-600 dark:text-blue-400">
+            ${t('step_ferry_sail')} (${ferry.duration_minutes} Menit)
+          </p>
+          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-600 dark:text-blue-400">${ferry.distance_nautical_miles} Mil Laut</span>
+        </div>
+        <p class="text-xs font-bold">${ferry.departure_port_name_zh} ➔ ${ferry.arrival_port_name_zh}</p>
+        <p class="text-[11px] opacity-80">
+          Operator: <b>${ferry.operator}</b>. Nikmati angin laut dan pemandangan pulau vulkanik.
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 4: Island Scooter Ride & Arrival -->
+    <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border border-amber-500/40">
+      <span class="w-6 h-6 rounded-full bg-amber-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">🎯</span>
+      <div class="space-y-0.5 flex-1">
+        <p class="font-extrabold text-xs leading-snug">Tiba di <span class="text-amber-500">${destTitle}</span></p>
+        <p class="text-[11px] opacity-75">
+          Ambil motor sewaan di dermaga ${ferry.arrival_port_name_zh}, berkendara sejauh <b>${multiModalData.leg3.distanceKm.toFixed(1)} km</b> (${multiModalData.leg3.travelMinutes} menit).
+        </p>
+      </div>
+    </div>
+  `;
 }
 
 function addRouteMarker(lat, lon, label, title, colorHex) {
