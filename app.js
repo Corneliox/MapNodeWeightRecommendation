@@ -1,11 +1,12 @@
 // ====================================================================
-// Penghu Cool-Ride - Dynamic Multi-Language Engine & Wikipedia Photo Markers
+// Penghu Cool-Ride - High-Performance Map Engine with Lazy Loading & Clustering
 // ====================================================================
 
 // Global Application State
 let map;
 let allNodes = [];
-let markersLayer;
+let filteredNodes = [];
+let markerClusterGroup;
 let routePolylineLayer;
 let currentTravelMode = 'scooter'; // 'scooter' | 'walk'
 let activeCategoryFilter = 'all';
@@ -13,6 +14,7 @@ let selectedSchemeId = 1;
 let currentLang = 'id';
 let currentTheme = 'tropical';
 let translations = {};
+let displayedPOICount = 25;
 
 let currentWeatherData = {
   temp: 35.2,
@@ -43,7 +45,7 @@ const SCIENTIFIC_SCHEMES_META = {
   4: { name: "Bi-Objective Pareto Router", strainReduction: 64, restMins: 12 }
 };
 
-// Verified Wikipedia Knowledge Base with Direct Wikimedia Thumbnail Images
+// Verified Wikipedia Knowledge Base
 const PENGHU_WIKIPEDIA_DB = {
   "通梁古榕": {
     wiki_title: "通梁古榕",
@@ -206,6 +208,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initMap();
   fetchLiveWeather();
   loadDataset();
+  setupInfiniteScroll();
 });
 
 async function loadTranslations() {
@@ -255,11 +258,6 @@ function updateUILanguage() {
   if (badgeEl && currentWeatherData.heatLevelKey) {
     badgeEl.textContent = t(currentWeatherData.heatLevelKey);
   }
-
-  if (allNodes.length > 0) {
-    renderPOIMarkers(allNodes);
-    filterPOIs();
-  }
 }
 
 function changeLanguage(lang) {
@@ -295,7 +293,32 @@ function initMap() {
     maxZoom: 19
   }).addTo(map);
 
-  markersLayer = L.layerGroup().addTo(map);
+  // High-performance Marker Clustering with lazy chunk loading
+  if (typeof L.markerClusterGroup === 'function') {
+    markerClusterGroup = L.markerClusterGroup({
+      chunkedLoading: true,
+      chunkInterval: 50,
+      chunkDelay: 20,
+      maxClusterRadius: 40,
+      spiderfyOnMaxZoom: true,
+      showCoverageOnHover: false,
+      iconCreateFunction: function(cluster) {
+        const count = cluster.getChildCount();
+        let cClass = 'marker-cluster-small';
+        if (count > 50) cClass = 'marker-cluster-medium';
+        if (count > 200) cClass = 'marker-cluster-large';
+        return L.divIcon({
+          html: `<div><span>${count}</span></div>`,
+          className: `marker-cluster ${cClass}`,
+          iconSize: L.point(36, 36)
+        });
+      }
+    });
+    map.addLayer(markerClusterGroup);
+  } else {
+    markerClusterGroup = L.layerGroup().addTo(map);
+  }
+
   routePolylineLayer = L.layerGroup().addTo(map);
 }
 
@@ -353,26 +376,31 @@ async function loadDataset() {
     allNodes = generateCuratedNodes();
   }
 
+  // Filter only valid Penghu bounding box coordinates
+  allNodes = allNodes.filter(n => n.latitude >= 23.1 && n.latitude <= 23.9 && n.longitude >= 119.2 && n.longitude <= 119.8);
+  filteredNodes = [...allNodes];
+
   document.getElementById('total-poi-count').textContent = allNodes.length;
   renderPOIMarkers(allNodes);
-  renderPOIList(allNodes.slice(0, 100));
+  renderPOIList(true);
 }
 
-// 6. Render POI Markers with LARGER CIRCLE WEIGHT & PHOTO THUMBNAILS for Wikipedia POIs
+// 6. High-Performance Marker Rendering (Clustered & Position Safe)
 function renderPOIMarkers(nodes) {
-  markersLayer.clearLayers();
+  markerClusterGroup.clearLayers();
 
-  const nodesToRender = nodes.filter(n => {
-    if (activeCategoryFilter === 'all') return true;
-    if (activeCategoryFilter === 'convenience_store') return n.category === 'convenience_store';
-    if (activeCategoryFilter === 'tourist_attraction') return n.category === 'tourist_attraction' || n.node_role === 'attraction_node';
-    if (activeCategoryFilter === 'shelter') return n.category === 'shelter' || n.category === 'food_and_drink' || n.category === 'restaurants';
-    if (activeCategoryFilter === 'hotel_node') return n.node_role === 'hotel_node' || n.category === 'hotels';
-    return true;
-  }).slice(0, 600);
+  const newMarkers = [];
 
-  nodesToRender.forEach(node => {
+  nodes.forEach(node => {
     if (!node.latitude || !node.longitude) return;
+
+    // Filter by active category
+    if (activeCategoryFilter !== 'all') {
+      if (activeCategoryFilter === 'convenience_store' && node.category !== 'convenience_store') return;
+      if (activeCategoryFilter === 'tourist_attraction' && node.category !== 'tourist_attraction' && node.node_role !== 'attraction_node') return;
+      if (activeCategoryFilter === 'shelter' && node.category !== 'shelter' && node.category !== 'food_and_drink' && node.category !== 'restaurants') return;
+      if (activeCategoryFilter === 'hotel_node' && node.node_role !== 'hotel_node' && node.category !== 'hotels') return;
+    }
 
     const universalTitle = getUniversalBilingualTitle(node);
     const wiki = getVerifiedWikiEntry(node);
@@ -380,22 +408,24 @@ function renderPOIMarkers(nodes) {
 
     let markerIcon;
 
-    // A. JIKA DESTINASI MEMILIKI WIKIPEDIA: Berikan Ukuran Lingkaran Lebih Besar (44px) + Cuplikan Foto
+    // A. WIKIPEDIA DESTINATION (Photo Pin with Inner Relative Wrapper)
     if (wiki !== null || imageUrl) {
       const photoSrc = imageUrl || "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=150&auto=format&fit=crop&q=80";
       
       markerIcon = L.divIcon({
         className: 'custom-pin-wiki',
         html: `
-          <img src="${photoSrc}" alt="${universalTitle}" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=150&auto=format&fit=crop&q=80'" />
-          <div class="wiki-badge-corner">W</div>
+          <div class="wiki-pin-inner">
+            <img src="${photoSrc}" alt="${universalTitle}" loading="lazy" onerror="this.src='https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=150&auto=format&fit=crop&q=80'" />
+            <div class="wiki-badge-corner">W</div>
+          </div>
         `,
-        iconSize: [44, 44],
-        iconAnchor: [22, 22]
+        iconSize: [36, 36],
+        iconAnchor: [18, 18]
       });
 
     } else {
-      // B. JIKA BUKAN WIKIPEDIA POI: Gunakan Pin Standar (26px)
+      // B. STANDARD PIN (22px)
       let iconClass = 'pin-attraction';
       let iconEmoji = '🏛️';
 
@@ -413,35 +443,34 @@ function renderPOIMarkers(nodes) {
       markerIcon = L.divIcon({
         className: `custom-pin ${iconClass}`,
         html: `<span>${iconEmoji}</span>`,
-        iconSize: [26, 26],
-        iconAnchor: [13, 13]
+        iconSize: [22, 22],
+        iconAnchor: [11, 11]
       });
     }
 
     const marker = L.marker([node.latitude, node.longitude], { icon: markerIcon });
 
-    // Header Gambar Popup (jika ada foto)
+    // Popup Content with Photo Banner & Wikipedia Card
     let photoHeaderHtml = "";
     if (imageUrl) {
       photoHeaderHtml = `
-        <div class="w-full h-28 overflow-hidden relative">
-          <img src="${imageUrl}" class="w-full h-full object-cover" alt="${universalTitle}" />
-          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent"></div>
-          <span class="absolute bottom-2 left-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-500 text-white shadow">
+        <div class="w-full h-24 overflow-hidden relative">
+          <img src="${imageUrl}" class="w-full h-full object-cover" alt="${universalTitle}" loading="lazy" />
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent"></div>
+          <span class="absolute bottom-1.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full bg-cyan-500 text-white shadow">
             Wikipedia Landmark
           </span>
         </div>
       `;
     }
 
-    // Strict Wikipedia Card Section (Hanya tampil jika ada di Wikipedia)
     let wikiCardHtml = "";
     if (wiki !== null) {
       const wikiUrl = currentLang === 'zh' ? (wiki.url_zh || wiki.url_en) : (wiki.url_en || wiki.url_zh);
       const wikiSummary = currentLang === 'zh' ? wiki.summary_zh : (currentLang === 'en' ? wiki.summary_en : wiki.summary_id);
 
       wikiCardHtml = `
-        <div class="p-2.5 rounded-xl dynamic-card-inner border text-[11px] space-y-1.5 shadow-inner">
+        <div class="p-2 rounded-xl dynamic-card-inner border text-[11px] space-y-1 shadow-inner">
           <div class="flex items-center justify-between">
             <span class="font-bold flex items-center gap-1 opacity-90">
               <span class="font-serif font-bold text-xs bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-1 rounded">W</span>
@@ -452,7 +481,7 @@ function renderPOIMarkers(nodes) {
               <i data-lucide="external-link" class="w-3 h-3"></i>
             </a>
           </div>
-          <p class="opacity-80 leading-relaxed text-[10.5px]">
+          <p class="opacity-80 leading-relaxed text-[10px]">
             ${wikiSummary}
           </p>
         </div>
@@ -460,9 +489,9 @@ function renderPOIMarkers(nodes) {
     }
 
     const popupHtml = `
-      <div class="text-xs space-y-2 min-w-[240px] max-w-[280px]">
+      <div class="text-xs space-y-2 min-w-[230px] max-w-[260px] overflow-hidden rounded-2xl">
         ${photoHeaderHtml}
-        <div class="p-1 space-y-2">
+        <div class="p-3 space-y-2">
           <div>
             <h4 class="font-extrabold text-sm leading-snug">${universalTitle}</h4>
             <span class="text-[10px] opacity-70 font-bold uppercase tracking-wider">${node.category.replace('_', ' ')}</span>
@@ -473,7 +502,6 @@ function renderPOIMarkers(nodes) {
           <div class="text-[11px] space-y-1 pt-1 border-t border-inherit">
             ${node.has_ac ? `<div class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">❄️ ${t('ac_equipped')}</div>` : ''}
             ${node.opening_hours ? `<div class="opacity-80">🕒 ${node.opening_hours}</div>` : ''}
-            ${node.fee_info ? `<div class="text-amber-500 font-bold">🎟️ ${node.fee_info}</div>` : ''}
           </div>
 
           <button onclick="setAsDestination(${node.latitude}, ${node.longitude}, '${universalTitle.replace(/'/g, "\\'")}')" class="w-full py-2 dynamic-btn-primary rounded-xl text-[11px] font-extrabold transition shadow flex items-center justify-center gap-1">
@@ -484,8 +512,14 @@ function renderPOIMarkers(nodes) {
     `;
 
     marker.bindPopup(popupHtml);
-    markersLayer.addLayer(marker);
+    newMarkers.push(marker);
   });
+
+  if (typeof markerClusterGroup.addLayers === 'function') {
+    markerClusterGroup.addLayers(newMarkers);
+  } else {
+    newMarkers.forEach(m => markerClusterGroup.addLayer(m));
+  }
 }
 
 // 7. Route Computation
@@ -571,9 +605,9 @@ function calculateSmartRoute() {
 function addRouteMarker(lat, lon, label, title, colorHex) {
   const icon = L.divIcon({
     className: 'custom-pin',
-    html: `<div style="background: ${colorHex}; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid white; font-size: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); color: white;">${label}</div>`,
-    iconSize: [32, 32],
-    iconAnchor: [16, 16]
+    html: `<div style="background: ${colorHex}; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; border: 2px solid white; font-size: 11px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); color: white;">${label}</div>`,
+    iconSize: [30, 30],
+    iconAnchor: [15, 15]
   });
 
   L.marker([lat, lon], { icon }).bindPopup(`<b>${title}</b>`).addTo(routePolylineLayer);
@@ -733,7 +767,7 @@ function toggleCategoryFilter(category) {
 
 function filterPOIs() {
   const query = document.getElementById('search-input').value.toLowerCase();
-  const filtered = allNodes.filter(n => {
+  filteredNodes = allNodes.filter(n => {
     const matchesCategory = (activeCategoryFilter === 'all') ||
       (activeCategoryFilter === 'convenience_store' && n.category === 'convenience_store') ||
       (activeCategoryFilter === 'tourist_attraction' && (n.category === 'tourist_attraction' || n.node_role === 'attraction_node')) ||
@@ -746,18 +780,37 @@ function filterPOIs() {
     return matchesCategory && matchesQuery;
   });
 
-  renderPOIList(filtered.slice(0, 100));
+  displayedPOICount = 25;
+  renderPOIList(true);
 }
 
-// 8. Render POI List Cards with Photo Thumbnails for Wikipedia Landmarks
-function renderPOIList(nodes) {
+// 8. Progressive Lazy Loading for POI List
+function setupInfiniteScroll() {
   const container = document.getElementById('poi-list');
-  if (nodes.length === 0) {
+  if (!container) return;
+
+  container.addEventListener('scroll', () => {
+    if (container.scrollTop + container.clientHeight >= container.scrollHeight - 50) {
+      if (displayedPOICount < filteredNodes.length) {
+        displayedPOICount += 25;
+        renderPOIList(false);
+      }
+    }
+  });
+}
+
+function renderPOIList(reset = false) {
+  const container = document.getElementById('poi-list');
+  if (!container) return;
+
+  if (filteredNodes.length === 0) {
     container.innerHTML = `<p class="text-xs opacity-50 text-center py-8 font-medium">${t('no_poi_found')}</p>`;
     return;
   }
 
-  container.innerHTML = nodes.map(n => {
+  const nodesToRender = filteredNodes.slice(0, displayedPOICount);
+
+  container.innerHTML = nodesToRender.map(n => {
     const universalTitle = getUniversalBilingualTitle(n);
     const wiki = getVerifiedWikiEntry(n);
     const imgUrl = (wiki && wiki.image_url) || n.image_url;
@@ -765,7 +818,7 @@ function renderPOIList(nodes) {
     let thumbHtml = "";
     if (imgUrl) {
       thumbHtml = `
-        <img src="${imgUrl}" class="w-10 h-10 rounded-xl object-cover border border-inherit shrink-0 shadow-sm" alt="${universalTitle}" />
+        <img src="${imgUrl}" class="w-9 h-9 rounded-xl object-cover border border-inherit shrink-0 shadow-sm" alt="${universalTitle}" loading="lazy" />
       `;
     }
 
