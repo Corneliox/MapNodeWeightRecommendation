@@ -1,25 +1,125 @@
 /* ====================================================================
-   Penghu Cool-Ride - Modern Glassmorphism & Micro-Interactions
+   Penghu Cool-Ride - Dynamic Holiday Themes & Glassmorphism Design
    ==================================================================== */
 
-/* Custom Smooth Scrollbar */
+/* --- 1. THEME DEFINITIONS --- */
+
+/* Theme 1: Palet Tropis Pantai (Eksotis & Segar) */
+body.theme-tropical {
+  --bg-app: #F8F9FA;
+  --bg-sidebar: rgba(255, 255, 255, 0.92);
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --bg-card-inner: #F1F5F9;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  --color-primary: #00A8B5; /* Biru Pirus */
+  --color-primary-hover: #008B96;
+  --color-accent: #FFD166; /* Kuning Cerah */
+  --color-secondary: #06D6A0; /* Hijau Daun */
+  --border-color: rgba(0, 168, 181, 0.2);
+  --border-card: rgba(203, 213, 225, 0.8);
+  --shadow-color: rgba(0, 168, 181, 0.15);
+}
+
+/* Theme 2: Palet Petualangan Alam (Hangat & Klasik) */
+body.theme-nature {
+  --bg-app: #F4F1DE; /* Beige / Krem */
+  --bg-sidebar: rgba(244, 241, 222, 0.94);
+  --bg-card: rgba(255, 255, 255, 0.9);
+  --bg-card-inner: #EAE6D0;
+  --text-primary: #3D405B; /* Cokelat Tua */
+  --text-secondary: #525672;
+  --text-muted: #727798;
+  --color-primary: #E07A5F; /* Terakota / Oranye Bata */
+  --color-primary-hover: #C9664C;
+  --color-accent: #F2CC8F; /* Kuning Tanah */
+  --color-secondary: #81B29A; /* Hijau Sage / Zaitun */
+  --border-color: rgba(224, 122, 95, 0.25);
+  --border-card: rgba(214, 209, 186, 0.9);
+  --shadow-color: rgba(224, 122, 95, 0.15);
+}
+
+/* Theme 3: Ocean Dark (Mode Gelap) */
+body.theme-ocean {
+  --bg-app: #020617;
+  --bg-sidebar: rgba(15, 23, 42, 0.95);
+  --bg-card: rgba(15, 23, 42, 0.8);
+  --bg-card-inner: #0B1222;
+  --text-primary: #F8FAFC;
+  --text-secondary: #94A3B8;
+  --text-muted: #64748B;
+  --color-primary: #06B6D4;
+  --color-primary-hover: #0891B2;
+  --color-accent: #F59E0B;
+  --color-secondary: #10B981;
+  --border-color: rgba(6, 182, 212, 0.25);
+  --border-card: rgba(51, 65, 85, 0.7);
+  --shadow-color: rgba(6, 182, 212, 0.2);
+}
+
+/* Base Body Styles */
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dynamic Classes using CSS Variables */
+.dynamic-sidebar {
+  background-color: var(--bg-sidebar);
+  border-color: var(--border-card);
+}
+
+.dynamic-card {
+  background-color: var(--bg-card);
+  border-color: var(--border-card);
+  color: var(--text-primary);
+}
+
+.dynamic-card-inner {
+  background-color: var(--bg-card-inner);
+  border-color: var(--border-card);
+}
+
+.dynamic-btn-primary {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+}
+.dynamic-btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.text-primary-var {
+  color: var(--color-primary);
+}
+
+.text-secondary-var {
+  color: var(--color-secondary);
+}
+
+.text-accent-var {
+  color: var(--color-accent);
+}
+
+/* Custom Scrollbars */
 .custom-scrollbar::-webkit-scrollbar {
   width: 5px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: rgba(2, 6, 23, 0.4);
+  background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(51, 65, 85, 0.7);
+  background: var(--border-card);
   border-radius: 9999px;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: rgba(6, 182, 212, 0.6);
+  background: var(--color-primary);
 }
 
-/* Map Dark Background */
+/* Map Overrides */
 .leaflet-container {
-  background-color: #020617 !important;
+  background-color: var(--bg-app) !important;
   font-family: 'Plus Jakarta Sans', sans-serif !important;
 }
 
@@ -31,7 +131,7 @@
   border-radius: 50%;
   color: white;
   font-size: 11px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
   transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
   cursor: pointer;
 }
@@ -42,31 +142,31 @@
 }
 
 .pin-attraction {
-  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-  border: 2px solid #93c5fd;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, #00A8B5, #007780);
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 10px rgba(0, 168, 181, 0.6);
 }
 
 .pin-store {
-  background: linear-gradient(135deg, #10b981, #047857);
-  border: 2px solid #6ee7b7;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  background: linear-gradient(135deg, #06D6A0, #048C68);
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 10px rgba(6, 214, 160, 0.6);
 }
 
 .pin-shelter {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
-  border: 2px solid #fde68a;
-  box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+  background: linear-gradient(135deg, #FFD166, #E5B338);
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 0 10px rgba(255, 209, 102, 0.6);
 }
 
 .pin-hotel {
-  background: linear-gradient(135deg, #a855f7, #7e22ce);
-  border: 2px solid #d8b4fe;
+  background: linear-gradient(135deg, #E07A5F, #B8583F);
+  border: 2px solid #FFFFFF;
 }
 
 .pin-user {
-  background: linear-gradient(135deg, #ef4444, #b91c1c);
-  border: 2px solid #ffffff;
+  background: linear-gradient(135deg, #EF4444, #B91C1C);
+  border: 2px solid #FFFFFF;
   animation: pulse-ring 2s infinite;
 }
 
@@ -84,18 +184,18 @@
 
 /* Custom Popup Design */
 .leaflet-popup-content-wrapper {
-  background: rgba(15, 23, 42, 0.96) !important;
+  background: var(--bg-sidebar) !important;
   backdrop-filter: blur(16px);
-  color: #f1f5f9 !important;
-  border: 1px solid rgba(51, 65, 85, 0.8) !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--border-card) !important;
   border-radius: 16px !important;
-  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.3) !important;
   padding: 2px !important;
 }
 
 .leaflet-popup-tip {
-  background: rgba(15, 23, 42, 0.96) !important;
-  border: 1px solid rgba(51, 65, 85, 0.8) !important;
+  background: var(--bg-sidebar) !important;
+  border: 1px solid var(--border-card) !important;
 }
 
 .leaflet-popup-content {
@@ -103,13 +203,13 @@
   line-height: 1.45;
 }
 
-/* Scheme Card Active State */
+/* Scheme Cards */
 .scheme-card {
   transition: all 0.2s ease-in-out;
 }
 
 .scheme-card.active {
-  border-color: rgba(6, 182, 212, 0.8) !important;
-  background: rgba(8, 51, 68, 0.35) !important;
-  box-shadow: 0 0 15px rgba(6, 182, 212, 0.15) !important;
+  border-color: var(--color-primary) !important;
+  background: var(--bg-card-inner) !important;
+  box-shadow: 0 0 15px var(--shadow-color) !important;
 }
