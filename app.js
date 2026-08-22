@@ -258,6 +258,19 @@ function updateUILanguage() {
   if (badgeEl && currentWeatherData.heatLevelKey) {
     badgeEl.textContent = t(currentWeatherData.heatLevelKey);
   }
+
+  // Dynamically translate Theme selector options in app.html
+  const themeSelect = document.getElementById('theme-selector');
+  if (themeSelect) {
+    const curVal = themeSelect.value || currentTheme;
+    const optTropical = themeSelect.querySelector('option[value="tropical"]');
+    const optNature = themeSelect.querySelector('option[value="nature"]');
+    const optOcean = themeSelect.querySelector('option[value="ocean"]');
+    if (optTropical) optTropical.innerText = t('theme_tropical');
+    if (optNature) optNature.innerText = t('theme_nature');
+    if (optOcean) optOcean.innerText = t('theme_ocean');
+    themeSelect.value = curVal;
+  }
 }
 
 function changeLanguage(lang) {

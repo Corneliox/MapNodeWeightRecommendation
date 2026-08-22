@@ -79,8 +79,8 @@ MapNodeWeightRecommendation/
 ├── fetch_penghu_google_places.py     # Google Places API (New) crawler with field-masking
 ├── fetch_penghu_osm.py               # OpenStreetMap Overpass API extractor
 ├── fetch_penghu_taiwan_opendata.py   # Taiwan Tourism Admin v2.0 extractor
-├── index.html                        # Main single-page web application (Interactive Map)
-├── landing.html                      # Modern, interactive Landing Page & Scientific Showcase
+├── app.html                          # Interactive Map Application & Climate Router Engine
+├── index.html                        # Modern, interactive Landing Page & Scientific Showcase (Root Entry)
 ├── merge_penghu_dataset.py           # Master node cleaner, bilingual formatter & Wiki scraper
 ├── requirements.txt                  # Python dependencies
 ├── style.css                         # Holiday themes, glassmorphism & marker cluster styles

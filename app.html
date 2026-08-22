@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Penghu Cool-Ride | Smart Climate-Aware Tourism Router</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Leaflet CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
+  <!-- Leaflet MarkerCluster CDN for High-Performance Mobile Lazy Loading -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Instant Theme Cache Script to eliminate FOUC -->
+  <script>
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('penghu_theme') || 'tropical';
+        document.documentElement.className = 'theme-' + savedTheme;
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-tropical flex flex-col h-screen overflow-hidden antialiased font-['Plus_Jakarta_Sans'] selection:bg-cyan-500 selection:text-white">
+
+  <!-- Top Navigation & Controls Bar -->
+  <header class="dynamic-sidebar border-b px-3 sm:px-5 py-2.5 z-30 flex items-center justify-between shadow-md shrink-0">
+    
+    <!-- App Logo & Branding -->
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-xl dynamic-btn-primary flex items-center justify-center shadow-lg">
+        <i data-lucide="palmtree" class="w-5 h-5 text-white"></i>
+      </div>
+      <div>
+        <div class="flex items-center gap-2">
+          <h1 data-i18n="app_title" class="text-sm sm:text-base font-extrabold tracking-tight">
+            Penghu Cool-Ride
+          </h1>
+          <span data-i18n="badge_tag" class="text-[10px] font-bold px-2 py-0.5 rounded-full border border-current opacity-80">
+            澎湖清涼導航
+          </span>
+        </div>
+        <p data-i18n="app_subtitle" class="text-[11px] opacity-75 hidden sm:block font-medium">
+          Router Wisata Adaptif Iklim & Jaringan Shelter
+        </p>
+      </div>
+    </div>
+
+    <!-- Right Controls: Weather Widget + Creator + Language & Theme Dropdowns -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      
+      <!-- Live Weather Pill -->
+      <div class="hidden md:flex items-center gap-2 dynamic-card-inner border rounded-full px-3 py-1 text-xs">
+        <div class="flex items-center gap-1.5 font-bold">
+          <i data-lucide="sun-medium" class="w-3.5 h-3.5 text-amber-500 animate-spin" style="animation-duration: 10s;"></i>
+          <span id="temp-display">34°C</span>
+        </div>
+        <div class="h-3 w-px bg-slate-300 dark:bg-slate-700"></div>
+        <div class="flex items-center gap-1">
+          <span id="uv-display" class="font-medium">UV: 9.8</span>
+        </div>
+        <span id="heat-badge" class="text-[9px] uppercase font-extrabold px-1.5 py-0.5 rounded-full bg-red-500/20 text-red-500 border border-red-500/30">
+          PANAS TINGGI
+        </span>
+      </div>
+
+      <!-- Creator Link (Href to GitHub) -->
+      <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="dynamic-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold flex items-center gap-1 hover:opacity-100 transition-opacity text-primary-var shadow-sm" title="Created by Corneliox">
+        <i data-lucide="github" class="w-3.5 h-3.5"></i>
+        <span class="hidden xl:inline">Corneliox</span>
+      </a>
+
+      <!-- Theme Switcher Selector -->
+      <div class="relative">
+        <select id="theme-selector" onchange="changeTheme(this.value)" class="dynamic-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer">
+          <option value="tropical">🏝️ Tropis Pantai</option>
+          <option value="nature">🏜️ Petualangan Alam</option>
+          <option value="ocean">🌌 Ocean Dark</option>
+        </select>
+      </div>
+
+      <!-- Language Selector (ID, EN, ZH) -->
+      <div class="relative">
+        <select id="lang-selector" onchange="changeLanguage(this.value)" class="dynamic-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer">
+          <option value="id">🇮🇩 ID</option>
+          <option value="en">🇬🇧 EN</option>
+          <option value="zh">🇹🇼 繁中</option>
+        </select>
+      </div>
+
+      <!-- Landing Page / Home Link Button -->
+      <a href="index.html" class="dynamic-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold flex items-center gap-1 hover:opacity-100 transition-opacity" title="Landing Page">
+        <i data-lucide="home" class="w-3.5 h-3.5 text-primary-var"></i>
+        <span data-i18n="nav_home" class="hidden sm:inline">Beranda</span>
+      </a>
+
+    </div>
+  </header>
+
+  <!-- Main App Workspace -->
+  <div class="flex flex-1 relative overflow-hidden">
+
+    <!-- Responsive Navigation Sidebar / Drawer (Fluid Percentage Width) -->
+    <aside id="sidebar" class="w-full sm:w-[42%] md:w-[36%] lg:w-[32%] xl:w-[28%] 2xl:w-[25%] min-w-[320px] max-w-[580px] dynamic-sidebar border-r flex flex-col z-20 transition-all duration-300 h-full absolute sm:relative shadow-2xl sm:shadow-none -translate-x-full sm:translate-x-0">
+      
+      <!-- Tab Header Navigation -->
+      <div class="p-2.5 border-b border-inherit">
+        <div class="grid grid-cols-3 gap-1 dynamic-card-inner p-1 rounded-2xl border border-inherit">
+          <button id="tab-btn-route" onclick="switchTab('route')" class="py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 dynamic-btn-primary shadow transition">
+            <i data-lucide="navigation-2" class="w-3.5 h-3.5"></i>
+            <span data-i18n="tab_route">Rute Cerdas</span>
+          </button>
+          <button id="tab-btn-schemes" onclick="switchTab('schemes')" class="py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 opacity-70 hover:opacity-100 transition">
+            <i data-lucide="flask-conical" class="w-3.5 h-3.5"></i>
+            <span data-i18n="tab_schemes">Skema Ilmiah</span>
+          </button>
+          <button id="tab-btn-explore" onclick="switchTab('explore')" class="py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1 opacity-70 hover:opacity-100 transition">
+            <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
+            <span data-i18n="tab_explore">POI</span> (<span id="total-poi-count">2190</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Tab Content Scrollable Area -->
+      <div class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+
+        <!-- ========================================================= -->
+        <!-- TAB 1: SMART CLIMATE ROUTE PLANNER -->
+        <!-- ========================================================= -->
+        <div id="tab-content-route" class="space-y-4">
+          
+          <!-- Active Scientific Scheme Banner -->
+          <div class="p-3 rounded-2xl dynamic-card border flex items-center justify-between text-xs shadow-sm">
+            <div class="flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></div>
+              <span data-i18n="active_model" class="opacity-70">Model Aktif:</span>
+              <span id="active-scheme-label" class="font-bold text-primary-var">ISO 7243 (WBGT Threshold)</span>
+            </div>
+            <button onclick="switchTab('schemes')" data-i18n="btn_change" class="text-xs text-primary-var hover:underline font-bold">Ubah</button>
+          </div>
+
+          <!-- Trip Planner Card -->
+          <div class="dynamic-card border rounded-2xl p-4 space-y-3.5 shadow-md">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xs font-bold uppercase tracking-wider opacity-80 flex items-center gap-1.5">
+                <i data-lucide="map" class="w-3.5 h-3.5 text-primary-var"></i>
+                <span data-i18n="config_title">Konfigurasi Perjalanan</span>
+              </h3>
+              <span data-i18n="location_tag" class="text-[10px] opacity-60 font-mono">Penghu, Taiwan</span>
+            </div>
+
+            <!-- Origin Selection -->
+            <div>
+              <div class="flex items-center justify-between text-xs font-semibold mb-1.5">
+                <label data-i18n="origin_label">Titik Keberangkatan (Origin)</label>
+                <button onclick="useCurrentLocation()" class="text-primary-var flex items-center gap-1 text-[11px] font-bold">
+                  <i data-lucide="locate-fixed" class="w-3 h-3"></i> <span data-i18n="btn_gps">GPS Saya</span>
+                </button>
+              </div>
+              <select id="select-start" class="w-full dynamic-card-inner border rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                <option value="magong_port">🚢 馬公港 / Magong Port (Rental Hub)</option>
+                <option value="magong_airport">✈️ 澎湖機場 / Penghu Airport</option>
+                <option value="kuobishan">🌊 奎壁山摩西分海 / Kuobishan Moses Parting</option>
+              </select>
+            </div>
+
+            <!-- Destination Selection -->
+            <div>
+              <label data-i18n="dest_label" class="block text-xs font-semibold mb-1.5">Destinasi Wisata (Target POI)</label>
+              <select id="select-end" class="w-full dynamic-card-inner border rounded-xl px-3 py-2.5 text-xs focus:outline-none">
+                <option value="tongliang_banyan">🌳 通梁古榕 / Tongliang Great Banyan</option>
+                <option value="penghu_bridge">🌉 澎湖跨海大橋 / Penghu Great Bridge</option>
+                <option value="daguoye_basalt">🗿 大菓葉柱狀玄武岩 / Daguoye Basalt</option>
+                <option value="shanshui_beach">🏖️ 山水沙灘 / Shanshui Beach</option>
+                <option value="fenggui_cave">💨 風櫃洞 / Fenggui Blowholes</option>
+                <option value="yuwengdao_lighthouse">🗼 漁翁島燈塔 / Yuwengdao Lighthouse</option>
+              </select>
+            </div>
+
+            <!-- Travel Mode Toggle -->
+            <div class="grid grid-cols-2 gap-2 pt-1">
+              <button id="mode-scooter" onclick="setTravelMode('scooter')" class="py-2.5 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 dynamic-btn-primary shadow-sm">
+                <i data-lucide="bike" class="w-4 h-4"></i> <span data-i18n="mode_scooter">Motor (35 km/j)</span>
+              </button>
+              <button id="mode-walk" onclick="setTravelMode('walk')" class="py-2.5 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 dynamic-card-inner border-inherit opacity-75 hover:opacity-100">
+                <i data-lucide="footprints" class="w-4 h-4"></i> <span data-i18n="mode_walk">Jalan Kaki (4.5 km/j)</span>
+              </button>
+            </div>
+
+            <!-- Compute Route Button -->
+            <button onclick="calculateSmartRoute()" class="w-full py-3 dynamic-btn-primary rounded-xl font-extrabold text-xs shadow-lg flex items-center justify-center gap-2 transition active:scale-[0.98]">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span data-i18n="btn_calculate">Hitung Rute Bebas Heatstroke</span>
+            </button>
+          </div>
+
+          <!-- Comparison Card Matrix -->
+          <div id="route-result-card" class="hidden space-y-3">
+            
+            <div class="text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 opacity-80">
+              <i data-lucide="git-compare" class="w-3.5 h-3.5 text-primary-var"></i>
+              <span data-i18n="comparison_title">Komparasi Rute Langsung vs Adaptif</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <!-- Direct Route Card -->
+              <div class="dynamic-card border rounded-2xl p-3 space-y-1.5">
+                <div class="flex items-center justify-between">
+                  <span data-i18n="direct_route" class="text-[10px] uppercase font-bold opacity-70">Rute Langsung</span>
+                  <span data-i18n="direct_risk" class="text-[9px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-500 font-bold">Resiko Tinggi</span>
+                </div>
+                <p id="direct-time-display" class="text-base font-extrabold">17 Menit</p>
+                <p data-i18n="direct_desc" class="text-[10px] opacity-70 leading-tight">Paparan terik 100% tanpa istirahat pendinginan.</p>
+              </div>
+
+              <!-- Safe Route Card -->
+              <div class="dynamic-card-inner border-2 border-emerald-500/50 rounded-2xl p-3 space-y-1.5 shadow-sm">
+                <div class="flex items-center justify-between">
+                  <span data-i18n="safe_route" class="text-[10px] uppercase font-bold text-emerald-600 dark:text-emerald-400">Cool-Ride Safe</span>
+                  <span id="reduction-badge" class="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold">-65% Strain</span>
+                </div>
+                <p id="safe-time-display" class="text-base font-extrabold text-emerald-600 dark:text-emerald-400">29 Menit</p>
+                <p data-i18n="safe_desc" class="text-[10px] opacity-75 leading-tight">Termasuk jeda pendinginan AC & rehidrasi di 7-Eleven.</p>
+              </div>
+            </div>
+
+            <!-- Route Timeline Details -->
+            <div class="dynamic-card border rounded-2xl p-3.5 space-y-3 shadow-md">
+              <h4 class="text-xs font-bold flex items-center justify-between">
+                <span data-i18n="itinerary_title">Rencana Singgah & Itinerary</span>
+                <span class="text-[10px] opacity-60 font-mono" id="route-distance-text">9.9 km</span>
+              </h4>
+
+              <div class="space-y-3 text-xs" id="route-timeline-steps">
+                <!-- Rendered dynamically by JS -->
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 2: SCIENTIFIC WEIGHTING SCHEMES -->
+        <!-- ========================================================= -->
+        <div id="tab-content-schemes" class="hidden space-y-3.5">
+          
+          <div class="dynamic-card border rounded-2xl p-3 text-xs space-y-1">
+            <h4 data-i18n="schemes_header" class="font-bold flex items-center gap-1.5">
+              <i data-lucide="book-open" class="w-4 h-4 text-primary-var"></i>
+              Landasan Ilmiah & Formula Jurnal
+            </h4>
+            <p data-i18n="schemes_desc" class="text-[11px] opacity-75">
+              Pilih model komputasi beban termal biometeorologi:
+            </p>
+          </div>
+
+          <!-- 4 Scheme Cards -->
+          <div class="space-y-2.5">
+            
+            <!-- Scheme 1 -->
+            <div onclick="selectScheme(1)" id="scheme-card-1" class="scheme-card active p-3.5 rounded-2xl border cursor-pointer shadow-sm">
+              <div class="flex items-center justify-between">
+                <span data-i18n="scheme1_title" class="text-xs font-bold text-primary-var">Skema 1: ISO 7243:2017 (WBGT Threshold)</span>
+                <span data-i18n="scheme1_tag" class="text-[10px] px-2 py-0.5 rounded-full font-bold bg-cyan-500/20 text-cyan-600 dark:text-cyan-300">Standard Medis</span>
+              </div>
+              <p data-i18n="scheme1_desc" class="text-[11px] opacity-75 mt-1 leading-relaxed">
+                Ambang batas paparan kritis T_max = 60 / (WBGT - 27)^1.2. Mewajibkan jeda AC saat WBGT >= 30°C.
+              </p>
+              <div class="mt-2 text-[10px] font-mono opacity-60 border-t border-inherit pt-1.5 flex justify-between">
+                <span>Ref: ISO 7243 / Budd (2008)</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Reduksi: ~65%</span>
+              </div>
+            </div>
+
+            <!-- Scheme 2 -->
+            <div onclick="selectScheme(2)" id="scheme-card-2" class="scheme-card p-3.5 rounded-2xl dynamic-card border cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span data-i18n="scheme2_title" class="text-xs font-bold">Skema 2: UTCI Non-Linear Strain</span>
+                <span data-i18n="scheme2_tag" class="text-[10px] px-2 py-0.5 rounded-full dynamic-card-inner font-bold opacity-80">Biometeorologi</span>
+              </div>
+              <p data-i18n="scheme2_desc" class="text-[11px] opacity-75 mt-1 leading-relaxed">
+                Fungsi polinomial eksponensial Phi = 1 + 0.7 * ((FeelsLike - 26)/10)^2.4 untuk mendeteksi ketidaknyamanan termal.
+              </p>
+              <div class="mt-2 text-[10px] font-mono opacity-60 border-t border-inherit pt-1.5 flex justify-between">
+                <span>Ref: Bröde et al. (2012) Int. J. Biometeorol</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Reduksi: ~58%</span>
+              </div>
+            </div>
+
+            <!-- Scheme 3 -->
+            <div onclick="selectScheme(3)" id="scheme-card-3" class="scheme-card p-3.5 rounded-2xl dynamic-card border cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span data-i18n="scheme3_title" class="text-xs font-bold">Skema 3: Solar Radiation Energy Budget</span>
+                <span data-i18n="scheme3_tag" class="text-[10px] px-2 py-0.5 rounded-full dynamic-card-inner font-bold opacity-80">Microclimate</span>
+              </div>
+              <p data-i18n="scheme3_desc" class="text-[11px] opacity-75 mt-1 leading-relaxed">
+                Menghitung beban radiasi langsung (DNI) dan indeks UV pada kulit terbuka R_abs = (DNI * 0.85) + (UV * 20).
+              </p>
+              <div class="mt-2 text-[10px] font-mono opacity-60 border-t border-inherit pt-1.5 flex justify-between">
+                <span>Ref: Brown & Gillespie COMFA Model (1995)</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Reduksi: ~72%</span>
+              </div>
+            </div>
+
+            <!-- Scheme 4 -->
+            <div onclick="selectScheme(4)" id="scheme-card-4" class="scheme-card p-3.5 rounded-2xl dynamic-card border cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span data-i18n="scheme4_title" class="text-xs font-bold">Skema 4: Bi-Objective Pareto Router</span>
+                <span data-i18n="scheme4_tag" class="text-[10px] px-2 py-0.5 rounded-full dynamic-card-inner font-bold opacity-80">Optimasi Graf</span>
+              </div>
+              <p data-i18n="scheme4_desc" class="text-[11px] opacity-75 mt-1 leading-relaxed">
+                Optimasi multiobjektif Min [w1*T + w2*Strain] dengan batas deviasi jarak <= 1.20 x Jarak Langsung.
+              </p>
+              <div class="mt-2 text-[10px] font-mono opacity-60 border-t border-inherit pt-1.5 flex justify-between">
+                <span>Ref: Raith & Ehrgott (2009) Comput. Oper. Res.</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Reduksi: ~64%</span>
+              </div>
+            </div>
+
+          </div>
+
+          <button onclick="switchTab('route'); calculateSmartRoute();" class="w-full py-3 dynamic-btn-primary font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i> <span data-i18n="btn_apply_scheme">Terapkan Skema ke Rute</span>
+          </button>
+
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- TAB 3: POI EXPLORER (2,190 NODES) WITH WIKIPEDIA CARDS -->
+        <!-- ========================================================= -->
+        <div id="tab-content-explore" class="hidden space-y-3">
+          
+          <div class="relative">
+            <i data-lucide="search" class="w-4 h-4 opacity-50 absolute left-3.5 top-3"></i>
+            <input id="search-input" oninput="filterPOIs()" type="text" placeholder="Cari 7-Eleven, Basalt, Pantai..." class="w-full dynamic-card-inner border rounded-xl pl-10 pr-3 py-2.5 text-xs focus:outline-none">
+          </div>
+
+          <!-- Filter Pills -->
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <button onclick="toggleCategoryFilter('all')" class="category-pill active text-[11px] px-3 py-1 rounded-full font-bold dynamic-btn-primary shadow-sm" data-cat="all">
+              <span data-i18n="cat_all">Semua</span> (2.190)
+            </button>
+            <button onclick="toggleCategoryFilter('convenience_store')" class="category-pill text-[11px] px-3 py-1 rounded-full font-medium dynamic-card-inner border border-inherit" data-cat="convenience_store">
+              🏪 <span data-i18n="cat_stores">7-11 & FamilyMart</span> (50)
+            </button>
+            <button onclick="toggleCategoryFilter('tourist_attraction')" class="category-pill text-[11px] px-3 py-1 rounded-full font-medium dynamic-card-inner border border-inherit" data-cat="tourist_attraction">
+              🏛️ <span data-i18n="cat_attractions">Objek Wisata</span> (444)
+            </button>
+            <button onclick="toggleCategoryFilter('shelter')" class="category-pill text-[11px] px-3 py-1 rounded-full font-medium dynamic-card-inner border border-inherit" data-cat="shelter">
+              🍧 <span data-i18n="cat_shelters">Shelter & Resto</span> (358)
+            </button>
+            <button onclick="toggleCategoryFilter('hotel_node')" class="category-pill text-[11px] px-3 py-1 rounded-full font-medium dynamic-card-inner border border-inherit" data-cat="hotel_node">
+              🏨 <span data-i18n="cat_hotels">Penginapan</span> (1.388)
+            </button>
+          </div>
+
+          <!-- POI List Container -->
+          <div id="poi-list" class="space-y-2 pt-2 max-h-[460px] overflow-y-auto pr-1 custom-scrollbar">
+            <!-- Rendered by JS -->
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Mobile Map View Button -->
+      <div class="sm:hidden p-3 border-t border-inherit dynamic-sidebar flex justify-end">
+        <button onclick="toggleSidebar()" class="py-2 px-4 dynamic-btn-primary rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-lg">
+          <i data-lucide="map" class="w-4 h-4"></i> Buka Peta Interaktif
+        </button>
+      </div>
+
+    </aside>
+
+    <!-- Map Canvas View -->
+    <main class="flex-1 h-full w-full relative">
+      <div id="map" class="h-full w-full z-10"></div>
+
+      <!-- Mobile Floating Menu Toggle -->
+      <button onclick="toggleSidebar()" class="sm:hidden absolute top-4 left-4 z-20 dynamic-sidebar border px-3.5 py-2 rounded-2xl shadow-xl flex items-center gap-2 text-xs font-bold">
+        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-primary-var"></i>
+        Menu & Skema Rute
+      </button>
+
+      <!-- Desktop Map Legend -->
+      <div class="absolute bottom-6 right-6 z-20 hidden md:flex flex-col gap-2 dynamic-sidebar border p-3.5 rounded-2xl shadow-2xl text-xs min-w-[210px]">
+        <div class="flex items-center justify-between border-b border-inherit pb-1.5">
+          <span data-i18n="legend_title" class="font-extrabold text-[10px] uppercase tracking-wider">Legenda Node</span>
+          <span class="text-[10px] text-primary-var font-mono">Penghu Graph</span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full bg-[#00A8B5] shadow-sm"></span>
+          <span data-i18n="legend_attraction">Atraksi Wisata Utama</span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full bg-[#06D6A0] shadow-sm"></span>
+          <span data-i18n="legend_store">Minimarket (AC Hub)</span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full bg-[#FFD166] shadow-sm"></span>
+          <span data-i18n="legend_shelter">Kedai Es Kaktus / Shelter</span>
+        </div>
+        <div class="flex items-center gap-2.5">
+          <span class="w-3 h-3 rounded-full bg-[#E07A5F]"></span>
+          <span data-i18n="legend_hotel">Hotel & Minshuku</span>
+        </div>
+      </div>
+    </main>
+
+  </div>
+
+  <!-- Wikipedia Modal Preview -->
+  <div id="wiki-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="dynamic-sidebar border rounded-3xl max-w-lg w-full p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeWikiModal()" class="absolute top-4 right-4 p-1.5 rounded-full dynamic-card-inner opacity-75 hover:opacity-100">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center font-bold font-serif text-base border">
+          W
+        </div>
+        <div>
+          <h3 id="wiki-modal-title" class="text-sm font-extrabold">Nama Tempat</h3>
+          <span class="text-[10px] opacity-60 font-mono">Wikipedia Knowledge Base</span>
+        </div>
+      </div>
+
+      <div id="wiki-modal-body" class="text-xs opacity-85 leading-relaxed max-h-60 overflow-y-auto custom-scrollbar p-1">
+        Memuat data Wikipedia...
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-inherit">
+        <button onclick="closeWikiModal()" class="px-3 py-1.5 dynamic-card-inner border rounded-xl text-xs font-bold opacity-80">Tutup</button>
+        <a id="wiki-modal-link" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 dynamic-btn-primary rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+          <span data-i18n="wiki_see_more">Buka di Wikipedia</span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

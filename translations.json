@@ -220,7 +220,10 @@
     "cookie_analytics_desc": "Menyimpan koordinat rute kustom terakhir dan filter kategori POI untuk memudahkan perjalanan Anda.",
     "cookie_save_btn": "Simpan Pengaturan Preferensi",
     "cookie_saved_alert": "Preferensi privasi berhasil disimpan!",
-    "cookie_policy_footer": "Kebijakan Privasi & Cookie"
+    "cookie_policy_footer": "Kebijakan Privasi & Cookie",
+    "theme_tropical": "🏝️ Tropis Pantai",
+    "theme_nature": "🏜️ Petualangan Alam",
+    "theme_ocean": "🌌 Ocean Dark"
   },
   "en": {
     "app_title": "Penghu Cool-Ride",
@@ -443,7 +446,10 @@
     "cookie_analytics_desc": "Caches your recent route selections and active POI category filters for your convenience.",
     "cookie_save_btn": "Save Privacy Preferences",
     "cookie_saved_alert": "Privacy preferences saved successfully!",
-    "cookie_policy_footer": "Privacy & Cookie Policy"
+    "cookie_policy_footer": "Privacy & Cookie Policy",
+    "theme_tropical": "🏝️ Tropical Beach",
+    "theme_nature": "🏜️ Nature Adventure",
+    "theme_ocean": "🌌 Ocean Dark"
   },
   "zh": {
     "app_title": "澎湖清涼導航",
@@ -666,6 +672,9 @@
     "cookie_analytics_desc": "暫存您最後查詢的導航站點與景點分類偏好，提供更流暢之旅遊體驗。",
     "cookie_save_btn": "儲存並套用設定",
     "cookie_saved_alert": "隱私權偏好設定已成功更新！",
-    "cookie_policy_footer": "隱私權與 Cookie 政策"
+    "cookie_policy_footer": "隱私權與 Cookie 政策",
+    "theme_tropical": "🏝️ 熱帶海灘",
+    "theme_nature": "🏜️ 大地冒險",
+    "theme_ocean": "🌌 深海暗夜"
   }
 }
