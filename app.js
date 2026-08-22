@@ -1155,6 +1155,109 @@ function renderMultiModalTimeline(startTitle, destTitle, multiModalData) {
   `;
 }
 
+// Google Maps Deep-Link & Waypoint Export Engine
+function generateGoogleMapsUrl(routeCache, activeView) {
+  if (!routeCache) return "https://www.google.com/maps";
+
+  const { start, destination, recommendedShelter, multiModalData } = routeCache;
+
+  if (multiModalData) {
+    // For Multi-Modal: Navigate to the departure ferry terminal
+    const depPort = multiModalData.depPort;
+    return `https://www.google.com/maps/dir/?api=1&origin=${start.lat},${start.lon}&destination=${depPort.lat},${depPort.lon}&travelmode=driving`;
+  }
+
+  const travelModeParam = currentTravelMode === 'walk' ? 'walking' : 'driving';
+
+  if (activeView === 'safe' && recommendedShelter) {
+    // Multi-stop route: Origin -> 7-Eleven/Cooling Shelter -> Destination
+    const stopLat = recommendedShelter.latitude;
+    const stopLon = recommendedShelter.longitude;
+    return `https://www.google.com/maps/dir/?api=1&origin=${start.lat},${start.lon}&destination=${destination.lat},${destination.lon}&waypoints=${stopLat},${stopLon}&travelmode=${travelModeParam}`;
+  }
+
+  // Direct Route: Origin -> Destination
+  return `https://www.google.com/maps/dir/?api=1&origin=${start.lat},${start.lon}&destination=${destination.lat},${destination.lon}&travelmode=${travelModeParam}`;
+}
+
+function openInGoogleMaps() {
+  if (!currentRouteCache) {
+    alert("Silakan hitung rute terlebih dahulu.");
+    return;
+  }
+  const url = generateGoogleMapsUrl(currentRouteCache, activeRouteView);
+  window.open(url, '_blank');
+}
+
+// Export Complete Route & Waypoints as JSON
+function exportRouteAsJSON() {
+  if (!currentRouteCache) {
+    alert("Silakan hitung rute terlebih dahulu.");
+    return;
+  }
+
+  const { start, destination, startTitle, destTitle, directRouteData, safeRouteData, recommendedShelter, schemeMeta, multiModalData } = currentRouteCache;
+  const activeRouteData = activeRouteView === 'direct' ? directRouteData : (safeRouteData || directRouteData);
+
+  const payload = {
+    app_version: "2.1.0",
+    export_timestamp: new Date().toISOString(),
+    route_name: `${startTitle} -> ${destTitle}`,
+    travel_mode: currentTravelMode,
+    active_scheme: schemeMeta ? schemeMeta.name : "Direct",
+    weather_conditions: {
+      temperature_c: currentWeatherData.temp,
+      feels_like_c: currentWeatherData.feelsLike,
+      uv_index: currentWeatherData.uvIndex,
+      wbgt_index: currentWeatherData.wbgt,
+      solar_dni_wm2: currentWeatherData.solarDni
+    },
+    origin: {
+      title: startTitle,
+      latitude: start.lat,
+      longitude: start.lon
+    },
+    destination: {
+      title: destTitle,
+      latitude: destination.lat,
+      longitude: destination.lon
+    },
+    cooling_pitstop: recommendedShelter ? {
+      name: getUniversalBilingualTitle(recommendedShelter),
+      latitude: recommendedShelter.latitude,
+      longitude: recommendedShelter.longitude,
+      has_ac: true,
+      suggested_rest_minutes: schemeMeta ? schemeMeta.restMins : 12
+    } : null,
+    navigation: {
+      total_distance_km: activeRouteData ? activeRouteData.distanceKm : 0,
+      estimated_travel_minutes: activeRouteData ? activeRouteData.travelMinutes : 0,
+      google_maps_url: generateGoogleMapsUrl(currentRouteCache, activeRouteView),
+      is_multi_modal_ferry: !!multiModalData
+    },
+    road_waypoints: activeRouteData ? activeRouteData.coords : []
+  };
+
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(payload, null, 2));
+  const downloadAnchor = document.createElement('a');
+  downloadAnchor.setAttribute("href", dataStr);
+  downloadAnchor.setAttribute("download", `penghu_route_${Date.now()}.json`);
+  document.body.appendChild(downloadAnchor);
+  downloadAnchor.click();
+  downloadAnchor.remove();
+}
+
+// Route Anomaly / Hard-to-Reach Trail Fallback Detector
+function checkRouteAnomaly(start, destination, routeData) {
+  if (!routeData) return false;
+  // If road distance is over 50 km or start-to-end detour ratio is unusually high (> 2.5) on main island
+  const directDist = getDistanceKm(start.lat, start.lon, destination.lat, destination.lon);
+  if (directDist > 0.5 && routeData.distanceKm / directDist > 2.6) {
+    return true;
+  }
+  return false;
+}
+
 function addRouteMarker(lat, lon, label, title, colorHex) {
   const icon = L.divIcon({
     className: 'custom-pin',
@@ -1170,6 +1273,7 @@ function addRouteMarker(lat, lon, label, title, colorHex) {
 function renderSafeTimeline(startTitle, destTitle, shelter, routeData, schemeMeta) {
   const container = document.getElementById('route-timeline-steps');
   const shelterTitle = getUniversalBilingualTitle(shelter);
+  const isAnomaly = currentRouteCache ? checkRouteAnomaly(currentRouteCache.start, currentRouteCache.destination, routeData) : false;
   
   const totalMins = routeData.travelMinutes;
   const leg1Mins = Math.max(6, Math.round(totalMins * 0.45));
@@ -1177,7 +1281,28 @@ function renderSafeTimeline(startTitle, destTitle, shelter, routeData, schemeMet
   const leg1Km = (routeData.distanceKm * 0.48).toFixed(1);
   const leg2Km = (routeData.distanceKm * 0.52).toFixed(1);
 
+  const anomalyHtml = isAnomaly ? `
+    <!-- Anomaly Hand-off Banner -->
+    <div class="p-3 rounded-2xl border-2 border-amber-500/70 bg-amber-500/10 text-amber-800 dark:text-amber-300 space-y-2 shadow-sm">
+      <div class="flex items-center justify-between">
+        <p class="font-extrabold text-xs flex items-center gap-1.5">
+          <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+          ${t('anomaly_alert_title')}
+        </p>
+      </div>
+      <p class="text-[11px] opacity-90 leading-relaxed font-normal">
+        ${t('anomaly_alert_desc')}
+      </p>
+      <button onclick="openInGoogleMaps()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow transition">
+        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        Buka Navigasi Lengkap di Google Maps
+      </button>
+    </div>
+  ` : '';
+
   container.innerHTML = `
+    ${anomalyHtml}
+
     <!-- Step 1: Origin Ride -->
     <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
       <span class="w-6 h-6 rounded-full dynamic-btn-primary font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</span>
@@ -1233,8 +1358,30 @@ function renderSafeTimeline(startTitle, destTitle, shelter, routeData, schemeMet
 // Narrative Itinerary for Direct Route
 function renderDirectTimeline(startTitle, destTitle, routeData) {
   const container = document.getElementById('route-timeline-steps');
+  const isAnomaly = currentRouteCache ? checkRouteAnomaly(currentRouteCache.start, currentRouteCache.destination, routeData) : false;
   
+  const anomalyHtml = isAnomaly ? `
+    <!-- Anomaly Hand-off Banner -->
+    <div class="p-3 rounded-2xl border-2 border-amber-500/70 bg-amber-500/10 text-amber-800 dark:text-amber-300 space-y-2 shadow-sm">
+      <div class="flex items-center justify-between">
+        <p class="font-extrabold text-xs flex items-center gap-1.5">
+          <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-600"></i>
+          ${t('anomaly_alert_title')}
+        </p>
+      </div>
+      <p class="text-[11px] opacity-90 leading-relaxed font-normal">
+        ${t('anomaly_alert_desc')}
+      </p>
+      <button onclick="openInGoogleMaps()" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-xs flex items-center justify-center gap-1.5 shadow transition">
+        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        Buka Navigasi Lengkap di Google Maps
+      </button>
+    </div>
+  ` : '';
+
   container.innerHTML = `
+    ${anomalyHtml}
+
     <!-- Step 1: Start -->
     <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
       <span class="w-6 h-6 rounded-full bg-slate-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</span>

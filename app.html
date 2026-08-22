@@ -277,6 +277,18 @@
               <div class="space-y-3 text-xs" id="route-timeline-steps">
                 <!-- Rendered dynamically by JS -->
               </div>
+
+              <!-- Navigation & Export Action Bar -->
+              <div class="grid grid-cols-2 gap-2 pt-2 border-t border-inherit">
+                <button onclick="openInGoogleMaps()" class="py-2.5 px-3 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white shadow-md transition active:scale-[0.98]" title="Buka rute dan titik singgah di Google Maps">
+                  <i data-lucide="map" class="w-4 h-4"></i>
+                  <span data-i18n="btn_gmaps">Google Maps</span>
+                </button>
+                <button onclick="exportRouteAsJSON()" class="py-2.5 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-1.5 dynamic-card-inner hover:border-primary-var shadow-sm transition active:scale-[0.98]" title="Download rute dan koordinat waypoint format JSON">
+                  <i data-lucide="download" class="w-4 h-4 text-primary-var"></i>
+                  <span data-i18n="btn_export_json">Export .JSON</span>
+                </button>
+              </div>
             </div>
 
           </div>
