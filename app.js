@@ -187,9 +187,27 @@ function getUniversalBilingualTitle(node) {
 
 // Strict Verified Wikipedia Check
 function getVerifiedWikiEntry(node) {
-  const zh = node.name_zh || node.name || "";
+  if (!node) return null;
+
+  // 1. Direct dataset verification
+  if (node.has_wikipedia && (node.wiki_url_zh || node.wiki_url_en || node.wiki_url)) {
+    return {
+      wiki_title: node.name_zh || node.name_en || node.title,
+      url_zh: node.wiki_url_zh || node.wiki_url || `https://zh.wikipedia.org/wiki/${encodeURIComponent(node.name_zh || '')}`,
+      url_en: node.wiki_url_en || node.wiki_url || `https://en.wikipedia.org/wiki/${encodeURIComponent(node.name_en || '')}`,
+      image_url: node.image_url || node.wiki_image_url,
+      summary_id: node.wiki_summary_id || node.description || "Destinasi wisata ikonik terverifikasi Wikipedia di Kepulauan Penghu.",
+      summary_en: node.wiki_summary_en || node.description || "Verified iconic Wikipedia landmark in Penghu Archipelago.",
+      summary_zh: node.wiki_summary_zh || node.description || "維基百科認證之澎湖著名觀光地標景點。"
+    };
+  }
+
+  // 2. Built-in verified database matching
+  const zh = (node.name_zh || node.name || node.title || "").trim();
+  const en = (node.name_en || "").trim();
+
   for (let key in PENGHU_WIKIPEDIA_DB) {
-    if (zh.includes(key) || key.includes(zh)) {
+    if (zh.includes(key) || key.includes(zh) || (en && en.toLowerCase().includes(key.toLowerCase()))) {
       return PENGHU_WIKIPEDIA_DB[key];
     }
   }
@@ -651,6 +669,53 @@ async function calculateSmartRoute() {
 
   routePolylineLayer.clearLayers();
 
+// Dynamic Risk Tier for Direct Route (UV >= 6: Red, 3-6: Yellow/Amber, < 3: Green)
+function getDirectRouteRiskConfig() {
+  const uv = (typeof currentWeatherData.uvIndex === 'number') ? currentWeatherData.uvIndex : 0;
+  const feelsLike = currentWeatherData.feelsLike || 28;
+
+  if (uv >= 6 || feelsLike >= 34) {
+    return {
+      tier: 'high',
+      label: t('direct_risk_high'),
+      desc: t('direct_desc_high'),
+      badgeClass: 'bg-red-500/20 text-red-500',
+      activeBorderClass: 'border-red-500',
+      activeBadgeBg: 'bg-red-500',
+      polylineColor: '#EF4444'
+    };
+  } else if (uv >= 3 || feelsLike >= 30) {
+    return {
+      tier: 'mod',
+      label: t('direct_risk_mod'),
+      desc: t('direct_desc_mod'),
+      badgeClass: 'bg-amber-500/20 text-amber-500',
+      activeBorderClass: 'border-amber-500',
+      activeBadgeBg: 'bg-amber-500',
+      polylineColor: '#F59E0B'
+    };
+  } else {
+    return {
+      tier: 'low',
+      label: t('direct_risk_low'),
+      desc: t('direct_desc_low'),
+      badgeClass: 'bg-emerald-500/20 text-emerald-500',
+      activeBorderClass: 'border-emerald-500',
+      activeBadgeBg: 'bg-emerald-500',
+      polylineColor: '#10B981'
+    };
+  }
+}
+
+async function calculateSmartRoute() {
+  const startKey = document.getElementById('select-start').value;
+  const endKey = document.getElementById('select-end').value;
+
+  const start = KEY_PRESET_LOCATIONS[startKey] || KEY_PRESET_LOCATIONS.magong_port;
+  const destination = KEY_PRESET_LOCATIONS[endKey] || KEY_PRESET_LOCATIONS.tongliang_banyan;
+
+  routePolylineLayer.clearLayers();
+
   // 1. Fetch Direct Road Route
   const directRouteData = await fetchRoadRouteOSRM(
     [[start.lat, start.lon], [destination.lat, destination.lon]],
@@ -661,7 +726,23 @@ async function calculateSmartRoute() {
   const directTravelMinutes = directRouteData.travelMinutes;
   const schemeMeta = SCIENTIFIC_SCHEMES_META[selectedSchemeId];
   
-  // 2. Evaluate Scientific Climate Thresholds
+  // 2. Always Compute Road-Corridor Safe Cooling Route
+  const recommendedShelter = findBestCorridorShelter(start, destination);
+  let safeRouteData = null;
+
+  if (recommendedShelter) {
+    // Multi-waypoint road route (Start -> Shelter -> Destination)
+    safeRouteData = await fetchRoadRouteOSRM(
+      [
+        [start.lat, start.lon],
+        [recommendedShelter.latitude, recommendedShelter.longitude],
+        [destination.lat, destination.lon]
+      ],
+      currentTravelMode
+    );
+  }
+
+  // 3. Evaluate Scientific Climate Thresholds
   let needsCoolingStop = false;
   if (selectedSchemeId === 1) { // ISO WBGT
     const tMax = Math.max(12, 60 / Math.pow(Math.max(1, currentWeatherData.wbgt - 27), 1.2));
@@ -672,25 +753,6 @@ async function calculateSmartRoute() {
     needsCoolingStop = directTravelMinutes >= 15 && currentWeatherData.solarDni >= 600;
   } else if (selectedSchemeId === 4) { // Pareto
     needsCoolingStop = directTravelMinutes >= 16;
-  }
-
-  let recommendedShelter = null;
-  let safeRouteData = null;
-
-  if (needsCoolingStop) {
-    recommendedShelter = findBestCorridorShelter(start, destination);
-
-    if (recommendedShelter) {
-      // Fetch multi-waypoint road route (Start -> Shelter -> Destination)
-      safeRouteData = await fetchRoadRouteOSRM(
-        [
-          [start.lat, start.lon],
-          [recommendedShelter.latitude, recommendedShelter.longitude],
-          [destination.lat, destination.lon]
-        ],
-        currentTravelMode
-      );
-    }
   }
 
   const startTitle = getUniversalBilingualTitle(start);
@@ -709,6 +771,18 @@ async function calculateSmartRoute() {
     needsCoolingStop
   };
 
+  // Update Direct Card Risk Styling Based on UV
+  const risk = getDirectRouteRiskConfig();
+  const directRiskBadge = document.querySelector('#card-route-direct [data-i18n="direct_risk"]');
+  if (directRiskBadge) {
+    directRiskBadge.textContent = risk.label;
+    directRiskBadge.className = `text-[9px] px-1.5 py-0.5 rounded font-bold ${risk.badgeClass}`;
+  }
+  const directDescEl = document.querySelector('#card-route-direct [data-i18n="direct_desc"]');
+  if (directDescEl) {
+    directDescEl.textContent = risk.desc;
+  }
+
   // Update card metric numbers
   document.getElementById('direct-time-display').textContent = `${directTravelMinutes} Min`;
   const safeTotalMinutes = safeRouteData ? (safeRouteData.travelMinutes + schemeMeta.restMins) : directTravelMinutes;
@@ -718,7 +792,7 @@ async function calculateSmartRoute() {
   document.getElementById('route-result-card').classList.remove('hidden');
 
   // Default to Safe Route view if available, else Direct
-  activeRouteView = recommendedShelter ? 'safe' : 'direct';
+  activeRouteView = 'safe';
   renderSelectedRouteView(activeRouteView);
 }
 
@@ -740,6 +814,7 @@ function renderSelectedRouteView(type) {
   const safeCard = document.getElementById('card-route-safe');
   const directBadge = document.getElementById('badge-direct-active');
   const safeBadge = document.getElementById('badge-safe-active');
+  const risk = getDirectRouteRiskConfig();
 
   let activeRouteData;
 
@@ -747,15 +822,18 @@ function renderSelectedRouteView(type) {
     // --- 1. DISPLAY DIRECT ROUTE ON MAP ---
     activeRouteData = directRouteData;
 
-    // Visual Card Selection
+    // Visual Card Selection with Conditional UV Colors
     if (directCard && safeCard) {
-      directCard.className = 'route-card-option dynamic-card-inner border-2 border-red-500 rounded-2xl p-3 space-y-1.5 cursor-pointer shadow-md';
+      directCard.className = `route-card-option dynamic-card-inner border-2 ${risk.activeBorderClass} rounded-2xl p-3 space-y-1.5 cursor-pointer shadow-md`;
       safeCard.className = 'route-card-option dynamic-card border border-inherit rounded-2xl p-3 space-y-1.5 cursor-pointer opacity-75 hover:opacity-100 transition-all';
-      if (directBadge) directBadge.classList.remove('hidden');
+      if (directBadge) {
+        directBadge.classList.remove('hidden');
+        directBadge.className = `px-1.5 py-0.5 rounded ${risk.activeBadgeBg} text-white text-[8px] font-extrabold`;
+      }
       if (safeBadge) safeBadge.classList.add('hidden');
     }
 
-    // Direct Route Polyline (High-Risk Orange/Red)
+    // Direct Route Polyline (Conditional Color: Red / Amber / Green)
     L.polyline(directRouteData.coords, {
       color: '#0F172A',
       weight: 8,
@@ -765,7 +843,7 @@ function renderSelectedRouteView(type) {
     }).addTo(routePolylineLayer);
 
     const polyline = L.polyline(directRouteData.coords, {
-      color: '#EF4444',
+      color: risk.polylineColor,
       weight: 5,
       opacity: 1,
       dashArray: '4, 8',
@@ -774,11 +852,11 @@ function renderSelectedRouteView(type) {
     }).addTo(routePolylineLayer);
 
     addRouteMarker(start.lat, start.lon, 'A', startTitle, '#00A8B5');
-    addRouteMarker(destination.lat, destination.lon, 'B', destTitle, '#EF4444');
+    addRouteMarker(destination.lat, destination.lon, 'B', destTitle, risk.polylineColor);
     map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
 
     document.getElementById('route-distance-text').textContent = `${directRouteData.distanceKm.toFixed(1)} km (Direct)`;
-    renderDirectTimeline(startTitle, destTitle, directRouteData);
+    renderDirectTimeline(startTitle, destTitle, directRouteData, risk);
 
   } else {
     // --- 2. DISPLAY COOL-RIDE SAFE ROUTE ON MAP ---
@@ -817,8 +895,6 @@ function renderSelectedRouteView(type) {
 
     document.getElementById('route-distance-text').textContent = `${safeRouteData.distanceKm.toFixed(1)} km (Safe Route)`;
     renderSafeTimeline(startTitle, destTitle, recommendedShelter, safeRouteData, schemeMeta);
-  }
-
   lucide.createIcons();
 }
 

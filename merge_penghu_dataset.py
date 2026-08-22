@@ -132,6 +132,21 @@ def clean_and_translate_name(name_zh, name_en, category, raw_tags=None):
 def merge_datasets():
     osm_path = os.path.join("data", "penghu_osm_pois.json")
     gov_path = os.path.join("data", "penghu_taiwan_gov_pois.json")
+    master_json = os.path.join("data", "penghu_master_nodes.json")
+
+    # Load existing legacy nodes to preserve previous Wikipedia data
+    existing_wiki_map = {}
+    if os.path.exists(master_json):
+        try:
+            with open(master_json, "r", encoding="utf-8") as f:
+                old_nodes = json.load(f)
+                for on in old_nodes:
+                    if on.get("has_wikipedia"):
+                        existing_wiki_map[on.get("node_id")] = on
+                        if on.get("name_zh"):
+                            existing_wiki_map[on.get("name_zh")] = on
+        except Exception as e:
+            print("Notice: Could not load old wiki cache:", e)
 
     if not os.path.exists(osm_path) or not os.path.exists(gov_path):
         print("Dataset belum lengkap. Jalankan fetch_penghu_osm.py dan fetch_penghu_taiwan_opendata.py terlebih dahulu.")
@@ -142,18 +157,21 @@ def merge_datasets():
     with open(gov_path, "r", encoding="utf-8") as f:
         gov_data = json.load(f)
 
-    print("[1/3] Mengambil dan memperbarui foto thumbnail Wikipedia secara otomatis...")
+    print("[1/3] Mengambil dan memperbarui metadata & foto Wikipedia secara otomatis...")
     wiki_images_cache = {}
+    wiki_meta_cache = {}
+
     for landmark_name, meta in WIKI_LANDMARKS.items():
         thumb_url = fetch_wikipedia_thumbnail(meta.get("title_en"), meta.get("title_zh"))
         if thumb_url:
             wiki_images_cache[landmark_name] = thumb_url
-            print(f"      -> Foto Wikipedia ditemukan untuk: {meta.get('title_en') or landmark_name.encode('ascii', 'ignore').decode('ascii')}")
+        wiki_meta_cache[landmark_name] = meta
 
     master_nodes = []
     
     # 1. Proses Data OpenStreetMap
     for item in osm_data:
+        node_id = f"OSM_{item['osm_type']}_{item['osm_id']}"
         zh, en = clean_and_translate_name(
             item.get("name_zh") or item.get("name"),
             item.get("name_en"),
@@ -163,17 +181,30 @@ def merge_datasets():
         
         bilingual_title = f"{zh} / {en}" if zh != en else zh
 
-        # Cek apakah memiliki thumbnail Wikipedia
+        # Cek apakah memiliki thumbnail atau referensi Wikipedia
         image_url = None
         has_wiki = False
-        for landmark_key, img_link in wiki_images_cache.items():
+        wiki_url_zh = None
+        wiki_url_en = None
+
+        for landmark_key, meta in wiki_meta_cache.items():
             if landmark_key in zh or landmark_key in en:
-                image_url = img_link
                 has_wiki = True
+                image_url = wiki_images_cache.get(landmark_key)
+                wiki_url_zh = f"https://zh.wikipedia.org/wiki/{meta.get('title_zh', landmark_key)}"
+                wiki_url_en = f"https://en.wikipedia.org/wiki/{meta.get('title_en', landmark_key)}"
                 break
 
+        # Preservation check from legacy dataset
+        legacy_entry = existing_wiki_map.get(node_id) or existing_wiki_map.get(zh)
+        if legacy_entry and not has_wiki:
+            has_wiki = True
+            image_url = legacy_entry.get("image_url") or image_url
+            wiki_url_zh = legacy_entry.get("wiki_url_zh")
+            wiki_url_en = legacy_entry.get("wiki_url_en")
+
         master_nodes.append({
-            "node_id": f"OSM_{item['osm_type']}_{item['osm_id']}",
+            "node_id": node_id,
             "source": "OpenStreetMap",
             "node_role": "shelter_node" if item["category"] in ["convenience_store", "shelter"] else "attraction_node",
             "category": item["category"],
@@ -189,12 +220,15 @@ def merge_datasets():
             "is_free": True if item["category"] in ["convenience_store", "shelter"] else None,
             "has_ac": True if (item.get("air_conditioning") == "yes" or item["category"] == "convenience_store") else None,
             "has_wikipedia": has_wiki,
+            "wiki_url_zh": wiki_url_zh,
+            "wiki_url_en": wiki_url_en,
             "image_url": image_url,
-            "weight_scale": 1.6 if has_wiki else 1.0  # Bobot ukuran lingkaran lebih besar untuk Wikipedia POI
+            "weight_scale": 1.6 if has_wiki else 1.0
         })
 
     # 2. Proses Data Resmi Pemerintah Taiwan
     for item in gov_data:
+        node_id = f"GOV_{item['category']}_{item['id']}"
         zh, en = clean_and_translate_name(
             item.get("name"),
             None,
@@ -207,14 +241,33 @@ def merge_datasets():
         # Cek gambar pemerintah atau Wikipedia
         image_url = item.get("image_url")
         has_wiki = False
-        for landmark_key, img_link in wiki_images_cache.items():
+        wiki_url_zh = None
+        wiki_url_en = None
+
+        for landmark_key, meta in wiki_meta_cache.items():
             if landmark_key in zh:
-                image_url = img_link
                 has_wiki = True
+                image_url = wiki_images_cache.get(landmark_key) or image_url
+                wiki_url_zh = f"https://zh.wikipedia.org/wiki/{meta.get('title_zh', landmark_key)}"
+                wiki_url_en = f"https://en.wikipedia.org/wiki/{meta.get('title_en', landmark_key)}"
                 break
 
+        # Preservation check from legacy dataset
+        legacy_entry = existing_wiki_map.get(node_id) or existing_wiki_map.get(zh)
+        if legacy_entry and not has_wiki:
+            has_wiki = True
+            image_url = legacy_entry.get("image_url") or image_url
+            wiki_url_zh = legacy_entry.get("wiki_url_zh")
+            wiki_url_en = legacy_entry.get("wiki_url_en")
+
+        lat = item["latitude"]
+        lon = item["longitude"]
+        if "bunny" in zh.lower() or "bunny" in en.lower():
+            lat = 23.65682
+            lon = 119.56024
+
         master_nodes.append({
-            "node_id": f"GOV_{item['category']}_{item['id']}",
+            "node_id": node_id,
             "source": "Taiwan_Gov_OpenData",
             "node_role": role,
             "category": item["category"],
@@ -222,14 +275,16 @@ def merge_datasets():
             "name_zh": zh,
             "name_en": en,
             "brand": None,
-            "latitude": item["latitude"],
-            "longitude": item["longitude"],
+            "latitude": lat,
+            "longitude": lon,
             "opening_hours": item.get("service_time"),
             "description": item.get("description"),
             "fee_info": item.get("fee_info"),
             "is_free": item.get("is_free"),
             "has_ac": True if item["category"] in ["restaurants", "hotels"] else None,
             "has_wikipedia": has_wiki,
+            "wiki_url_zh": wiki_url_zh,
+            "wiki_url_en": wiki_url_en,
             "image_url": image_url,
             "weight_scale": 1.6 if has_wiki else 1.0
         })
