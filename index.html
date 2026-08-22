@@ -37,33 +37,33 @@
 <body id="main-body" class="w-full min-h-screen flex flex-col antialiased font-['Plus_Jakarta_Sans'] selection:bg-cyan-500 selection:text-white custom-scrollbar overflow-x-hidden i18n-fade">
 
   <!-- ====================================================================
-       1. TOP NAVIGATION BAR (FLUID 100% SCREEN WIDTH)
+       1. TOP NAVIGATION BAR (FLUID 100% SCREEN WIDTH & ANDROID/MOBILE OPTIMIZED)
        ==================================================================== -->
   <header class="sticky top-0 z-50 w-full glass-navbar border-b transition-all duration-300 shadow-sm">
-    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto h-16 flex items-center justify-between">
+    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto h-14 sm:h-16 flex items-center justify-between gap-2">
       
-      <!-- Brand Logo -->
-      <a href="#" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-2xl dynamic-btn-primary flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
-          <i data-lucide="palmtree" class="w-5 h-5 text-white"></i>
+      <!-- Brand Logo (Compact & Responsive on Mobile) -->
+      <a href="#" class="flex items-center gap-2 sm:gap-3 group shrink-0">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl dynamic-btn-primary flex items-center justify-center shadow-md transition-transform group-hover:scale-105">
+          <i data-lucide="palmtree" class="w-4 h-4 sm:w-5 sm:h-5 text-white"></i>
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <span data-i18n="app_title" class="font-extrabold text-base sm:text-lg tracking-tight">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span data-i18n="app_title" class="font-extrabold text-sm sm:text-base md:text-lg tracking-tight whitespace-nowrap">
               Penghu Cool-Ride
             </span>
-            <span data-i18n="badge_tag" class="text-[10px] font-bold px-2 py-0.5 rounded-full border border-current opacity-80 hidden sm:inline-block">
+            <span data-i18n="badge_tag" class="text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-current opacity-80 hidden md:inline-block whitespace-nowrap">
               澎湖清涼導航
             </span>
           </div>
-          <p class="text-[11px] opacity-70 font-medium hidden md:block" data-i18n="hero_pill">
+          <p class="text-[10px] sm:text-[11px] opacity-70 font-medium hidden lg:block" data-i18n="hero_pill">
             🏝️ Climate-Adaptive Tourism Router
           </p>
         </div>
       </a>
 
-      <!-- Desktop Nav Links (Ordered correctly with Home at top) -->
-      <nav class="hidden lg:flex items-center gap-5 xl:gap-7 text-sm font-semibold">
+      <!-- Desktop Nav Links (Visible on lg: and up) -->
+      <nav class="hidden lg:flex items-center gap-4 xl:gap-7 text-xs xl:text-sm font-semibold">
         <a href="#" class="opacity-80 hover:opacity-100 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors flex items-center gap-1">
           <i data-lucide="home" class="w-3.5 h-3.5"></i>
           <span data-i18n="nav_home">Beranda</span>
@@ -85,74 +85,100 @@
         </a>
       </nav>
 
-      <!-- Right Controls: Theme, Lang, Creator, & CTA -->
-      <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Right Controls: Clean, Non-Overflowing Row on Android -->
+      <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
         
-        <!-- Creator Attribution Badge (Href to GitHub) -->
-        <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 glass-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold text-primary-var hover:scale-105 transition-all shadow-sm" title="Created by Corneliox">
+        <!-- Creator Attribution Badge (Visible on xl:) -->
+        <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="hidden xl:flex items-center gap-1.5 glass-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold text-primary-var hover:scale-105 transition-all shadow-sm" title="Created by Corneliox">
           <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path></svg>
           <span class="font-extrabold">Corneliox</span>
         </a>
 
-        <!-- Theme Selector (Cached in LocalStorage) -->
-        <select id="theme-selector" onchange="changeTheme(this.value)" class="glass-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer">
+        <!-- Theme Selector (Visible on md: and up, in mobile drawer on small screens) -->
+        <select id="theme-selector" onchange="changeTheme(this.value)" class="hidden md:inline-block glass-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer">
           <option value="tropical" data-i18n="theme_tropical">🏝️ Tropis Pantai</option>
           <option value="nature" data-i18n="theme_nature">🏜️ Petualangan Alam</option>
           <option value="ocean" data-i18n="theme_ocean">🌌 Ocean Dark</option>
         </select>
 
-        <!-- Language Selector (Smooth i18n Transition) -->
-        <select id="lang-selector" onchange="changeLanguage(this.value)" class="glass-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer">
+        <!-- Language Selector (Compact on all screens) -->
+        <select id="lang-selector" onchange="changeLanguage(this.value)" class="glass-card-inner border rounded-xl px-2 py-1.5 sm:px-2.5 text-[11px] sm:text-xs font-bold focus:outline-none cursor-pointer">
           <option value="id">🇮🇩 ID</option>
           <option value="en">🇬🇧 EN</option>
           <option value="zh">🇹🇼 繁中</option>
         </select>
 
-        <!-- CTA to Map Application -->
-        <a href="app.html" class="dynamic-btn-primary px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-md hover:opacity-95 transition-all">
-          <i data-lucide="map" class="w-4 h-4"></i>
-          <span data-i18n="nav_cta_map">Buka Peta Rute</span>
+        <!-- CTA Button to Map App -->
+        <a href="app.html" class="dynamic-btn-primary px-2.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1 shadow-md hover:opacity-95 transition-all shrink-0">
+          <i data-lucide="map" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+          <span class="hidden sm:inline" data-i18n="nav_cta_map">Buka Peta Rute</span>
+          <span class="sm:hidden" data-i18n="nav_cta_map_short">Peta</span>
         </a>
 
-        <!-- Mobile Menu Toggle Button -->
-        <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl glass-card-inner border focus:outline-none" aria-label="Toggle Menu">
-          <i data-lucide="menu" class="w-5 h-5"></i>
+        <!-- Mobile Hamburger Menu Button -->
+        <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="lg:hidden p-1.5 sm:p-2 rounded-xl glass-card-inner border focus:outline-none shrink-0" aria-label="Toggle Menu">
+          <i data-lucide="menu" class="w-4 h-4 sm:w-5 sm:h-5"></i>
         </button>
       </div>
 
     </div>
 
-    <!-- Mobile Drawer Menu (Fluid 100% Width) -->
-    <div id="mobile-menu" class="hidden lg:hidden w-full border-t glass-navbar px-[5%] pt-3 pb-5 space-y-2 text-sm font-semibold">
-      <a href="#" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-1.5">
-        <i data-lucide="home" class="w-4 h-4 text-primary-var"></i>
-        <span data-i18n="nav_home">Beranda</span>
-      </a>
-      <a href="#climate-radar" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_climate_radar">
-        Radar Iklim
-      </a>
-      <a href="#how-it-works" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_how_it_works">
-        Cara Kerja
-      </a>
-      <a href="#scientific-schemes" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_schemes">
-        Landasan Ilmiah
-      </a>
-      <a href="#destinations" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_destinations">
-        Destinasi Ikonik
-      </a>
-      <a href="#faq" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_faq">
-        FAQ & Keselamatan
-      </a>
-      <div class="pt-2 flex flex-col gap-2">
-        <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="w-full glass-card-inner border py-2.5 rounded-xl text-center font-bold flex items-center justify-center gap-2">
-          <i data-lucide="github" class="w-4 h-4 text-primary-var"></i>
-          <span>Created by Corneliox</span>
+    <!-- Mobile Drawer Menu (Fluid 100% Width, Android Touch-Optimized) -->
+    <div id="mobile-menu" class="hidden lg:hidden w-full border-t glass-navbar px-4 sm:px-6 py-4 space-y-3 shadow-xl backdrop-blur-xl">
+      
+      <!-- Mobile Quick Settings Row: Theme -->
+      <div class="p-3 rounded-2xl glass-card-inner border space-y-2">
+        <div class="text-[11px] font-bold opacity-75 uppercase tracking-wider flex items-center gap-1.5">
+          <i data-lucide="sliders" class="w-3.5 h-3.5 text-primary-var"></i>
+          <span data-i18n="nav_mobile_theme_label">Pilihan Tema Tampilan:</span>
+        </div>
+        <select id="theme-selector-mobile" onchange="changeTheme(this.value)" class="w-full glass-card border rounded-xl px-3 py-2 text-xs font-bold focus:outline-none cursor-pointer">
+          <option value="tropical" data-i18n="theme_tropical">🏝️ Tropis Pantai</option>
+          <option value="nature" data-i18n="theme_nature">🏜️ Petualangan Alam</option>
+          <option value="ocean" data-i18n="theme_ocean">🌌 Ocean Dark</option>
+        </select>
+      </div>
+
+      <!-- Navigation Links -->
+      <div class="space-y-1">
+        <a href="#" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 font-bold text-xs sm:text-sm">
+          <i data-lucide="home" class="w-4 h-4 text-primary-var"></i>
+          <span data-i18n="nav_home">Beranda</span>
         </a>
-        <a href="app.html" class="w-full dynamic-btn-primary py-3 rounded-xl text-center font-bold flex items-center justify-center gap-2 shadow">
+        <a href="#climate-radar" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 font-bold text-xs sm:text-sm">
+          <i data-lucide="activity" class="w-4 h-4 text-primary-var"></i>
+          <span data-i18n="nav_climate_radar">Radar Iklim</span>
+        </a>
+        <a href="#how-it-works" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 font-bold text-xs sm:text-sm">
+          <i data-lucide="git-merge" class="w-4 h-4 text-primary-var"></i>
+          <span data-i18n="nav_how_it_works">Cara Kerja</span>
+        </a>
+        <a href="#scientific-schemes" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 font-bold text-xs sm:text-sm">
+          <i data-lucide="flask-conical" class="w-4 h-4 text-primary-var"></i>
+          <span data-i18n="nav_schemes">Landasan Ilmiah</span>
+        </a>
+        <a href="#destinations" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 font-bold text-xs sm:text-sm">
+          <i data-lucide="compass" class="w-4 h-4 text-primary-var"></i>
+          <span data-i18n="nav_destinations">Destinasi Ikonik</span>
+        </a>
+        <a href="#faq" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 flex items-center gap-2 font-bold text-xs sm:text-sm">
+          <i data-lucide="help-circle" class="w-4 h-4 text-primary-var"></i>
+          <span data-i18n="nav_faq">FAQ & Panduan</span>
+        </a>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="pt-2 space-y-2">
+        <a href="app.html" class="w-full dynamic-btn-primary py-3 rounded-xl text-center font-extrabold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg">
           <i data-lucide="map" class="w-4 h-4"></i>
           <span data-i18n="nav_cta_map">Buka Peta Rute Interaktif</span>
         </a>
+        <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="w-full glass-card-inner border py-2.5 rounded-xl text-center font-bold text-xs flex items-center justify-center gap-2 text-primary-var">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"></path></svg>
+          <span>Created by Corneliox</span>
+        </a>
       </div>
+
     </div>
   </header>
 
@@ -1424,18 +1450,20 @@
         }
       });
 
-      // Explicitly Translate Theme Selector Options
-      const themeSel = document.getElementById('theme-selector');
-      if (themeSel && dict) {
-        const curVal = themeSel.value || currentTheme;
-        const optTropical = themeSel.querySelector('option[value="tropical"]');
-        const optNature = themeSel.querySelector('option[value="nature"]');
-        const optOcean = themeSel.querySelector('option[value="ocean"]');
-        if (optTropical && dict['theme_tropical']) optTropical.innerText = dict['theme_tropical'];
-        if (optNature && dict['theme_nature']) optNature.innerText = dict['theme_nature'];
-        if (optOcean && dict['theme_ocean']) optOcean.innerText = dict['theme_ocean'];
-        themeSel.value = curVal;
-      }
+      // Explicitly Translate Desktop & Mobile Theme Selector Options
+      ['theme-selector', 'theme-selector-mobile'].forEach(id => {
+        const sel = document.getElementById(id);
+        if (sel && dict) {
+          const curVal = sel.value || currentTheme;
+          const optTropical = sel.querySelector('option[value="tropical"]');
+          const optNature = sel.querySelector('option[value="nature"]');
+          const optOcean = sel.querySelector('option[value="ocean"]');
+          if (optTropical && dict['theme_tropical']) optTropical.innerText = dict['theme_tropical'];
+          if (optNature && dict['theme_nature']) optNature.innerText = dict['theme_nature'];
+          if (optOcean && dict['theme_ocean']) optOcean.innerText = dict['theme_ocean'];
+          sel.value = curVal;
+        }
+      });
 
       updateWeatherAdviceUI(latestWbgt);
 
@@ -1453,6 +1481,8 @@
       
       const themeSel = document.getElementById('theme-selector');
       if (themeSel) themeSel.value = theme;
+      const themeSelMobile = document.getElementById('theme-selector-mobile');
+      if (themeSelMobile) themeSelMobile.value = theme;
     }
 
     function toggleMobileMenu() {

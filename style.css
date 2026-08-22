@@ -59,10 +59,15 @@ body.theme-ocean {
 }
 
 /* Base Body Styles */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
 body {
   background-color: var(--bg-app);
   color: var(--text-primary);
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-text-size-adjust: 100%;
 }
 
 /* Dynamic Classes using CSS Variables */

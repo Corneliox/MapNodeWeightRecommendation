@@ -223,7 +223,11 @@
     "cookie_policy_footer": "Kebijakan Privasi & Cookie",
     "theme_tropical": "🏝️ Tropis Pantai",
     "theme_nature": "🏜️ Petualangan Alam",
-    "theme_ocean": "🌌 Ocean Dark"
+    "theme_ocean": "🌌 Ocean Dark",
+    "nav_cta_map_short": "Peta",
+    "nav_mobile_theme_label": "Pilihan Tema Tampilan:",
+    "nav_mobile_lang_label": "Pilihan Bahasa:",
+    "nav_menu_title": "Menu Navigasi"
   },
   "en": {
     "app_title": "Penghu Cool-Ride",
@@ -449,7 +453,11 @@
     "cookie_policy_footer": "Privacy & Cookie Policy",
     "theme_tropical": "🏝️ Tropical Beach",
     "theme_nature": "🏜️ Nature Adventure",
-    "theme_ocean": "🌌 Ocean Dark"
+    "theme_ocean": "🌌 Ocean Dark",
+    "nav_cta_map_short": "Map",
+    "nav_mobile_theme_label": "Display Theme:",
+    "nav_mobile_lang_label": "Language:",
+    "nav_menu_title": "Navigation Menu"
   },
   "zh": {
     "app_title": "澎湖清涼導航",
@@ -675,6 +683,10 @@
     "cookie_policy_footer": "隱私權與 Cookie 政策",
     "theme_tropical": "🏝️ 熱帶海灘",
     "theme_nature": "🏜️ 大地冒險",
-    "theme_ocean": "🌌 深海暗夜"
+    "theme_ocean": "🌌 深海暗夜",
+    "nav_cta_map_short": "地圖",
+    "nav_mobile_theme_label": "介面主題風格：",
+    "nav_mobile_lang_label": "語言選擇：",
+    "nav_menu_title": "導覽選單"
   }
 }
