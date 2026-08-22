@@ -65,9 +65,9 @@
     "legend_store": "Minimarket (AC Hub)",
     "legend_shelter": "Kedai Es Kaktus / Shelter",
     "legend_hotel": "Hotel & Minshuku",
-    "theme_tropical": "Tropis Pantai",
-    "theme_nature": "Petualangan Alam",
-    "theme_ocean": "Ocean Dark"
+    "wiki_title": "Informasi Wikipedia",
+    "wiki_see_more": "Buka di Wikipedia",
+    "wiki_preview_btn": "Lihat Info Wikipedia"
   },
   "en": {
     "app_title": "Penghu Cool-Ride",
@@ -135,9 +135,9 @@
     "legend_store": "Convenience Store (AC Hub)",
     "legend_shelter": "Cactus Ice Cream / Shelter",
     "legend_hotel": "Hotel & Minshuku",
-    "theme_tropical": "Tropical Beach",
-    "theme_nature": "Nature Adventure",
-    "theme_ocean": "Ocean Dark"
+    "wiki_title": "Wikipedia Information",
+    "wiki_see_more": "See more on Wikipedia",
+    "wiki_preview_btn": "View Wikipedia Info"
   },
   "zh": {
     "app_title": "澎湖清涼導航",
@@ -205,8 +205,8 @@
     "legend_store": "超商便利店 (冷氣站)",
     "legend_shelter": "仙人掌冰 / 庇護站",
     "legend_hotel": "民宿與飯店",
-    "theme_tropical": "熱帶海灘 (Tropis)",
-    "theme_nature": "自然冒險 (Petualangan)",
-    "theme_ocean": "深海夜間 (Dark)"
+    "wiki_title": "維基百科導覽資訊",
+    "wiki_see_more": "在維基百科查看完整內容",
+    "wiki_preview_btn": "查看維基百科介紹"
   }
 }

@@ -90,7 +90,7 @@
   <div class="flex flex-1 relative overflow-hidden">
 
     <!-- Responsive Navigation Sidebar / Drawer -->
-    <aside id="sidebar" class="w-full sm:w-[410px] md:w-[450px] dynamic-sidebar border-r flex flex-col z-20 transition-all duration-300 h-full absolute sm:relative shadow-2xl sm:shadow-none -translate-x-full sm:translate-x-0">
+    <aside id="sidebar" class="w-full sm:w-[420px] md:w-[460px] dynamic-sidebar border-r flex flex-col z-20 transition-all duration-300 h-full absolute sm:relative shadow-2xl sm:shadow-none -translate-x-full sm:translate-x-0">
       
       <!-- Tab Header Navigation -->
       <div class="p-2.5 border-b border-inherit">
@@ -147,9 +147,9 @@
                 </button>
               </div>
               <select id="select-start" class="w-full dynamic-card-inner border rounded-xl px-3 py-2.5 text-xs focus:outline-none">
-                <option value="magong_port">🚢 Pelabuhan Magong (Pusat Kota & Rental Motor)</option>
-                <option value="magong_airport">✈️ Bandara Penghu (Magong Airport)</option>
-                <option value="kuobishan">🌊 Kuobishan / Moses Sea Parting</option>
+                <option value="magong_port">🚢 馬公港 / Magong Port (Rental Hub)</option>
+                <option value="magong_airport">✈️ 澎湖機場 / Penghu Airport</option>
+                <option value="kuobishan">🌊 奎壁山摩西分海 / Kuobishan Moses Parting</option>
               </select>
             </div>
 
@@ -157,12 +157,12 @@
             <div>
               <label data-i18n="dest_label" class="block text-xs font-semibold mb-1.5">Destinasi Wisata (Target POI)</label>
               <select id="select-end" class="w-full dynamic-card-inner border rounded-xl px-3 py-2.5 text-xs focus:outline-none">
-                <option value="tongliang_banyan">🌳 Pohon Beringin Tongliang (Tongliang Great Banyan)</option>
-                <option value="penghu_bridge">🌉 Jembatan Lintas Laut Penghu (Great Bridge)</option>
-                <option value="daguoye_basalt">🗿 Kolom Basalt Daguoye (Xiyu Basalt)</option>
-                <option value="shanshui_beach">🏖️ Pantai Shanshui (Jalur Selatan)</option>
-                <option value="fenggui_cave">💨 Fenggui Blowholes (Gua Angin)</option>
-                <option value="yuwengdao_lighthouse">🗼 Mercusuar Yuwengdao (Ujung Barat)</option>
+                <option value="tongliang_banyan">🌳 通梁古榕 / Tongliang Great Banyan</option>
+                <option value="penghu_bridge">🌉 澎湖跨海大橋 / Penghu Great Bridge</option>
+                <option value="daguoye_basalt">🗿 大菓葉柱狀玄武岩 / Daguoye Basalt</option>
+                <option value="shanshui_beach">🏖️ 山水沙灘 / Shanshui Beach</option>
+                <option value="fenggui_cave">💨 風櫃洞 / Fenggui Blowholes</option>
+                <option value="yuwengdao_lighthouse">🗼 漁翁島燈塔 / Yuwengdao Lighthouse</option>
               </select>
             </div>
 
@@ -316,7 +316,7 @@
         </div>
 
         <!-- ========================================================= -->
-        <!-- TAB 3: POI EXPLORER (2,190 NODES) -->
+        <!-- TAB 3: POI EXPLORER (2,190 NODES) WITH WIKIPEDIA CARDS -->
         <!-- ========================================================= -->
         <div id="tab-content-explore" class="hidden space-y-3">
           
@@ -344,7 +344,7 @@
             </button>
           </div>
 
-          <!-- POI List -->
+          <!-- POI List Container -->
           <div id="poi-list" class="space-y-2 pt-2 max-h-[460px] overflow-y-auto pr-1 custom-scrollbar">
             <!-- Rendered by JS -->
           </div>
@@ -362,7 +362,7 @@
 
     </aside>
 
-    <!-- Map Canvas -->
+    <!-- Map Canvas View -->
     <main class="flex-1 h-full w-full relative">
       <div id="map" class="h-full w-full z-10"></div>
 
@@ -397,6 +397,37 @@
       </div>
     </main>
 
+  </div>
+
+  <!-- Wikipedia Modal Preview -->
+  <div id="wiki-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="dynamic-sidebar border rounded-3xl max-w-lg w-full p-5 space-y-4 shadow-2xl relative">
+      <button onclick="closeWikiModal()" class="absolute top-4 right-4 p-1.5 rounded-full dynamic-card-inner opacity-75 hover:opacity-100">
+        <i data-lucide="x" class="w-4 h-4"></i>
+      </button>
+
+      <div class="flex items-center gap-2.5">
+        <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-900 flex items-center justify-center font-bold font-serif text-base border">
+          W
+        </div>
+        <div>
+          <h3 id="wiki-modal-title" class="text-sm font-extrabold">Nama Tempat</h3>
+          <span class="text-[10px] opacity-60 font-mono">Wikipedia Knowledge Base</span>
+        </div>
+      </div>
+
+      <div id="wiki-modal-body" class="text-xs opacity-85 leading-relaxed max-h-60 overflow-y-auto custom-scrollbar p-1">
+        Memuat data Wikipedia...
+      </div>
+
+      <div class="flex items-center justify-between pt-2 border-t border-inherit">
+        <button onclick="closeWikiModal()" class="px-3 py-1.5 dynamic-card-inner border rounded-xl text-xs font-bold opacity-80">Tutup</button>
+        <a id="wiki-modal-link" href="#" target="_blank" rel="noopener noreferrer" class="px-4 py-2 dynamic-btn-primary rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+          <span data-i18n="wiki_see_more">Buka di Wikipedia</span>
+          <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+        </a>
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>

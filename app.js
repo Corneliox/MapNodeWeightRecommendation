@@ -1,5 +1,5 @@
 // ====================================================================
-// Penghu Cool-Ride - Core Application with Multi-Language & Theme Engine
+// Penghu Cool-Ride - Bilingual Nomenclature & Wikipedia Knowledge Graph
 // ====================================================================
 
 // Global State
@@ -23,45 +23,153 @@ let currentWeatherData = {
   heatLevel: 'HIGH'
 };
 
-// Preset Key Coordinates for Routing Demo
+// Preset Key Coordinates
 const KEY_PRESET_LOCATIONS = {
-  magong_port: { name: "Pelabuhan Magong (Pusat Rental Motor)", name_en: "Magong Port (Scooter Hub)", name_zh: "馬公港 (租車中心)", lat: 23.5654, lon: 119.5668 },
-  magong_airport: { name: "Bandara Penghu (Magong Airport)", name_en: "Penghu Magong Airport", name_zh: "澎湖機場 (馬公航空站)", lat: 23.5697, lon: 119.6294 },
-  kuobishan: { name: "Kuobishan (Moses Sea Parting)", name_en: "Kuobishan Moses Sea Parting", name_zh: "奎壁山摩西分海", lat: 23.5975, lon: 119.6748 },
-  tongliang_banyan: { name: "Pohon Beringin Raksasa Tongliang", name_en: "Tongliang Great Banyan", name_zh: "通梁古榕", lat: 23.6575, lon: 119.5594 },
-  penghu_bridge: { name: "Jembatan Lintas Laut Penghu (Great Bridge)", name_en: "Penghu Great Bridge", name_zh: "澎湖跨海大橋", lat: 23.6508, lon: 119.5392 },
-  daguoye_basalt: { name: "Kolom Basalt Daguoye (Xiyu)", name_en: "Daguoye Columnar Basalt", name_zh: "大菓葉柱狀玄武岩", lat: 23.5932, lon: 119.5161 },
-  shanshui_beach: { name: "Pantai Shanshui (Jalur Selatan)", name_en: "Shanshui Beach (South Ring)", name_zh: "山水沙灘", lat: 23.5136, lon: 119.5912 },
-  fenggui_cave: { name: "Fenggui Blowholes (Gua Angin)", name_en: "Fenggui Blowholes", name_zh: "風櫃洞", lat: 23.5414, lon: 119.5447 },
-  yuwengdao_lighthouse: { name: "Mercusuar Yuwengdao", name_en: "Yuwengdao Lighthouse", name_zh: "漁翁島燈塔", lat: 23.5606, lon: 119.4678 }
+  magong_port: { name_zh: "馬公港", name_en: "Magong Port (Rental Hub)", lat: 23.5654, lon: 119.5668 },
+  magong_airport: { name_zh: "澎湖機場", name_en: "Penghu Airport", lat: 23.5697, lon: 119.6294 },
+  kuobishan: { name_zh: "奎壁山摩西分海", name_en: "Kuobishan Moses Parting", lat: 23.5975, lon: 119.6748 },
+  tongliang_banyan: { name_zh: "通梁古榕", name_en: "Tongliang Great Banyan", lat: 23.6575, lon: 119.5594 },
+  penghu_bridge: { name_zh: "澎湖跨海大橋", name_en: "Penghu Great Bridge", lat: 23.6508, lon: 119.5392 },
+  daguoye_basalt: { name_zh: "大菓葉柱狀玄武岩", name_en: "Daguoye Columnar Basalt", lat: 23.5932, lon: 119.5161 },
+  shanshui_beach: { name_zh: "山水沙灘", name_en: "Shanshui Beach", lat: 23.5136, lon: 119.5912 },
+  fenggui_cave: { name_zh: "風櫃洞", name_en: "Fenggui Blowholes", lat: 23.5414, lon: 119.5447 },
+  yuwengdao_lighthouse: { name_zh: "漁翁島燈塔", name_en: "Yuwengdao Lighthouse", lat: 23.5606, lon: 119.4678 }
 };
 
 const SCIENTIFIC_SCHEMES_META = {
-  1: {
-    name: "ISO 7243 (WBGT Threshold)",
-    strainReduction: 65,
-    restMins: 12
+  1: { name: "ISO 7243 (WBGT Threshold)", strainReduction: 65, restMins: 12 },
+  2: { name: "UTCI Physiological Strain", strainReduction: 58, restMins: 15 },
+  3: { name: "Solar Radiation Budget (COMFA)", strainReduction: 72, restMins: 10 },
+  4: { name: "Bi-Objective Pareto Router", strainReduction: 64, restMins: 12 }
+};
+
+// Curated Wikipedia Knowledge Base for Penghu
+const PENGHU_WIKIPEDIA_DB = {
+  "通梁古榕": {
+    wiki_title: "通梁古榕",
+    wiki_title_en: "Tongliang Great Banyan",
+    url_zh: "https://zh.wikipedia.org/wiki/通梁古榕",
+    url_en: "https://en.wikipedia.org/wiki/Tongliang_Great_Banyan",
+    summary_id: "Pohon banyan raksasa berumur lebih dari 300 tahun di Desa Tongliang, Baisha. Memiliki hampir 100 akar gantung yang membentuk kanopi peneduh alami seluas 660 meter persegi di depan Kuil Bao'an.",
+    summary_en: "A historic 300-year-old banyan tree located in Tongliang Village, Baisha. Features nearly 100 aerial roots forming a massive 660 m² natural shade canopy in front of Bao'an Temple.",
+    summary_zh: "位於白沙鄉通梁村保安宮前，樹齡已達300多年，氣根近百條，枝葉繁茂形成廣達660平方公尺的天然綠蔭。"
   },
-  2: {
-    name: "UTCI Physiological Strain",
-    strainReduction: 58,
-    restMins: 15
+  "澎湖跨海大橋": {
+    wiki_title: "澎湖跨海大橋",
+    wiki_title_en: "Penghu Great Bridge",
+    url_zh: "https://zh.wikipedia.org/wiki/澎湖跨海大橋",
+    url_en: "https://en.wikipedia.org/wiki/Penghu_Great_Bridge",
+    summary_id: "Jembatan sepanjang 2,49 km yang menghubungkan Pulau Baisha dan Pulau Xiyu melintasi Selat Houhan yang berarus deras. Merupakan ikon utama pariwisata Penghu.",
+    summary_en: "A 2.49 km long cross-sea bridge connecting Baisha and Xiyu islands across the turbulent Houhan Channel. The landmark engineering feat of Penghu.",
+    summary_zh: "連接白沙鄉與西嶼鄉的跨海大橋，全長2,494公尺，橫跨潮流洶湧的吼門水道，為澎湖最具代表性的地標建築。"
   },
-  3: {
-    name: "Solar Radiation Budget (COMFA)",
-    strainReduction: 72,
-    restMins: 10
+  "跨海大橋": {
+    wiki_title: "澎湖跨海大橋",
+    url_zh: "https://zh.wikipedia.org/wiki/澎湖跨海大橋",
+    summary_id: "Jembatan megah penghubung Baisha dan Xiyu sepanjang 2.494 meter.",
+    summary_en: "Penghu's famous 2.49 km cross-sea bridge connecting Baisha and Xiyu.",
+    summary_zh: "連接白沙與西嶼的著名跨海大橋。"
   },
-  4: {
-    name: "Bi-Objective Pareto Router",
-    strainReduction: 64,
-    restMins: 12
+  "大菓葉柱狀玄武岩": {
+    wiki_title: "大菓葉柱狀玄武岩",
+    wiki_title_en: "Daguoye Columnar Basalt",
+    url_zh: "https://zh.wikipedia.org/wiki/西嶼鄉",
+    url_en: "https://en.wikipedia.org/wiki/Xiyu",
+    summary_id: "Formasi tebing basal heksagonal vertikal spektakuler yang terbentuk dari pendinginan lava vulkanik purba di Xiyu ribuan tahun silam.",
+    summary_en: "Spectacular vertical hexagonal columnar basalt cliffs formed by cooling volcanic lava in Xiyu, standing opposite the ocean.",
+    summary_zh: "西嶼鄉著名的火山熔岩冷卻凝固形成的六角柱狀玄武岩壁，氣勢雄偉壯觀。"
+  },
+  "奎壁山摩西分海": {
+    wiki_title: "奎壁山",
+    wiki_title_en: "Kuobishan",
+    url_zh: "https://zh.wikipedia.org/wiki/奎壁山",
+    url_en: "https://en.wikipedia.org/wiki/Huxi,_Penghu",
+    summary_id: "Fenomena pasang surut air laut yang membuka jalur jalan setapak kerikil sepanjang 300 meter menuju Pulau Chiyu, menyerupai kisah terbelahnya Laut Merah.",
+    summary_en: "Famous tidal phenomenon where ocean waters recede at low tide to reveal a 300-meter pebble path connecting to Chiyu Island.",
+    summary_zh: "澎湖著名潮汐奇景，退潮時海水向兩側退去，露出通往赤嶼的300公尺玄武岩礫石步道。"
+  },
+  "山水沙灘": {
+    wiki_title: "山水沙灘",
+    wiki_title_en: "Shanshui Beach",
+    url_zh: "https://zh.wikipedia.org/wiki/馬公市",
+    url_en: "https://en.wikipedia.org/wiki/Magong",
+    summary_id: "Pantai pasir emas terindah di Jalur Selatan Magong dengan ombak lembut dan air laut jernih kehijauan.",
+    summary_en: "The most picturesque golden sand beach in southern Magong, popular for gentle waves and crystal-clear waters.",
+    summary_zh: "馬公南環最富盛名的金色細沙海灘，海水清澈碧藍，為水上活動勝地。"
+  },
+  "風櫃洞": {
+    wiki_title: "風櫃洞",
+    wiki_title_en: "Fenggui Blowholes",
+    url_zh: "https://zh.wikipedia.org/wiki/風櫃洞",
+    url_en: "https://en.wikipedia.org/wiki/Fenggui_Blowholes",
+    summary_id: "Gua erosi laut di ujung semenanjung Fenggui. Saat ombak pasang menghantam rekahan batu basal, tercipta semburan air dan suara dengung mirip tiupan hembusan angin raksasa.",
+    summary_en: "A sea-cave erosion marvel where waves crash into basalt fissures, emitting thunderous whistling acoustic sounds and water sprays.",
+    summary_zh: "澎湖著名海蝕地形，海浪拍打玄武岩孔隙時會發出呼嘯巨響並噴出水柱。"
+  },
+  "漁翁島燈塔": {
+    wiki_title: "漁翁島燈塔",
+    wiki_title_en: "Yuwengdao Lighthouse",
+    url_zh: "https://zh.wikipedia.org/wiki/漁翁島燈塔",
+    url_en: "https://en.wikipedia.org/wiki/Yuwengdao_Lighthouse",
+    summary_id: "Mercusuar bergaya Barat pertama di Taiwan yang dibangun pada tahun 1778 di ujung barat daya Pulau Xiyu.",
+    summary_en: "Taiwan's earliest Western-style lighthouse established in 1778 at the southwestern tip of Xiyu Island.",
+    summary_zh: "西元1778年設立之台灣最早西式燈塔，位處西嶼最南端，為國定古蹟。"
   }
 };
 
+// Helper: Format Bilingual Name
+function formatBilingualName(node) {
+  const zh = node.name_zh || node.name || "";
+  let en = node.name_en || "";
+
+  // English fallback translations for common local prefixes/suffixes
+  if (!en || en === zh) {
+    if (zh.includes("7-Eleven") || zh.includes("7-11")) {
+      en = zh.replace("門市", " Store");
+    } else if (zh.includes("全家") || zh.includes("FamilyMart")) {
+      en = zh.replace("全家", "FamilyMart").replace("店", " Store");
+    } else if (zh.includes("沙灘")) {
+      en = zh.replace("沙灘", " Beach");
+    } else if (zh.includes("古榕")) {
+      en = zh.replace("古榕", " Great Banyan");
+    } else if (zh.includes("燈塔")) {
+      en = zh.replace("燈塔", " Lighthouse");
+    } else if (zh.includes("玄武岩")) {
+      en = zh.replace("柱狀玄武岩", " Columnar Basalt");
+    } else {
+      en = zh;
+    }
+  }
+
+  if (zh && en && zh !== en) {
+    return `${zh} / ${en}`;
+  }
+  return zh || en || "Penghu POI";
+}
+
+// Helper: Get Wikipedia data or fallback search URL
+function getWikiData(node) {
+  const zh = node.name_zh || node.name || "";
+  for (let key in PENGHU_WIKIPEDIA_DB) {
+    if (zh.includes(key) || key.includes(zh)) {
+      return PENGHU_WIKIPEDIA_DB[key];
+    }
+  }
+
+  // Fallback dynamic Wikipedia search URL
+  const cleanName = zh.replace(/门市|店|门市部|門市/g, '').trim();
+  return {
+    wiki_title: cleanName,
+    url_zh: `https://zh.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(cleanName)}`,
+    url_en: `https://en.wikipedia.org/wiki/Special:Search?search=${encodeURIComponent(cleanName)}`,
+    summary_id: `Informasi ensiklopedia terbuka untuk ${cleanName}.`,
+    summary_en: `Open encyclopedia information for ${cleanName}.`,
+    summary_zh: `關於 ${cleanName} 的維基百科開放資訊。`
+  };
+}
+
 // Initialize Application
 document.addEventListener('DOMContentLoaded', async () => {
-  // Load saved preferences from localStorage
   const savedLang = localStorage.getItem('penghu_lang') || 'id';
   const savedTheme = localStorage.getItem('penghu_theme') || 'tropical';
   
@@ -74,7 +182,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   loadDataset();
 });
 
-// 1. Load Translations JSON
 async function loadTranslations() {
   try {
     const res = await fetch('translations.json');
@@ -82,7 +189,7 @@ async function loadTranslations() {
       translations = await res.json();
     }
   } catch (e) {
-    console.warn('Could not load external translations.json, using fallback.', e);
+    console.warn('Fallback translations.', e);
   }
 }
 
@@ -101,11 +208,9 @@ function updateUILanguage() {
     }
   });
 
-  // Update dropdown values
   const langSelect = document.getElementById('lang-selector');
   if (langSelect) langSelect.value = currentLang;
 
-  // Re-render Scheme label
   const activeLabel = document.getElementById('active-scheme-label');
   if (activeLabel) {
     activeLabel.textContent = SCIENTIFIC_SCHEMES_META[selectedSchemeId].name;
@@ -125,7 +230,6 @@ function setLanguage(lang) {
   }
 }
 
-// 2. Holiday Theme Switcher
 function changeTheme(theme) {
   setTheme(theme);
 }
@@ -139,7 +243,6 @@ function setTheme(theme) {
   if (themeSelect) themeSelect.value = theme;
 }
 
-// 3. Leaflet Map Initialization
 function initMap() {
   map = L.map('map', { zoomControl: false }).setView([23.5711, 119.5793], 11);
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
@@ -154,7 +257,6 @@ function initMap() {
   routePolylineLayer = L.layerGroup().addTo(map);
 }
 
-// 4. Live Open-Meteo Weather Fetcher
 async function fetchLiveWeather() {
   const url = 'https://api.open-meteo.com/v1/forecast?latitude=23.57&longitude=119.57&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,wind_speed_10m&hourly=uv_index,direct_normal_irradiance&timezone=Asia%2FTaipei';
 
@@ -190,13 +292,11 @@ async function fetchLiveWeather() {
     badgeEl.className = `text-[9px] uppercase font-extrabold px-2 py-0.5 rounded-full border ${badgeClass}`;
 
   } catch (err) {
-    console.warn('Simulated weather fallback:', err);
     document.getElementById('temp-display').textContent = '35°C (Terasa 40°C)';
     document.getElementById('uv-display').textContent = 'UV: 10.5';
   }
 }
 
-// 5. Load Dataset (2,190 Nodes)
 async function loadDataset() {
   try {
     const res = await fetch('data/penghu_master_nodes.json');
@@ -204,7 +304,7 @@ async function loadDataset() {
       allNodes = await res.json();
     }
   } catch (e) {
-    console.log('Loading curated fallback nodes:', e);
+    console.log('Fallback nodes used:', e);
   }
 
   if (!allNodes || allNodes.length === 0) {
@@ -216,7 +316,7 @@ async function loadDataset() {
   renderPOIList(allNodes.slice(0, 100));
 }
 
-// 6. Render POI Markers
+// 6. Render POI Markers with Bilingual Titles & Wikipedia Card Section
 function renderPOIMarkers(nodes) {
   markersLayer.clearLayers();
 
@@ -229,7 +329,7 @@ function renderPOIMarkers(nodes) {
     return true;
   }).slice(0, 600);
 
-  nodesToRender.forEach(node => {
+  nodesToRender.forEach((node, index) => {
     if (!node.latitude || !node.longitude) return;
 
     let iconClass = 'pin-attraction';
@@ -255,26 +355,46 @@ function renderPOIMarkers(nodes) {
 
     const marker = L.marker([node.latitude, node.longitude], { icon: customIcon });
 
-    const displayName = currentLang === 'zh' ? (node.name_zh || node.name) : (node.name_en || node.name);
+    const bilingualTitle = formatBilingualName(node);
+    const wiki = getWikiData(node);
+    const wikiUrl = currentLang === 'zh' ? (wiki.url_zh || wiki.url_en) : (wiki.url_en || wiki.url_zh);
+    const wikiSummary = currentLang === 'zh' ? wiki.summary_zh : (currentLang === 'en' ? wiki.summary_en : wiki.summary_id);
 
     const popupHtml = `
-      <div class="text-xs space-y-1.5 min-w-[210px]">
-        <div class="flex items-center gap-1.5">
-          <span class="text-base">${iconEmoji}</span>
-          <h4 class="font-bold">${displayName}</h4>
-        </div>
-        ${node.name_zh && currentLang !== 'zh' ? `<p class="text-[10px] opacity-75 italic">${node.name_zh}</p>` : ''}
-        <div class="pt-1.5 border-t border-inherit text-[11px] space-y-1">
-          <div class="flex justify-between">
-            <span class="opacity-70">${t('category_label')}:</span>
-            <span class="font-bold text-primary-var uppercase text-[10px]">${node.category.replace('_', ' ')}</span>
+      <div class="text-xs space-y-2 min-w-[230px] max-w-[270px]">
+        <div class="flex items-start gap-2">
+          <span class="text-lg shrink-0 mt-0.5">${iconEmoji}</span>
+          <div>
+            <h4 class="font-extrabold text-sm leading-snug">${bilingualTitle}</h4>
+            <span class="text-[10px] opacity-70 font-bold uppercase tracking-wider">${node.category.replace('_', ' ')}</span>
           </div>
+        </div>
+
+        <!-- Wikipedia Card Section -->
+        <div class="p-2.5 rounded-xl dynamic-card-inner border text-[11px] space-y-1.5 shadow-inner">
+          <div class="flex items-center justify-between">
+            <span class="font-bold flex items-center gap-1 opacity-90">
+              <span class="font-serif font-bold text-xs bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-1 rounded">W</span>
+              Wikipedia
+            </span>
+            <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-primary-var font-bold flex items-center gap-0.5 hover:underline">
+              <span>${t('wiki_see_more')}</span>
+              <i data-lucide="external-link" class="w-3 h-3"></i>
+            </a>
+          </div>
+          <p class="opacity-80 leading-relaxed text-[10.5px]">
+            ${wikiSummary || "Informasi detail dapat diakses di ensiklopedia terbuka Wikipedia."}
+          </p>
+        </div>
+
+        <div class="text-[11px] space-y-1 pt-1 border-t border-inherit">
           ${node.has_ac ? `<div class="text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">❄️ ${t('ac_equipped')}</div>` : ''}
           ${node.opening_hours ? `<div class="opacity-80">🕒 ${node.opening_hours}</div>` : ''}
           ${node.fee_info ? `<div class="text-amber-500 font-bold">🎟️ ${node.fee_info}</div>` : ''}
         </div>
-        <button onclick="setAsDestination(${node.latitude}, ${node.longitude}, '${displayName.replace(/'/g, "\\'")}')" class="mt-2 w-full py-1.5 dynamic-btn-primary rounded-lg text-[10px] font-bold transition shadow">
-          ${t('btn_set_dest')}
+
+        <button onclick="setAsDestination(${node.latitude}, ${node.longitude}, '${bilingualTitle.replace(/'/g, "\\'")}')" class="w-full py-2 dynamic-btn-primary rounded-xl text-[11px] font-extrabold transition shadow flex items-center justify-center gap-1">
+          <i data-lucide="navigation" class="w-3 h-3"></i> ${t('btn_set_dest')}
         </button>
       </div>
     `;
@@ -284,7 +404,7 @@ function renderPOIMarkers(nodes) {
   });
 }
 
-// 7. Route Computation with Scientific Schemes
+// 7. Route Computation
 function calculateSmartRoute() {
   const startKey = document.getElementById('select-start').value;
   const endKey = document.getElementById('select-end').value;
@@ -301,7 +421,7 @@ function calculateSmartRoute() {
   const schemeMeta = SCIENTIFIC_SCHEMES_META[selectedSchemeId];
   
   let needsCoolingStop = false;
-  if (selectedSchemeId === 1) { // ISO 7243 WBGT
+  if (selectedSchemeId === 1) { // ISO WBGT
     const tMax = Math.max(12, 60 / Math.pow(Math.max(1, currentWeatherData.wbgt - 27), 1.2));
     needsCoolingStop = directTravelMinutes >= tMax;
   } else if (selectedSchemeId === 2) { // UTCI
@@ -341,15 +461,15 @@ function calculateSmartRoute() {
     lineJoin: 'round'
   }).addTo(routePolylineLayer);
 
-  const startName = currentLang === 'zh' ? start.name_zh : (currentLang === 'en' ? start.name_en : start.name);
-  const destName = currentLang === 'zh' ? destination.name_zh : (currentLang === 'en' ? destination.name_en : destination.name);
+  const startTitle = formatBilingualName(start);
+  const destTitle = formatBilingualName(destination);
 
-  addRouteMarker(start.lat, start.lon, 'A', startName, '#00A8B5');
+  addRouteMarker(start.lat, start.lon, 'A', startTitle, '#00A8B5');
   if (recommendedShelter) {
-    const shelterName = currentLang === 'zh' ? (recommendedShelter.name_zh || recommendedShelter.name) : (recommendedShelter.name_en || recommendedShelter.name);
-    addRouteMarker(recommendedShelter.latitude, recommendedShelter.longitude, '❄️', `Shelter: ${shelterName}`, '#06D6A0');
+    const shelterTitle = formatBilingualName(recommendedShelter);
+    addRouteMarker(recommendedShelter.latitude, recommendedShelter.longitude, '❄️', `Shelter: ${shelterTitle}`, '#06D6A0');
   }
-  addRouteMarker(destination.lat, destination.lon, 'B', destName, '#E07A5F');
+  addRouteMarker(destination.lat, destination.lon, 'B', destTitle, '#E07A5F');
 
   map.fitBounds(polyline.getBounds(), { padding: [60, 60] });
 
@@ -360,7 +480,7 @@ function calculateSmartRoute() {
   document.getElementById('safe-time-display').textContent = `${safeMinutes} Min`;
   document.getElementById('reduction-badge').textContent = `-${schemeMeta.strainReduction}% ${t('strain_reduced')}`;
 
-  renderRouteTimeline(startName, destName, recommendedShelter, directDistanceKm, directTravelMinutes, schemeMeta);
+  renderRouteTimeline(startTitle, destTitle, recommendedShelter, directDistanceKm, directTravelMinutes, schemeMeta);
   document.getElementById('route-result-card').classList.remove('hidden');
 }
 
@@ -375,30 +495,28 @@ function addRouteMarker(lat, lon, label, title, colorHex) {
   L.marker([lat, lon], { icon }).bindPopup(`<b>${title}</b>`).addTo(routePolylineLayer);
 }
 
-function renderRouteTimeline(startName, destName, shelter, distanceKm, totalMins, schemeMeta) {
+function renderRouteTimeline(startTitle, destTitle, shelter, distanceKm, totalMins, schemeMeta) {
   const container = document.getElementById('route-timeline-steps');
   
   if (shelter) {
     const leg1Mins = Math.max(8, Math.round(totalMins * 0.45));
     const leg2Mins = Math.max(8, Math.round(totalMins * 0.55));
-    const shelterName = currentLang === 'zh' ? (shelter.name_zh || shelter.name) : (shelter.name_en || shelter.name || "7-Eleven Tongliang Store");
+    const shelterTitle = formatBilingualName(shelter);
 
     container.innerHTML = `
       <div class="flex items-start gap-2.5">
         <span class="w-5 h-5 rounded-full dynamic-btn-primary font-bold flex items-center justify-center text-[10px] shrink-0">1</span>
         <div>
-          <p class="font-bold">${startName}</p>
+          <p class="font-bold">${startTitle}</p>
           <p class="text-[11px] opacity-75">${t('step_origin')} (${leg1Mins} min - ${Math.round(distanceKm*0.5)} km).</p>
         </div>
       </div>
 
-      <div class="flex items-start gap-2.5 dynamic-card-inner border-2 border-emerald-500/50 p-2.5 rounded-2xl">
+      <div class="flex items-start gap-2.5 dynamic-card-inner border-2 border-emerald-500/50 p-3 rounded-2xl shadow-sm">
         <span class="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-[10px] shrink-0">❄️</span>
-        <div class="space-y-0.5">
-          <div class="flex items-center gap-1.5">
-            <p class="font-bold text-emerald-600 dark:text-emerald-400">${t('step_rest')} ${schemeMeta.restMins} Min @ ${shelterName}</p>
-          </div>
-          <p class="text-[11px] opacity-80">
+        <div class="space-y-1">
+          <p class="font-extrabold text-emerald-600 dark:text-emerald-400 text-xs">${t('step_rest')} ${schemeMeta.restMins} Min @ ${shelterTitle}</p>
+          <p class="text-[11px] opacity-80 leading-relaxed">
             ${t('step_rest_desc')} (-${schemeMeta.strainReduction}% Heat Strain).
           </p>
         </div>
@@ -407,7 +525,7 @@ function renderRouteTimeline(startName, destName, shelter, distanceKm, totalMins
       <div class="flex items-start gap-2.5">
         <span class="w-5 h-5 rounded-full dynamic-btn-primary font-bold flex items-center justify-center text-[10px] shrink-0">2</span>
         <div>
-          <p class="font-bold">${destName}</p>
+          <p class="font-bold">${destTitle}</p>
           <p class="text-[11px] opacity-75">${t('step_dest')} (${leg2Mins} min).</p>
         </div>
       </div>
@@ -417,14 +535,14 @@ function renderRouteTimeline(startName, destName, shelter, distanceKm, totalMins
       <div class="flex items-start gap-2.5">
         <span class="w-5 h-5 rounded-full dynamic-btn-primary font-bold flex items-center justify-center text-[10px] shrink-0">1</span>
         <div>
-          <p class="font-bold">${startName}</p>
+          <p class="font-bold">${startTitle}</p>
           <p class="text-[11px] opacity-75">${distanceKm.toFixed(1)} km direct.</p>
         </div>
       </div>
       <div class="flex items-start gap-2.5">
         <span class="w-5 h-5 rounded-full dynamic-btn-primary font-bold flex items-center justify-center text-[10px] shrink-0">2</span>
         <div>
-          <p class="font-bold">${destName}</p>
+          <p class="font-bold">${destTitle}</p>
           <p class="text-[11px] opacity-75">${t('step_direct_desc')}</p>
         </div>
       </div>
@@ -538,9 +656,9 @@ function filterPOIs() {
       (activeCategoryFilter === 'shelter' && (n.category === 'shelter' || n.category === 'food_and_drink')) ||
       (activeCategoryFilter === 'hotel_node' && (n.node_role === 'hotel_node' || n.category === 'hotels'));
 
-    const name = (n.name_zh || n.name || '').toLowerCase();
+    const nameZh = (n.name_zh || n.name || '').toLowerCase();
     const nameEn = (n.name_en || '').toLowerCase();
-    const matchesQuery = !query || name.includes(query) || nameEn.includes(query);
+    const matchesQuery = !query || nameZh.includes(query) || nameEn.includes(query);
 
     return matchesCategory && matchesQuery;
   });
@@ -556,14 +674,31 @@ function renderPOIList(nodes) {
   }
 
   container.innerHTML = nodes.map(n => {
-    const displayName = currentLang === 'zh' ? (n.name_zh || n.name) : (n.name_en || n.name);
+    const bilingualTitle = formatBilingualName(n);
+    const wiki = getWikiData(n);
+    const wikiUrl = currentLang === 'zh' ? (wiki.url_zh || wiki.url_en) : (wiki.url_en || wiki.url_zh);
+
     return `
-      <div onclick="panToNode(${n.latitude}, ${n.longitude})" class="p-3 rounded-2xl dynamic-card-inner border hover:border-cyan-500 cursor-pointer transition flex items-center justify-between shadow-sm">
-        <div>
-          <h5 class="text-xs font-bold">${displayName}</h5>
-          <p class="text-[10px] opacity-60 uppercase tracking-wider mt-0.5">${n.category.replace('_', ' ')} ${n.brand ? `• ${n.brand}` : ''}</p>
+      <div class="p-3 rounded-2xl dynamic-card-inner border hover:border-cyan-500 transition space-y-2 shadow-sm">
+        <div onclick="panToNode(${n.latitude}, ${n.longitude})" class="cursor-pointer flex items-center justify-between">
+          <div>
+            <h5 class="text-xs font-bold">${bilingualTitle}</h5>
+            <p class="text-[10px] opacity-60 uppercase tracking-wider mt-0.5">${n.category.replace('_', ' ')} ${n.brand ? `• ${n.brand}` : ''}</p>
+          </div>
+          <i data-lucide="chevron-right" class="w-3.5 h-3.5 opacity-50"></i>
         </div>
-        <i data-lucide="chevron-right" class="w-3.5 h-3.5 opacity-50"></i>
+
+        <!-- Mini Wikipedia Link -->
+        <div class="flex items-center justify-between border-t border-inherit pt-1.5 text-[10px]">
+          <span class="opacity-60 flex items-center gap-1">
+            <span class="font-serif font-bold bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-1 rounded text-[9px]">W</span>
+            Wikipedia
+          </span>
+          <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" class="text-primary-var font-bold flex items-center gap-0.5 hover:underline">
+            <span>${t('wiki_see_more')}</span>
+            <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
+          </a>
+        </div>
       </div>
     `;
   }).join('');
@@ -586,7 +721,7 @@ function setAsDestination(lat, lon, name) {
   option.selected = true;
   select.add(option, 0);
 
-  KEY_PRESET_LOCATIONS.custom_selected = { name, lat, lon };
+  KEY_PRESET_LOCATIONS.custom_selected = { name_zh: name, name_en: name, lat, lon };
   switchTab('route');
   calculateSmartRoute();
 }
@@ -601,7 +736,7 @@ function useCurrentLocation() {
     navigator.geolocation.getCurrentPosition(pos => {
       const lat = pos.coords.latitude;
       const lon = pos.coords.longitude;
-      KEY_PRESET_LOCATIONS.my_gps = { name: "Lokasi GPS Saya", name_en: "My GPS Location", name_zh: "我的GPS位置", lat, lon };
+      KEY_PRESET_LOCATIONS.my_gps = { name_zh: "我的GPS位置", name_en: "My GPS Location", lat, lon };
       
       const select = document.getElementById('select-start');
       let opt = document.createElement('option');
@@ -620,16 +755,16 @@ function useCurrentLocation() {
 
 function generateCuratedNodes() {
   return [
-    { name_zh: "7-Eleven 通梁門市", name_en: "7-Eleven Tongliang Store", name: "7-Eleven Tongliang", category: "convenience_store", latitude: 23.6558, longitude: 119.5582, has_ac: true },
-    { name_zh: "FamilyMart 白沙赤崁店", name_en: "FamilyMart Baisha Store", name: "FamilyMart Baisha", category: "convenience_store", latitude: 23.6591, longitude: 119.6002, has_ac: true },
-    { name_zh: "7-Eleven 馬公門市", name_en: "7-Eleven Magong Store", name: "7-Eleven Magong", category: "convenience_store", latitude: 23.5682, longitude: 119.5671, has_ac: true },
-    { name_zh: "FamilyMart 西嶼池西店", name_en: "FamilyMart Xiyu Store", name: "FamilyMart Xiyu", category: "convenience_store", latitude: 23.6042, longitude: 119.5101, has_ac: true },
-    { name_zh: "通梁古榕", name_en: "Tongliang Great Banyan", name: "Tongliang Great Banyan", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.6575, longitude: 119.5594 },
-    { name_zh: "跨海大橋", name_en: "Penghu Great Bridge", name: "Penghu Great Bridge", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.6508, longitude: 119.5392 },
-    { name_zh: "大菓葉柱狀玄武岩", name_en: "Daguoye Columnar Basalt", name: "Daguoye Basalt", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5932, longitude: 119.5161 },
-    { name_zh: "奎壁山摩西分海", name_en: "Kuobishan Moses Parting", name: "Kuobishan Moses Parting", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5975, longitude: 119.6748 },
-    { name_zh: "山水沙灘", name_en: "Shanshui Beach", name: "Shanshui Beach", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5136, longitude: 119.5912 },
-    { name_zh: "風櫃洞", name_en: "Fenggui Blowholes", name: "Fenggui Blowholes", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5414, longitude: 119.5447 },
-    { name_zh: "易家仙人掌冰", name_en: "Yijia Cactus Ice Cream", name: "Yijia Cactus Ice Cream", category: "shelter", latitude: 23.6571, longitude: 119.5587, has_ac: true }
+    { name_zh: "7-Eleven 通梁門市", name_en: "7-Eleven Tongliang Store", category: "convenience_store", latitude: 23.6558, longitude: 119.5582, has_ac: true },
+    { name_zh: "FamilyMart 白沙赤崁店", name_en: "FamilyMart Baisha Store", category: "convenience_store", latitude: 23.6591, longitude: 119.6002, has_ac: true },
+    { name_zh: "7-Eleven 馬公門市", name_en: "7-Eleven Magong Store", category: "convenience_store", latitude: 23.5682, longitude: 119.5671, has_ac: true },
+    { name_zh: "FamilyMart 西嶼池西店", name_en: "FamilyMart Xiyu Store", category: "convenience_store", latitude: 23.6042, longitude: 119.5101, has_ac: true },
+    { name_zh: "通梁古榕", name_en: "Tongliang Great Banyan", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.6575, longitude: 119.5594 },
+    { name_zh: "澎湖跨海大橋", name_en: "Penghu Great Bridge", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.6508, longitude: 119.5392 },
+    { name_zh: "大菓葉柱狀玄武岩", name_en: "Daguoye Columnar Basalt", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5932, longitude: 119.5161 },
+    { name_zh: "奎壁山摩西分海", name_en: "Kuobishan Moses Parting", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5975, longitude: 119.6748 },
+    { name_zh: "山水沙灘", name_en: "Shanshui Beach", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5136, longitude: 119.5912 },
+    { name_zh: "風櫃洞", name_en: "Fenggui Blowholes", category: "tourist_attraction", node_role: "attraction_node", latitude: 23.5414, longitude: 119.5447 },
+    { name_zh: "易家仙人掌冰", name_en: "Yijia Cactus Ice Cream", category: "shelter", latitude: 23.6571, longitude: 119.5587, has_ac: true }
   ];
 }
