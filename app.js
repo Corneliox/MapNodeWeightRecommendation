@@ -519,9 +519,16 @@ function renderPOIMarkers(nodes) {
         <div class="w-full h-24 overflow-hidden relative">
           <img src="${imageUrl}" class="w-full h-full object-cover" alt="${universalTitle}" loading="lazy" />
           <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent"></div>
-          <span class="absolute bottom-1.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full bg-cyan-500 text-white shadow">
-            Wikipedia Landmark
-          </span>
+          ${wiki !== null ? `
+            <button onclick="openWikiModal('${(node.name_zh || node.name_en || '').replace(/'/g, "\\'")}')" class="absolute bottom-1.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full bg-cyan-500 hover:bg-cyan-400 text-white shadow flex items-center gap-1 transition cursor-pointer">
+              <span>Wikipedia Landmark</span>
+              <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
+            </button>
+          ` : `
+            <span class="absolute bottom-1.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded-full bg-cyan-500/80 text-white shadow">
+              Penghu Spot
+            </span>
+          `}
         </div>
       `;
     }
@@ -534,10 +541,10 @@ function renderPOIMarkers(nodes) {
       wikiCardHtml = `
         <div class="p-2 rounded-xl dynamic-card-inner border text-[11px] space-y-1 shadow-inner">
           <div class="flex items-center justify-between">
-            <span class="font-bold flex items-center gap-1 opacity-90">
+            <button onclick="openWikiModal('${(node.name_zh || node.name_en || '').replace(/'/g, "\\'")}')" class="font-bold flex items-center gap-1 opacity-90 hover:text-primary-var text-left">
               <span class="font-serif font-bold text-xs bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-1 rounded">W</span>
-              Wikipedia
-            </span>
+              <span>Wikipedia</span>
+            </button>
             <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" class="text-[10px] text-primary-var font-bold flex items-center gap-0.5 hover:underline">
               <span>${t('wiki_see_more')}</span>
               <i data-lucide="external-link" class="w-3 h-3"></i>
@@ -671,19 +678,19 @@ async function calculateSmartRoute() {
   let safeRouteData = null;
 
   if (needsCoolingStop) {
-    const midLat = (start.lat + destination.lat) / 2;
-    const midLon = (start.lon + destination.lon) / 2;
-    recommendedShelter = findNearestShelter(midLat, midLon);
+    recommendedShelter = findBestCorridorShelter(start, destination);
 
-    // Fetch multi-waypoint road route (Start -> Shelter -> Destination)
-    safeRouteData = await fetchRoadRouteOSRM(
-      [
-        [start.lat, start.lon],
-        [recommendedShelter.latitude, recommendedShelter.longitude],
-        [destination.lat, destination.lon]
-      ],
-      currentTravelMode
-    );
+    if (recommendedShelter) {
+      // Fetch multi-waypoint road route (Start -> Shelter -> Destination)
+      safeRouteData = await fetchRoadRouteOSRM(
+        [
+          [start.lat, start.lon],
+          [recommendedShelter.latitude, recommendedShelter.longitude],
+          [destination.lat, destination.lon]
+        ],
+        currentTravelMode
+      );
+    }
   }
 
   const startTitle = getUniversalBilingualTitle(start);
@@ -931,19 +938,116 @@ function renderDirectTimeline(startTitle, destTitle, routeData) {
   lucide.createIcons();
 }
 
-function findNearestShelter(lat, lon) {
-  const shelters = allNodes.filter(n => n.category === 'convenience_store' || n.category === 'shelter');
-  if (shelters.length === 0) {
-    return {
-      name_zh: "7-Eleven 通梁門市",
-      name_en: "7-Eleven Tongliang Store",
-      latitude: 23.6558,
-      longitude: 119.5582,
-      category: "convenience_store"
-    };
+// Smart Road Corridor Shelter Finder (Prevents Island-Hopping & Giant Detours)
+function findBestCorridorShelter(start, destination) {
+  const directDist = getDistanceKm(start.lat, start.lon, destination.lat, destination.lon);
+  
+  // Is this route on the main connected island system? (Magong, Huxi, Baisha, Xiyu connected by bridges)
+  const isMainIslandRoute = start.lat >= 23.50 && start.lat <= 23.68 && destination.lat >= 23.50 && destination.lat <= 23.68;
+
+  // Filter candidate cooling shelters (Strictly prioritize 24/7 AC Convenience Stores on connected land)
+  let candidateShelters = allNodes.filter(n => {
+    if (!n.latitude || !n.longitude) return false;
+    
+    // If on main island, filter out remote ferry islands (Jibei / Qimei / Wang'an / Huayu)
+    if (isMainIslandRoute) {
+      if (n.latitude > 23.675 || n.latitude < 23.50 || n.longitude < 119.50 || n.longitude > 119.68) {
+        return false;
+      }
+    }
+
+    return n.category === 'convenience_store' || (n.has_ac === true && (n.category === 'shelter' || n.category === 'food_and_drink'));
+  });
+
+  if (candidateShelters.length === 0) {
+    candidateShelters = allNodes.filter(n => n.category === 'convenience_store');
   }
 
-  return minBy(shelters, s => getDistanceKm(lat, lon, s.latitude, s.longitude));
+  // Calculate corridor detour score for every shelter
+  const scored = candidateShelters.map(s => {
+    const d1 = getDistanceKm(start.lat, start.lon, s.latitude, s.longitude);
+    const d2 = getDistanceKm(s.latitude, s.longitude, destination.lat, destination.lon);
+    const detourRatio = (d1 + d2) / directDist;
+    const balancePenalty = (Math.abs(d1 - d2) / directDist) * 0.20; // Prefers midway cooling stops
+    return {
+      shelter: s,
+      d1,
+      d2,
+      detourRatio,
+      score: detourRatio + balancePenalty
+    };
+  });
+
+  // Strict detour limit: max 25% deviation from direct route (no massive loop detours!)
+  const onCorridor = scored.filter(item => item.detourRatio <= 1.25);
+  if (onCorridor.length > 0) {
+    onCorridor.sort((a, b) => a.score - b.score);
+    return onCorridor[0].shelter;
+  }
+
+  // Relaxed fallback if route is very short or in rural spot (max 40% detour)
+  const relaxed = scored.filter(item => item.detourRatio <= 1.40);
+  if (relaxed.length > 0) {
+    relaxed.sort((a, b) => a.score - b.score);
+    return relaxed[0].shelter;
+  }
+
+  // Fallback default safe store along Route 203
+  return {
+    name_zh: "7-Eleven 通梁門市",
+    name_en: "7-Eleven Tongliang Store",
+    latitude: 23.6558,
+    longitude: 119.5582,
+    category: "convenience_store",
+    has_ac: true
+  };
+}
+
+// 8. Wikipedia Interactive Modal System
+function openWikiModal(queryOrTitle) {
+  let targetNode = allNodes.find(n => n.name_zh === queryOrTitle || n.name_en === queryOrTitle || n.title === queryOrTitle);
+  if (!targetNode && typeof queryOrTitle === 'object') targetNode = queryOrTitle;
+
+  const wiki = targetNode ? getVerifiedWikiEntry(targetNode) : null;
+  const modal = document.getElementById('wiki-modal');
+  if (!modal) return;
+
+  const titleEl = document.getElementById('wiki-modal-title');
+  const bodyEl = document.getElementById('wiki-modal-body');
+  const linkEl = document.getElementById('wiki-modal-link');
+
+  const universalTitle = targetNode ? getUniversalBilingualTitle(targetNode) : queryOrTitle;
+  const wikiUrl = wiki ? (currentLang === 'zh' ? (wiki.url_zh || wiki.url_en) : (wiki.url_en || wiki.url_zh)) : `https://zh.wikipedia.org/wiki/${encodeURIComponent(queryOrTitle)}`;
+  const wikiSummary = wiki ? (currentLang === 'zh' ? wiki.summary_zh : (currentLang === 'en' ? wiki.summary_en : wiki.summary_id)) : (targetNode?.description || "Informasi tempat wisata bersejarah dan ikonik di Kepulauan Penghu.");
+  const imgUrl = (wiki && wiki.image_url) || targetNode?.image_url;
+
+  titleEl.textContent = universalTitle;
+  
+  let imgHtml = "";
+  if (imgUrl) {
+    imgHtml = `
+      <div class="w-full h-44 rounded-2xl overflow-hidden mb-3 border border-inherit shadow-md">
+        <img src="${imgUrl}" class="w-full h-full object-cover" alt="${universalTitle}" />
+      </div>
+    `;
+  }
+
+  bodyEl.innerHTML = `
+    ${imgHtml}
+    <div class="space-y-2">
+      <p class="text-xs opacity-90 leading-relaxed font-normal">${wikiSummary}</p>
+      ${targetNode?.opening_hours ? `<div class="text-[11px] opacity-75 pt-2 border-t border-inherit">🕒 <b>Jam Operasional:</b> ${targetNode.opening_hours}</div>` : ''}
+    </div>
+  `;
+
+  linkEl.href = wikiUrl;
+  modal.classList.remove('hidden');
+  lucide.createIcons();
+}
+
+function closeWikiModal() {
+  const modal = document.getElementById('wiki-modal');
+  if (modal) modal.classList.add('hidden');
 }
 
 function minBy(arr, fn) {
@@ -1088,10 +1192,10 @@ function renderPOIList(reset = false) {
       const wikiUrl = currentLang === 'zh' ? (wiki.url_zh || wiki.url_en) : (wiki.url_en || wiki.url_zh);
       wikiSectionHtml = `
         <div class="flex items-center justify-between border-t border-inherit pt-1.5 text-[10px]">
-          <span class="opacity-60 flex items-center gap-1 font-bold">
+          <button onclick="openWikiModal('${(n.name_zh || n.name_en || '').replace(/'/g, "\\'")}')" class="opacity-80 hover:text-primary-var flex items-center gap-1 font-bold text-left">
             <span class="font-serif bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-200 px-1 rounded text-[9px]">W</span>
-            Wikipedia
-          </span>
+            <span>Wikipedia Preview</span>
+          </button>
           <a href="${wikiUrl}" target="_blank" rel="noopener noreferrer" class="text-primary-var font-bold flex items-center gap-0.5 hover:underline">
             <span>${t('wiki_see_more')}</span>
             <i data-lucide="external-link" class="w-2.5 h-2.5"></i>
