@@ -288,3 +288,105 @@ body {
   background: var(--bg-card-inner) !important;
   box-shadow: 0 0 15px var(--shadow-color) !important;
 }
+
+/* --- LANDING PAGE MODERN STYLES & GLASSMORPHISM --- */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.glass-navbar {
+  background-color: var(--bg-sidebar);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: var(--border-card);
+}
+
+.glass-card {
+  background-color: var(--bg-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-card);
+  color: var(--text-primary);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-inner {
+  background-color: var(--bg-card-inner);
+  border: 1px solid var(--border-card);
+}
+
+.glow-primary {
+  box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.glow-primary-lg {
+  box-shadow: 0 10px 35px -5px var(--shadow-color);
+}
+
+.gradient-text-primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.gradient-badge {
+  background: linear-gradient(135deg, rgba(0, 168, 181, 0.12), rgba(6, 214, 160, 0.12));
+  border: 1px solid var(--border-color);
+}
+
+.dest-card {
+  transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.dest-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 35px -10px var(--shadow-color);
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float-slow 4s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.88; transform: scale(1.02); }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+/* KaTeX custom theme override */
+.katex-display {
+  margin: 0.8em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 0;
+}
+.katex {
+  font-size: 1.05em !important;
+  color: var(--text-primary) !important;
+}
+
+/* Smooth i18n Language Transition Effect */
+.i18n-fade {
+  transition: opacity 0.22s cubic-bezier(0.4, 0, 0.2, 1), transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.i18n-fade-out {
+  opacity: 0.45;
+  transform: translateY(2px);
+}
+
+.i18n-fade-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+

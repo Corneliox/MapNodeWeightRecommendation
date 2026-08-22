@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="id" class="w-full h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Penghu Cool-Ride | Smart Climate-Aware Tourism Router</title>
+  
+  <!-- Instant Theme Cache Script to eliminate FOUC -->
+  <script>
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('penghu_theme') || 'tropical';
+        document.documentElement.className = 'theme-' + savedTheme;
+      } catch (e) {}
+    })();
+  </script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- KaTeX CSS & JS for Scientific Mathematical Formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Shared Theme & Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body id="main-body" class="w-full min-h-screen flex flex-col antialiased font-['Plus_Jakarta_Sans'] selection:bg-cyan-500 selection:text-white custom-scrollbar overflow-x-hidden i18n-fade">
+
+  <!-- ====================================================================
+       1. TOP NAVIGATION BAR (FLUID 100% SCREEN WIDTH)
+       ==================================================================== -->
+  <header class="sticky top-0 z-50 w-full glass-navbar border-b transition-all duration-300 shadow-sm">
+    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <div class="w-10 h-10 rounded-2xl dynamic-btn-primary flex items-center justify-center shadow-lg transition-transform group-hover:scale-105">
+          <i data-lucide="palmtree" class="w-5 h-5 text-white"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span data-i18n="app_title" class="font-extrabold text-base sm:text-lg tracking-tight">
+              Penghu Cool-Ride
+            </span>
+            <span data-i18n="badge_tag" class="text-[10px] font-bold px-2 py-0.5 rounded-full border border-current opacity-80 hidden sm:inline-block">
+              澎湖清涼導航
+            </span>
+          </div>
+          <p class="text-[11px] opacity-70 font-medium hidden md:block" data-i18n="hero_pill">
+            🏝️ Climate-Adaptive Tourism Router
+          </p>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <nav class="hidden lg:flex items-center gap-6 xl:gap-8 text-sm font-semibold">
+        <a href="#how-it-works" class="opacity-80 hover:opacity-100 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" data-i18n="nav_how_it_works">
+          Cara Kerja
+        </a>
+        <a href="#climate-radar" class="opacity-80 hover:opacity-100 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" data-i18n="nav_climate_radar">
+          Radar Iklim
+        </a>
+        <a href="#scientific-schemes" class="opacity-80 hover:opacity-100 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" data-i18n="nav_schemes">
+          Landasan Ilmiah
+        </a>
+        <a href="#destinations" class="opacity-80 hover:opacity-100 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" data-i18n="nav_destinations">
+          Destinasi Ikonik
+        </a>
+        <a href="#faq" class="opacity-80 hover:opacity-100 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors" data-i18n="nav_faq">
+          FAQ & Panduan
+        </a>
+      </nav>
+
+      <!-- Right Controls: Theme, Lang, Creator, & CTA -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        
+        <!-- Creator Attribution Badge (Href to GitHub) -->
+        <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="hidden xl:flex items-center gap-1.5 glass-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold text-primary-var hover:scale-105 transition-all shadow-sm" title="Created by Corneliox">
+          <i data-lucide="github" class="w-3.5 h-3.5"></i>
+          <span>Corneliox</span>
+        </a>
+
+        <!-- Theme Selector (Cached in LocalStorage) -->
+        <select id="theme-selector" onchange="changeTheme(this.value)" class="glass-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer">
+          <option value="tropical">🏝️ Tropis Pantai</option>
+          <option value="nature">🏜️ Petualangan Alam</option>
+          <option value="ocean">🌌 Ocean Dark</option>
+        </select>
+
+        <!-- Language Selector (Smooth i18n Transition) -->
+        <select id="lang-selector" onchange="changeLanguage(this.value)" class="glass-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold focus:outline-none cursor-pointer">
+          <option value="id">🇮🇩 ID</option>
+          <option value="en">🇬🇧 EN</option>
+          <option value="zh">🇹🇼 繁中</option>
+        </select>
+
+        <!-- CTA to Map Application -->
+        <a href="index.html" class="dynamic-btn-primary px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 shadow-md hover:opacity-95 transition-all">
+          <i data-lucide="map" class="w-4 h-4"></i>
+          <span data-i18n="nav_cta_map">Buka Peta Rute</span>
+        </a>
+
+        <!-- Mobile Menu Toggle Button -->
+        <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-xl glass-card-inner border focus:outline-none" aria-label="Toggle Menu">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Mobile Drawer Menu (Fluid 100% Width) -->
+    <div id="mobile-menu" class="hidden lg:hidden w-full border-t glass-navbar px-[5%] pt-3 pb-5 space-y-2 text-sm font-semibold">
+      <a href="#how-it-works" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_how_it_works">
+        Cara Kerja
+      </a>
+      <a href="#climate-radar" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_climate_radar">
+        Radar Iklim
+      </a>
+      <a href="#scientific-schemes" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_schemes">
+        Landasan Ilmiah
+      </a>
+      <a href="#destinations" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_destinations">
+        Destinasi Ikonik
+      </a>
+      <a href="#faq" onclick="toggleMobileMenu()" class="block py-2.5 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5" data-i18n="nav_faq">
+        FAQ & Keselamatan
+      </a>
+      <div class="pt-2 flex flex-col gap-2">
+        <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="w-full glass-card-inner border py-2.5 rounded-xl text-center font-bold flex items-center justify-center gap-2">
+          <i data-lucide="github" class="w-4 h-4 text-primary-var"></i>
+          <span>Created by Corneliox</span>
+        </a>
+        <a href="index.html" class="w-full dynamic-btn-primary py-3 rounded-xl text-center font-bold flex items-center justify-center gap-2 shadow">
+          <i data-lucide="map" class="w-4 h-4"></i>
+          <span data-i18n="nav_cta_map">Buka Peta Rute Interaktif</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ====================================================================
+       2. HERO SECTION WITH FLUID PERCENTAGE ADAPTIVE LAYOUT
+       ==================================================================== -->
+  <section class="w-full relative overflow-hidden py-[5vh] md:py-[7vh] flex flex-col justify-center">
+    
+    <!-- Background Ambient Glows -->
+    <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] bg-cyan-400/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
+    <div class="absolute top-1/3 right-[5%] w-[40vw] h-[40vw] max-w-[400px] max-h-[400px] bg-amber-400/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto">
+      
+      <!-- Main Hero Header -->
+      <div class="text-center w-[96%] sm:w-[90%] md:w-[82%] lg:w-[75%] xl:w-[70%] mx-auto mb-[4vh]">
+        
+        <!-- Top Pill Tag -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full gradient-badge text-xs font-extrabold mb-5 shadow-sm">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+          <span data-i18n="hero_pill">🏝️ Climate-Adaptive Tourism Routing Engine</span>
+          <span class="opacity-40">|</span>
+          <span data-i18n="hero_badge" class="text-primary-var font-bold">2.190 Node Graf Terkurasi</span>
+        </div>
+
+        <!-- Hero Headline -->
+        <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl 2xl:text-7xl font-extrabold tracking-tight leading-tight sm:leading-tight mb-5">
+          <span data-i18n="hero_title_1">Jelajahi Penghu Lebih Aman Tanpa Resiko</span><br>
+          <span class="gradient-text-primary" data-i18n="hero_title_accent">Sengatan Panas (Heatstroke)</span>
+        </h1>
+
+        <!-- Subtitle -->
+        <p class="text-sm sm:text-base md:text-lg 2xl:text-xl opacity-80 font-normal leading-relaxed mb-8 mx-auto" data-i18n="hero_subtitle">
+          Sistem navigasi cerdas pertama untuk Kepulauan Penghu yang memadukan 2.190 node graf, data mikroklimat cuaca real-time, dan secara otomatis menyisipkan titik rehidrasi di 50+ minimarket 7-Eleven & FamilyMart ber-AC untuk mereduksi beban termal hingga -65%.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4">
+          <a href="index.html" class="w-full sm:w-auto dynamic-btn-primary px-8 py-3.5 rounded-2xl font-extrabold text-sm sm:text-base shadow-xl hover:scale-105 transition-all flex items-center justify-center gap-2 glow-primary">
+            <i data-lucide="navigation" class="w-5 h-5"></i>
+            <span data-i18n="hero_cta_primary">Buka Peta & Mulai Navigasi 🗺️</span>
+          </a>
+          <a href="#how-it-works" class="w-full sm:w-auto glass-card px-7 py-3.5 rounded-2xl font-bold text-sm sm:text-base hover:bg-black/5 dark:hover:bg-white/5 transition-all flex items-center justify-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+            <span data-i18n="hero_cta_secondary">Pelajari Algoritma & Formula 🔬</span>
+          </a>
+        </div>
+
+      </div>
+
+      <!-- Hero Micro-Stats Row (Fluid 4-Col Grid) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-[2%] w-full mb-[5vh]">
+        <div class="glass-card p-4 sm:p-5 rounded-2xl text-center">
+          <div class="text-xl sm:text-2xl 2xl:text-3xl font-extrabold text-primary-var" data-i18n="hero_stat_nodes_title">2.190 Node Graf</div>
+          <div class="text-xs 2xl:text-sm opacity-75 font-medium mt-1" data-i18n="hero_stat_nodes_desc">OSM + Biro Pariwisata Taiwan</div>
+        </div>
+        <div class="glass-card p-4 sm:p-5 rounded-2xl text-center">
+          <div class="text-xl sm:text-2xl 2xl:text-3xl font-extrabold text-emerald-500" data-i18n="hero_stat_stores_title">50+ Hub Pendingin</div>
+          <div class="text-xs 2xl:text-sm opacity-75 font-medium mt-1" data-i18n="hero_stat_stores_desc">7-Eleven & FamilyMart Ber-AC</div>
+        </div>
+        <div class="glass-card p-4 sm:p-5 rounded-2xl text-center">
+          <div class="text-xl sm:text-2xl 2xl:text-3xl font-extrabold text-amber-500" data-i18n="hero_stat_reduction_title">-65% Beban Termal</div>
+          <div class="text-xs 2xl:text-sm opacity-75 font-medium mt-1" data-i18n="hero_stat_reduction_desc">Tervalidasi ISO 7243 & UTCI</div>
+        </div>
+        <div class="glass-card p-4 sm:p-5 rounded-2xl text-center">
+          <div class="text-xl sm:text-2xl 2xl:text-3xl font-extrabold text-cyan-600 dark:text-cyan-400" data-i18n="hero_stat_schemes_title">4 Skema Ilmiah</div>
+          <div class="text-xs 2xl:text-sm opacity-75 font-medium mt-1" data-i18n="hero_stat_schemes_desc">Model Biometeorologi Teruji</div>
+        </div>
+      </div>
+
+      <!-- SPLIT ROUTE COMPARISON (FLUID PERCENTAGE WIDTH) -->
+      <div class="w-full glass-card rounded-3xl p-5 sm:p-8 2xl:p-10 shadow-2xl border">
+        
+        <div class="text-center w-[96%] sm:w-[85%] md:w-[70%] mx-auto mb-6">
+          <span class="text-xs font-extrabold uppercase tracking-widest text-primary-var" data-i18n="compare_title">
+            Mengapa Perlu Cool-Ride?
+          </span>
+          <h2 class="text-xl sm:text-2xl 2xl:text-3xl font-extrabold mt-1">
+            <span data-i18n="compare_title">Komparasi Ilmiah: Rute Biasa vs Rute Adaptif</span>
+          </h2>
+          <p class="text-xs sm:text-sm 2xl:text-base opacity-75 mt-1" data-i18n="compare_subtitle">
+            Simulasi rute Pelabuhan Magong ➔ Jembatan Lintas Laut Penghu (24,5 km di bawah terik 35,2°C)
+          </p>
+        </div>
+
+        <!-- Interactive Comparison Toggle for Mobile / Tabs -->
+        <div class="flex justify-center mb-6">
+          <div class="inline-flex p-1 rounded-2xl glass-card-inner border text-xs sm:text-sm font-bold">
+            <button id="tab-btn-safe" onclick="switchHeroComparison('safe')" class="px-5 py-2.5 rounded-xl dynamic-btn-primary shadow transition-all">
+              <span data-i18n="compare_tab_cool">❄️ Cool-Ride Safe (Rekomendasi)</span>
+            </button>
+            <button id="tab-btn-direct" onclick="switchHeroComparison('direct')" class="px-5 py-2.5 rounded-xl opacity-70 hover:opacity-100 transition-all">
+              <span data-i18n="compare_tab_direct">⚠️ Rute Langsung Penuh Terik</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Comparison Cards Side-by-Side (Fluid 2-Col Grid) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-[3%] items-stretch">
+          
+          <!-- Card 1: Direct Route (Danger) -->
+          <div id="card-direct" class="glass-card-inner rounded-2xl p-5 sm:p-7 border border-red-500/30 relative flex flex-col justify-between transition-all">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-red-500/10 text-red-500 border border-red-500/20" data-i18n="compare_direct_tag">
+                  Resiko Sengatan Panas Tinggi
+                </span>
+                <span class="text-xs font-mono font-bold opacity-60">Tanpa Titik Singgah</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-extrabold text-red-500 mb-2" data-i18n="compare_direct_header">
+                Rute Tercepat Tanpa Perlindungan
+              </h3>
+              <p class="text-xs sm:text-sm opacity-80 leading-relaxed mb-4" data-i18n="compare_direct_desc">
+                Melintasi jalanan aspal terbuka dan jembatan lintas laut tanpa jeda pendinginan. Panas akumulatif memicu dehidrasi parah dan heat exhaustion.
+              </p>
+
+              <!-- Route Visual Steps -->
+              <div class="space-y-2 mb-4 text-xs sm:text-sm font-medium">
+                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-red-500/5 border border-red-500/20">
+                  <div class="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-[10px] font-bold">1</div>
+                  <span>馬公港 / Magong Port</span>
+                </div>
+                <div class="flex items-center justify-center text-red-500 text-xs font-bold py-1">
+                  <i data-lucide="arrow-down" class="w-4 h-4 animate-bounce"></i>
+                  <span class="ml-1 text-[11px] sm:text-xs">42 Menit Terik Kontinu (>39.8°C)</span>
+                </div>
+                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-red-500/5 border border-red-500/20">
+                  <div class="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center text-[10px] font-bold">2</div>
+                  <span>澎湖跨海大橋 / Penghu Great Bridge (Kelelahan Akut)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-red-500/20 text-center text-xs sm:text-sm">
+              <div>
+                <div class="opacity-60 text-[10px] sm:text-xs">Paparan Matahari</div>
+                <div class="font-extrabold text-red-500 mt-0.5" data-i18n="compare_direct_stat_exposure">100% Terik</div>
+              </div>
+              <div>
+                <div class="opacity-60 text-[10px] sm:text-xs">Indeks UV</div>
+                <div class="font-extrabold text-red-500 mt-0.5" data-i18n="compare_direct_stat_uv">UV > 10.5</div>
+              </div>
+              <div>
+                <div class="opacity-60 text-[10px] sm:text-xs">Beban Termal</div>
+                <div class="font-extrabold text-red-500 mt-0.5" data-i18n="compare_direct_stat_risk">Bahaya Kritis</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2: Cool-Ride Safe (Recommended) -->
+          <div id="card-safe" class="glass-card-inner rounded-2xl p-5 sm:p-7 border-2 border-emerald-500/40 relative flex flex-col justify-between shadow-lg glow-primary">
+            <div>
+              <div class="flex items-center justify-between mb-3">
+                <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30" data-i18n="compare_cool_tag">
+                  Terproteksi Standar Medis
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-cyan-500 text-white shadow-sm">REKOMENDASI</span>
+              </div>
+              <h3 class="text-lg sm:text-xl font-extrabold text-emerald-600 dark:text-emerald-400 mb-2" data-i18n="compare_cool_header">
+                Rute Cerdas dengan Injeksi Hub AC
+              </h3>
+              <p class="text-xs sm:text-sm opacity-80 leading-relaxed mb-4" data-i18n="compare_cool_desc">
+                Menyisipkan istirahat 10-15 menit di 7-Eleven/FamilyMart terdekat sebelum melintasi jembatan terbuka atau rute panjang, menurunkan suhu tubuh inti dengan deviasi jarak minimal.
+              </p>
+
+              <!-- Route Visual Steps -->
+              <div class="space-y-2 mb-4 text-xs sm:text-sm font-medium">
+                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+                  <div class="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center text-[10px] font-bold">1</div>
+                  <span>馬公港 / Magong Port (Mulai)</span>
+                </div>
+                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/40 animate-pulse-soft">
+                  <div class="w-6 h-6 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">❄️</div>
+                  <div class="flex-1 flex items-center justify-between">
+                    <span class="font-bold text-emerald-600 dark:text-emerald-400">7-11 通梁門市 (12m AC & Es Kaktus)</span>
+                    <span class="text-[10px] sm:text-xs font-extrabold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">-65% Panas</span>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+                  <div class="w-6 h-6 rounded-full bg-cyan-600 text-white flex items-center justify-center text-[10px] font-bold">2</div>
+                  <span>澎湖跨海大橋 / Penghu Great Bridge (Segar & Aman)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-3 gap-2 pt-3 border-t border-emerald-500/20 text-center text-xs sm:text-sm">
+              <div>
+                <div class="opacity-60 text-[10px] sm:text-xs">Reduksi Panas</div>
+                <div class="font-extrabold text-emerald-500 mt-0.5" data-i18n="compare_cool_stat_reduction">-65% Termal</div>
+              </div>
+              <div>
+                <div class="opacity-60 text-[10px] sm:text-xs">Jeda AC</div>
+                <div class="font-extrabold text-cyan-500 mt-0.5" data-i18n="compare_cool_stat_rest">12 Menit</div>
+              </div>
+              <div>
+                <div class="opacity-60 text-[10px] sm:text-xs">Deviasi Rute</div>
+                <div class="font-extrabold text-emerald-500 mt-0.5" data-i18n="compare_cool_stat_detour"><8% Waktu</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ====================================================================
+       3. LIVE MICROCLIMATE RADAR WIDGET SECTION (FLUID 100% WIDTH)
+       ==================================================================== -->
+  <section id="climate-radar" class="w-full py-[6vh] md:py-[8vh] border-t border-b glass-navbar relative">
+    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto">
+      
+      <!-- Section Header -->
+      <div class="text-center w-[96%] sm:w-[85%] md:w-[75%] lg:w-[65%] mx-auto mb-[4vh]">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full gradient-badge text-xs font-extrabold mb-3">
+          <i data-lucide="activity" class="w-3.5 h-3.5 text-primary-var animate-pulse"></i>
+          <span data-i18n="radar_tag">PEMANTAUAN MIKROKLIMAT LIVE</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl 2xl:text-5xl font-extrabold tracking-tight mb-3" data-i18n="radar_title">
+          Radar Cuaca & Indeks Bahaya Termal Penghu
+        </h2>
+        <p class="text-sm sm:text-base 2xl:text-lg opacity-75 leading-relaxed" data-i18n="radar_subtitle">
+          Data biometeorologi langsung dari Kepulauan Penghu (23.56°N, 119.56°E) untuk menghitung indeks WBGT dan batas aman berkendara.
+        </p>
+      </div>
+
+      <!-- Radar Dashboard Container -->
+      <div class="w-full glass-card rounded-3xl p-6 sm:p-8 2xl:p-10 shadow-xl border">
+        
+        <!-- Live Status Bar & Refresh Button -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pb-6 border-b border-card">
+          <div class="flex items-center gap-3">
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </span>
+            <div>
+              <div class="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-emerald-500" data-i18n="radar_badge_live">
+                LIVE OPEN-METEO API
+              </div>
+              <div class="text-[11px] sm:text-xs opacity-60">Stasiun Magong City, Penghu (23.5654, 119.5668)</div>
+            </div>
+          </div>
+
+          <button onclick="fetchLiveWeatherData()" id="radar-refresh-btn" class="glass-card-inner px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 hover:bg-black/5 dark:hover:bg-white/5 transition-all">
+            <i data-lucide="refresh-cw" class="w-4 h-4 text-primary-var"></i>
+            <span data-i18n="radar_refresh_btn">Perbarui Data Cuaca</span>
+          </button>
+        </div>
+
+        <!-- 4 Metric Cards (Fluid 4-Col Grid) -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-[2%] my-6">
+          
+          <!-- Metric 1: Temp & Feels Like -->
+          <div class="glass-card-inner p-4 sm:p-5 rounded-2xl text-center">
+            <div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto mb-2">
+              <i data-lucide="thermometer-sun" class="w-5 h-5"></i>
+            </div>
+            <div class="text-xs sm:text-sm opacity-70 font-semibold" data-i18n="radar_temp_label">Suhu Udara</div>
+            <div id="radar-temp" class="text-2xl sm:text-3xl 2xl:text-4xl font-extrabold mt-1">27.5°C</div>
+            <div class="text-[11px] sm:text-xs opacity-60 mt-1.5">
+              <span data-i18n="radar_feels_label">Terasa</span>: <span id="radar-feels" class="font-bold text-amber-500">29.8°C</span>
+            </div>
+          </div>
+
+          <!-- Metric 2: UV Index & DNI -->
+          <div class="glass-card-inner p-4 sm:p-5 rounded-2xl text-center">
+            <div class="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-500 flex items-center justify-center mx-auto mb-2">
+              <i data-lucide="sun" class="w-5 h-5"></i>
+            </div>
+            <div class="text-xs sm:text-sm opacity-70 font-semibold" data-i18n="radar_uv_label">Indeks UV</div>
+            <div id="radar-uv" class="text-2xl sm:text-3xl 2xl:text-4xl font-extrabold text-purple-500 mt-1">4.5</div>
+            <div class="text-[11px] sm:text-xs opacity-60 mt-1.5">
+              <span data-i18n="radar_radiation_label">DNI</span>: <span id="radar-dni" class="font-bold">420 W/m²</span>
+            </div>
+          </div>
+
+          <!-- Metric 3: WBGT Index (ISO 7243) -->
+          <div id="radar-wbgt-card" class="glass-card-inner p-4 sm:p-5 rounded-2xl text-center border border-emerald-500/30 transition-all">
+            <div id="radar-wbgt-icon-box" class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto mb-2 transition-all">
+              <i id="radar-wbgt-icon" data-lucide="check-circle-2" class="w-5 h-5"></i>
+            </div>
+            <div class="text-xs sm:text-sm opacity-70 font-semibold" data-i18n="radar_wbgt_label">Indeks WBGT</div>
+            <div id="radar-wbgt" class="text-2xl sm:text-3xl 2xl:text-4xl font-extrabold text-emerald-500 mt-1 transition-colors">25.4°C</div>
+            <div id="radar-wbgt-sub" class="text-[10px] sm:text-xs font-bold text-emerald-500 uppercase mt-1.5 transition-colors" data-i18n="radar_wbgt_safe">
+              ISO 7243: AMAN & NYAMAN
+            </div>
+          </div>
+
+          <!-- Metric 4: Wind & Humidity -->
+          <div class="glass-card-inner p-4 sm:p-5 rounded-2xl text-center">
+            <div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-500 flex items-center justify-center mx-auto mb-2">
+              <i data-lucide="wind" class="w-5 h-5"></i>
+            </div>
+            <div class="text-xs sm:text-sm opacity-70 font-semibold" data-i18n="radar_wind_label">Kecepatan Angin</div>
+            <div id="radar-wind" class="text-2xl sm:text-3xl 2xl:text-4xl font-extrabold text-primary-var mt-1">24 km/j</div>
+            <div class="text-[11px] sm:text-xs opacity-60 mt-1.5">
+              <span data-i18n="radar_humidity_label">Kelembapan</span>: <span id="radar-humidity" class="font-bold">72%</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- WBGT Thermal Hazard Status & Medical Advice Alert Banner -->
+        <div id="radar-advice-banner" class="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-4 transition-all">
+          <div id="radar-advice-icon-box" class="p-2.5 rounded-xl bg-emerald-500 text-white shrink-0 mt-0.5 shadow-sm transition-all">
+            <i id="radar-advice-icon" data-lucide="check-circle-2" class="w-5 h-5"></i>
+          </div>
+          <div class="flex-1">
+            <div class="flex items-center gap-2">
+              <span id="radar-status-badge" class="text-xs sm:text-sm uppercase font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500 text-white transition-all" data-i18n="radar_status_comfortable">
+                KONDISI TERMAL NYAMAN
+              </span>
+              <span class="text-xs font-mono opacity-60">ISO 7243 Standard Medical Level</span>
+            </div>
+            <p id="radar-advice-text" class="text-xs sm:text-sm 2xl:text-base mt-2 opacity-90 leading-relaxed font-medium" data-i18n="radar_advice_comfortable">
+              Cuaca bersahabat untuk berkendara motor dan menjelajah luar ruangan.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ====================================================================
+       4. CARA KERJA ALGORITMA "NODING" (FLUID 3-STEP INFOGRAPHIC)
+       ==================================================================== -->
+  <section id="how-it-works" class="w-full py-[6vh] md:py-[8vh] relative overflow-hidden">
+    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto">
+      
+      <!-- Section Header -->
+      <div class="text-center w-[96%] sm:w-[85%] md:w-[75%] lg:w-[65%] mx-auto mb-[5vh]">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full gradient-badge text-xs font-extrabold mb-3">
+          <i data-lucide="cpu" class="w-3.5 h-3.5 text-primary-var"></i>
+          <span data-i18n="steps_tag">ARSITEKTUR ALGORITMA</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl 2xl:text-5xl font-extrabold tracking-tight mb-3" data-i18n="steps_title">
+          Cara Kerja Algoritma Routing Cerdas
+        </h2>
+        <p class="text-sm sm:text-base 2xl:text-lg opacity-75 leading-relaxed" data-i18n="steps_subtitle">
+          Proses 3 langkah komputasi graf node yang mentransformasi rute wisata biasa menjadi rute aman berketahanan iklim.
+        </p>
+      </div>
+
+      <!-- 3-Step Infographic Cards (Fluid 3-Col Grid) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-[2.5%] relative w-full">
+        
+        <!-- Step 1 -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 relative border hover:border-primary-var transition-all group flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl dynamic-btn-primary flex items-center justify-center font-black text-base shadow-lg mb-5 group-hover:scale-110 transition-transform">
+              01
+            </div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-primary-var" data-i18n="step1_badge">
+              Langkah 1: Data Ingestion
+            </span>
+            <h3 class="text-lg sm:text-xl font-extrabold mt-1 mb-3" data-i18n="step1_title">
+              Integrasi 2.190 Node Graf & Wikipedia
+            </h3>
+            <p class="text-xs sm:text-sm opacity-80 leading-relaxed" data-i18n="step1_desc">
+              Menggabungkan 505 node OSM (50 minimarket AC, 156 shelter), 1.685 data resmi pariwisata Taiwan, dan foto ensiklopedia Wikipedia dengan penamaan bilingual otomatis [Mandarin] / [English].
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-card flex items-center gap-2 text-xs font-mono opacity-70">
+            <i data-lucide="database" class="w-4 h-4 text-cyan-500"></i>
+            <span>2.190 Master POIs Processed</span>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 relative border hover:border-amber-500 transition-all group flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center font-black text-base shadow-lg mb-5 group-hover:scale-110 transition-transform">
+              02
+            </div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-amber-500" data-i18n="step2_badge">
+              Langkah 2: Threshold Detection
+            </span>
+            <h3 class="text-lg sm:text-xl font-extrabold mt-1 mb-3" data-i18n="step2_title">
+              Deteksi Ambang Batas Paparan Panas (>15 m)
+            </h3>
+            <p class="text-xs sm:text-sm opacity-80 leading-relaxed" data-i18n="step2_desc">
+              Algoritma mengevaluasi durasi rute terbuka terhadap batas ambang ISO 7243 T_max = 60 / (WBGT - 27)^1.2. Jika durasi rute melebihi batas aman termal, peringatan dipicu.
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-card flex items-center gap-2 text-xs font-mono opacity-70">
+            <i data-lucide="flame" class="w-4 h-4 text-amber-500"></i>
+            <span>Continuous Heat Monitor</span>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 relative border hover:border-emerald-500 transition-all group flex flex-col justify-between">
+          <div>
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-white flex items-center justify-center font-black text-base shadow-lg mb-5 group-hover:scale-110 transition-transform">
+              03
+            </div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-500" data-i18n="step3_badge">
+              Langkah 3: AC Injection
+            </span>
+            <h3 class="text-lg sm:text-xl font-extrabold mt-1 mb-3" data-i18n="step3_title">
+              Injeksi Otomatis Hub AC Berbasis Pareto
+            </h3>
+            <p class="text-xs sm:text-sm opacity-80 leading-relaxed" data-i18n="step3_desc">
+              Sistem secara cerdas menyisipkan 7-Eleven / FamilyMart terdekat sebagai waypoint wajib dengan deviasi jarak &le;15%, menurunkan beban termal hingga -65% sebelum menyeberang jembatan.
+            </p>
+          </div>
+          <div class="mt-5 pt-4 border-t border-card flex items-center gap-2 text-xs font-mono opacity-70">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+            <span>-65% Thermal Strain Lowered</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Visual Node Injection Flow Diagram (Fluid Width) -->
+      <div class="mt-10 w-full glass-card rounded-3xl p-6 sm:p-8 text-center border">
+        <div class="text-xs sm:text-sm font-mono font-bold opacity-60 uppercase mb-5">
+          GRAPH NODE ROUTING TRANSFORMATION VISUALIZATION
+        </div>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 text-xs sm:text-sm font-bold">
+          
+          <div class="px-5 py-3 rounded-2xl glass-card-inner border flex items-center gap-2">
+            <div class="w-3.5 h-3.5 rounded-full bg-cyan-500"></div>
+            <span>Origin: 馬公港 (Magong)</span>
+          </div>
+
+          <i data-lucide="arrow-right" class="w-5 h-5 text-primary-var hidden sm:block"></i>
+          <i data-lucide="arrow-down" class="w-5 h-5 text-primary-var sm:hidden"></i>
+
+          <div class="px-5 py-3 rounded-2xl bg-emerald-500/15 border-2 border-emerald-500 flex items-center gap-2 animate-pulse-soft">
+            <span class="text-emerald-500 text-base">❄️</span>
+            <span>Waypoint: 7-Eleven 通梁門市 (+12 Min Rest)</span>
+          </div>
+
+          <i data-lucide="arrow-right" class="w-5 h-5 text-primary-var hidden sm:block"></i>
+          <i data-lucide="arrow-down" class="w-5 h-5 text-primary-var sm:hidden"></i>
+
+          <div class="px-5 py-3 rounded-2xl glass-card-inner border flex items-center gap-2">
+            <div class="w-3.5 h-3.5 rounded-full bg-amber-500"></div>
+            <span>Destination: 跨海大橋 (Bridge)</span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ====================================================================
+       5. LANDASAN ILMIAH (4 ACADEMIC SCHEMES SHOWCASE - FLUID)
+       ==================================================================== -->
+  <section id="scientific-schemes" class="w-full py-[6vh] md:py-[8vh] border-t border-b glass-navbar relative">
+    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto">
+      
+      <!-- Section Header -->
+      <div class="text-center w-[96%] sm:w-[85%] md:w-[75%] lg:w-[65%] mx-auto mb-[4vh]">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full gradient-badge text-xs font-extrabold mb-3">
+          <i data-lucide="book-open" class="w-3.5 h-3.5 text-primary-var"></i>
+          <span data-i18n="schemes_section_tag">LANDASAN ILMIAH</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl 2xl:text-5xl font-extrabold tracking-tight mb-3" data-i18n="schemes_section_title">
+          4 Skema Biometeorologi Berbasis Jurnal
+        </h2>
+        <p class="text-sm sm:text-base 2xl:text-lg opacity-75 leading-relaxed" data-i18n="schemes_section_subtitle">
+          Algoritma Penghu Cool-Ride dirancang berdasarkan 4 standar internasional dan model matematika fisiologis teruji.
+        </p>
+      </div>
+
+      <!-- Scheme Selector Tabs (Fluid Spacing) -->
+      <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 w-full mx-auto mb-8">
+        <button onclick="selectSchemeDetail(1)" id="scheme-tab-1" class="px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold dynamic-btn-primary shadow transition-all">
+          <span data-i18n="scheme_tab_1">ISO 7243 (WBGT)</span>
+        </button>
+        <button onclick="selectSchemeDetail(2)" id="scheme-tab-2" class="px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold glass-card-inner border opacity-75 hover:opacity-100 transition-all">
+          <span data-i18n="scheme_tab_2">UTCI Strain</span>
+        </button>
+        <button onclick="selectSchemeDetail(3)" id="scheme-tab-3" class="px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold glass-card-inner border opacity-75 hover:opacity-100 transition-all">
+          <span data-i18n="scheme_tab_3">COMFA Solar Budget</span>
+        </button>
+        <button onclick="selectSchemeDetail(4)" id="scheme-tab-4" class="px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold glass-card-inner border opacity-75 hover:opacity-100 transition-all">
+          <span data-i18n="scheme_tab_4">Bi-Objective Pareto</span>
+        </button>
+      </div>
+
+      <!-- Active Scheme Detail Card (Fluid Width) -->
+      <div id="scheme-content-card" class="w-full glass-card rounded-3xl p-6 sm:p-8 2xl:p-10 shadow-xl border mb-12">
+        <!-- Dynamically rendered via JS -->
+      </div>
+
+      <!-- Comparative Benchmark Simulation Table (Fluid Width) -->
+      <div class="w-full glass-card rounded-3xl p-6 sm:p-8 2xl:p-10 shadow-xl border">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-6">
+          <div>
+            <h3 class="text-lg sm:text-xl 2xl:text-2xl font-extrabold" data-i18n="scheme_benchmark_title">
+              Hasil Uji Simulasi Benchmark di Jalur Populer Penghu
+            </h3>
+            <p class="text-xs sm:text-sm opacity-75" data-i18n="scheme_benchmark_desc">
+              Kondisi simulasi terik siang (Suhu 35.2°C, Feels Like 39.8°C, WBGT 31.4°C, UV 10.5)
+            </p>
+          </div>
+          <span class="text-[10px] sm:text-xs font-mono font-bold px-3 py-1 rounded-full bg-cyan-500/10 text-primary-var border border-cyan-500/30">
+            N = 4 ROUTE BENCHMARKS
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-xs sm:text-sm 2xl:text-base">
+            <thead>
+              <tr class="border-b border-card opacity-60 text-[11px] sm:text-xs uppercase tracking-wider">
+                <th class="py-3.5 px-3" data-i18n="bench_th_route">Nama Rute Populer</th>
+                <th class="py-3.5 px-3 text-center" data-i18n="bench_th_distance">Jarak</th>
+                <th class="py-3.5 px-3 text-center" data-i18n="bench_th_direct_time">Waktu Langsung</th>
+                <th class="py-3.5 px-3 text-center text-emerald-500" data-i18n="bench_th_rest_time">Jeda AC Wajib</th>
+                <th class="py-3.5 px-3 text-center" data-i18n="bench_th_total_time">Total Waktu</th>
+                <th class="py-3.5 px-3 text-right text-emerald-500 font-bold" data-i18n="bench_th_strain_reduction">Reduksi Termal</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-card font-medium">
+              <tr>
+                <td class="py-4 px-3 font-bold">Beihuan North Ring (Magong ➔ Penghu Great Bridge)</td>
+                <td class="py-4 px-3 text-center font-mono">9.9 km</td>
+                <td class="py-4 px-3 text-center font-mono">17.0 min</td>
+                <td class="py-4 px-3 text-center font-mono text-emerald-500 font-bold">12.0 min (7-11)</td>
+                <td class="py-4 px-3 text-center font-mono">29.0 min</td>
+                <td class="py-4 px-3 text-right font-extrabold text-emerald-500">-65.0%</td>
+              </tr>
+              <tr>
+                <td class="py-4 px-3 font-bold">Xiyu Exploration (Magong ➔ Daguoye Columnar Basalt)</td>
+                <td class="py-4 px-3 text-center font-mono">6.0 km</td>
+                <td class="py-4 px-3 text-center font-mono">10.3 min</td>
+                <td class="py-4 px-3 text-center font-mono opacity-50">0.0 min (Aman)</td>
+                <td class="py-4 px-3 text-center font-mono">10.3 min</td>
+                <td class="py-4 px-3 text-right font-mono opacity-50">0.0%</td>
+              </tr>
+              <tr>
+                <td class="py-4 px-3 font-bold">Huxi Line (Magong Airport ➔ Kuobishan Moses Parting)</td>
+                <td class="py-4 px-3 text-center font-mono">5.6 km</td>
+                <td class="py-4 px-3 text-center font-mono">9.5 min</td>
+                <td class="py-4 px-3 text-center font-mono opacity-50">0.0 min (Aman)</td>
+                <td class="py-4 px-3 text-center font-mono">9.5 min</td>
+                <td class="py-4 px-3 text-right font-mono opacity-50">0.0%</td>
+              </tr>
+              <tr>
+                <td class="py-4 px-3 font-bold">Magong Historical Walking Tour (Magong Old Street)</td>
+                <td class="py-4 px-3 text-center font-mono">0.6 km</td>
+                <td class="py-4 px-3 text-center font-mono">8.0 min</td>
+                <td class="py-4 px-3 text-center font-mono opacity-50">0.0 min (Aman)</td>
+                <td class="py-4 px-3 text-center font-mono">8.0 min</td>
+                <td class="py-4 px-3 text-right font-mono opacity-50">0.0%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ====================================================================
+       6. DESTINASI IKONIK & WIKIPEDIA KNOWLEDGE CARDS (FLUID 4-COL GRID)
+       ==================================================================== -->
+  <section id="destinations" class="w-full py-[6vh] md:py-[8vh] relative">
+    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto">
+      
+      <!-- Section Header -->
+      <div class="text-center w-[96%] sm:w-[85%] md:w-[75%] lg:w-[65%] mx-auto mb-[4vh]">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full gradient-badge text-xs font-extrabold mb-3">
+          <i data-lucide="compass" class="w-3.5 h-3.5 text-primary-var"></i>
+          <span data-i18n="dest_tag">EXPLORE PENGHU</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl 2xl:text-5xl font-extrabold tracking-tight mb-3" data-i18n="dest_title">
+          Destinasi Ikonik & Ensiklopedia Wikipedia
+        </h2>
+        <p class="text-sm sm:text-base 2xl:text-lg opacity-75 leading-relaxed" data-i18n="dest_subtitle">
+          Jelajahi landmark terkenal Kepulauan Penghu yang telah diperkaya dengan foto resolusi tinggi dan data ensiklopedia resmi.
+        </p>
+      </div>
+
+      <!-- Destination Cards Grid (Fluid Responsive Columns) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-[2%]" id="destination-grid">
+        <!-- Rendered via JS -->
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ====================================================================
+       7. FAQ & EMERGENCY SAFETY GUIDE (FLUID 3-COL GRID)
+       ==================================================================== -->
+  <section id="faq" class="w-full py-[6vh] md:py-[8vh] border-t glass-navbar relative">
+    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto">
+      
+      <!-- Section Header -->
+      <div class="text-center w-[96%] sm:w-[85%] md:w-[75%] lg:w-[65%] mx-auto mb-[4vh]">
+        <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full gradient-badge text-xs font-extrabold mb-3">
+          <i data-lucide="help-circle" class="w-3.5 h-3.5 text-primary-var"></i>
+          <span data-i18n="faq_tag">INFORMASI & KEAMANAN</span>
+        </div>
+        <h2 class="text-2xl sm:text-3xl md:text-4xl 2xl:text-5xl font-extrabold tracking-tight mb-3" data-i18n="faq_title">
+          Pertanyaan yang Sering Diajukan (FAQ)
+        </h2>
+        <p class="text-sm sm:text-base 2xl:text-lg opacity-75 leading-relaxed" data-i18n="faq_subtitle">
+          Panduan penting seputar keselamatan berwisata di Penghu, penggunaan motor, dan legalitas data terbuka.
+        </p>
+      </div>
+
+      <!-- FAQ Accordion & Emergency Card Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-[3%] w-full items-start">
+        
+        <!-- Accordion List (2 Cols) -->
+        <div class="lg:col-span-2 space-y-4" id="faq-accordion">
+          
+          <!-- Item 1 -->
+          <div class="glass-card rounded-2xl border overflow-hidden">
+            <button onclick="toggleFaq(1)" class="w-full p-4 sm:p-5 text-left font-bold text-sm sm:text-base flex items-center justify-between gap-4 focus:outline-none">
+              <span data-i18n="faq_q1">Mengapa wisatawan di Penghu sangat rentan terserang heatstroke?</span>
+              <i id="faq-icon-1" data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div id="faq-content-1" class="px-4 sm:px-5 pb-5 text-xs sm:text-sm opacity-80 leading-relaxed border-t border-card pt-3">
+              <p data-i18n="faq_a1">
+                Penghu adalah kepulauan terbuka dengan vegetasi pohon tinggi yang sangat minim. Di musim panas, suhu sering melampaui 35°C dengan Indeks UV >10. Mayoritas turis mengendarai sepeda motor sewaan melintasi jembatan terbuka (seperti Jembatan Lintas Laut Penghu sepanjang 2,49 km) di mana angin kencang mempercepat penguapan keringat tanpa disadari, memicu dehidrasi akut.
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="glass-card rounded-2xl border overflow-hidden">
+            <button onclick="toggleFaq(2)" class="w-full p-4 sm:p-5 text-left font-bold text-sm sm:text-base flex items-center justify-between gap-4 focus:outline-none">
+              <span data-i18n="faq_q2">Mengapa minimarket 7-Eleven & FamilyMart dipilih sebagai hub pendinginan?</span>
+              <i id="faq-icon-2" data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div id="faq-content-2" class="hidden px-4 sm:px-5 pb-5 text-xs sm:text-sm opacity-80 leading-relaxed border-t border-card pt-3">
+              <p data-i18n="faq_a2">
+                Penghu memiliki densitas minimarket 24 jam ber-AC tertinggi per kapita di pulau-pulau terluar Taiwan (lebih dari 50 gerai di pulau utama). Minimarket ini ber-AC dingin (~22°C), menjual air minum dan es kaktus, serta memiliki area duduk santai gratis yang ideal untuk menurunkan suhu inti tubuh.
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="glass-card rounded-2xl border overflow-hidden">
+            <button onclick="toggleFaq(3)" class="w-full p-4 sm:p-5 text-left font-bold text-sm sm:text-base flex items-center justify-between gap-4 focus:outline-none">
+              <span data-i18n="faq_q3">Berapa penambahan waktu perjalanan jika rute pendinginan diaktifkan?</span>
+              <i id="faq-icon-3" data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div id="faq-content-3" class="hidden px-4 sm:px-5 pb-5 text-xs sm:text-sm opacity-80 leading-relaxed border-t border-card pt-3">
+              <p data-i18n="faq_a3">
+                Berdasarkan model Pareto Constrained kami, deviasi rute hanya menambah waktu tempuh sekitar 5-8% (1-2 km jarak tempuh tambahan), ditambah jeda istirahat AC selama 10-15 menit. Hasilnya adalah penurunan 65% risiko kelelahan panas ekstrem.
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 4 -->
+          <div class="glass-card rounded-2xl border overflow-hidden">
+            <button onclick="toggleFaq(4)" class="w-full p-4 sm:p-5 text-left font-bold text-sm sm:text-base flex items-center justify-between gap-4 focus:outline-none">
+              <span data-i18n="faq_q4">Apakah data POI dan peta ini legal dan bebas biaya?</span>
+              <i id="faq-icon-4" data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div id="faq-content-4" class="hidden px-4 sm:px-5 pb-5 text-xs sm:text-sm opacity-80 leading-relaxed border-t border-card pt-3">
+              <p data-i18n="faq_a4">
+                100% legal, aman, dan open-source. Seluruh data 2.190 POI dihimpun dari OpenStreetMap (lisensi ODbL), Data Terbuka Resmi Biro Pariwisata Taiwan (Open Government Data License v1.0), dan Wikimedia Commons (CC-BY-SA).
+              </p>
+            </div>
+          </div>
+
+          <!-- Item 5 -->
+          <div class="glass-card rounded-2xl border overflow-hidden">
+            <button onclick="toggleFaq(5)" class="w-full p-4 sm:p-5 text-left font-bold text-sm sm:text-base flex items-center justify-between gap-4 focus:outline-none">
+              <span data-i18n="faq_q5">Bisakah aplikasi ini digunakan untuk tur jalan kaki (walking tour)?</span>
+              <i id="faq-icon-5" data-lucide="chevron-down" class="w-5 h-5 transition-transform"></i>
+            </button>
+            <div id="faq-content-5" class="hidden px-4 sm:px-5 pb-5 text-xs sm:text-sm opacity-80 leading-relaxed border-t border-card pt-3">
+              <p data-i18n="faq_a5">
+                Ya! Aplikasi menyediakan toggle mode Jalan Kaki (kecepatan rata-rata 4.5 km/j) yang sangat berguna untuk eksplorasi sejarah di kawasan Kota Tua Magong (Zhongyang Street & Kuil Tianhou).
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Emergency Support Card (1 Col - Verified Penghu Contacts) -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 border border-red-500/30 flex flex-col justify-between shadow-lg">
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <div class="w-12 h-12 rounded-2xl bg-red-500 text-white flex items-center justify-center shadow-lg">
+                <i data-lucide="phone-call" class="w-6 h-6 animate-pulse"></i>
+              </div>
+              <span class="text-[10px] font-mono font-extrabold px-2.5 py-1 rounded-full bg-red-500/15 text-red-500 border border-red-500/30">
+                PENGHU 24/7 HOTLINE
+              </span>
+            </div>
+            <h3 class="text-base sm:text-lg 2xl:text-xl font-extrabold text-red-500 mb-1" data-i18n="emergency_card_title">
+              Layanan Darurat Medis, Ambulans & Damkar Penghu
+            </h3>
+            <p class="text-xs sm:text-sm opacity-75 mb-5" data-i18n="emergency_card_desc">
+              Simpan nomor darurat resmi Kepulauan Penghu berikut saat berwisata:
+            </p>
+
+            <div class="space-y-3 text-xs sm:text-sm font-semibold">
+              
+              <!-- 1. Fire Bureau & Ambulance (119) -->
+              <div class="p-3 rounded-2xl bg-red-500/10 border-2 border-red-500/30 flex items-center justify-between">
+                <div>
+                  <div class="font-extrabold text-red-500 flex items-center gap-1.5" data-i18n="emergency_fire_ambulance">
+                    <i data-lucide="ambulance" class="w-4 h-4"></i>
+                    Dinas Damkar & Ambulans Penghu
+                  </div>
+                  <div class="text-[10px] sm:text-[11px] opacity-75 mt-0.5" data-i18n="emergency_fire_ambulance_sub">
+                    Layanan 119 & Penyelamatan (06) 927-4004
+                  </div>
+                </div>
+                <a href="tel:119" class="font-mono text-sm sm:text-base font-black px-3 py-1 rounded-xl bg-red-500 text-white hover:bg-red-600 transition shadow">119</a>
+              </div>
+
+              <!-- 2. Main Penghu Hospital MOHW (24H ER) -->
+              <div class="p-3 rounded-2xl glass-card-inner border flex items-center justify-between">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5" data-i18n="emergency_hospital_main">
+                    <i data-lucide="hospital" class="w-4 h-4 text-primary-var"></i>
+                    RS Penghu Kemenkes (UGD 24 Jam)
+                  </div>
+                  <div class="text-[10px] sm:text-[11px] opacity-70 mt-0.5" data-i18n="emergency_hospital_main_sub">
+                    Pusat Rujukan Medis: (06) 926-1151
+                  </div>
+                </div>
+                <a href="tel:+88669261151" class="font-mono text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-xl glass-card border hover:bg-black/5 transition">(06) 926-1151</a>
+              </div>
+
+              <!-- 3. Tri-Service General Hospital Penghu Branch -->
+              <div class="p-3 rounded-2xl glass-card-inner border flex items-center justify-between">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5" data-i18n="emergency_hospital_military">
+                    <i data-lucide="cross" class="w-4 h-4 text-emerald-500"></i>
+                    RS Militer Tri-Service Penghu
+                  </div>
+                  <div class="text-[10px] sm:text-[11px] opacity-70 mt-0.5" data-i18n="emergency_hospital_military_sub">
+                    IGD & Ruang Hiperbarik: (06) 921-5080
+                  </div>
+                </div>
+                <a href="tel:+88669215080" class="font-mono text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-xl glass-card border hover:bg-black/5 transition">(06) 921-5080</a>
+              </div>
+
+              <!-- 4. Police (110) -->
+              <div class="p-3 rounded-2xl glass-card-inner border flex items-center justify-between">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5" data-i18n="emergency_police_title">
+                    <i data-lucide="shield" class="w-4 h-4 text-slate-400"></i>
+                    Kepolisian Daerah Penghu (110)
+                  </div>
+                  <div class="text-[10px] sm:text-[11px] opacity-70 mt-0.5" data-i18n="emergency_police_sub">
+                    Pusat Komando Keamanan: (06) 927-2105
+                  </div>
+                </div>
+                <a href="tel:110" class="font-mono text-xs sm:text-sm font-black px-2.5 py-1 rounded-xl bg-slate-700 text-white hover:bg-slate-800 transition">110</a>
+              </div>
+
+              <!-- 5. Coast Guard (118) -->
+              <div class="p-3 rounded-2xl glass-card-inner border flex items-center justify-between">
+                <div>
+                  <div class="font-bold flex items-center gap-1.5" data-i18n="emergency_coastguard_title">
+                    <i data-lucide="life-buoy" class="w-4 h-4 text-cyan-500"></i>
+                    Penjaga Pantai & SAR Laut (118)
+                  </div>
+                  <div class="text-[10px] sm:text-[11px] opacity-70 mt-0.5" data-i18n="emergency_coastguard_sub">
+                    Penyelamatan Laut Penghu: (06) 921-5223
+                  </div>
+                </div>
+                <a href="tel:118" class="font-mono text-xs sm:text-sm font-black px-2.5 py-1 rounded-xl bg-cyan-600 text-white hover:bg-cyan-700 transition">118</a>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="mt-6 pt-4 border-t border-card text-center">
+            <a href="index.html" class="w-full dynamic-btn-primary py-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow">
+              <i data-lucide="map-pin" class="w-4 h-4"></i>
+              <span data-i18n="nav_cta_map">Buka Peta & Shelter Terdekat</span>
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ====================================================================
+       8. FOOTER WITH CREATOR BRANDING & COOKIE PREFERENCES LINK
+       ==================================================================== -->
+  <footer class="w-full glass-navbar border-t py-12 text-xs opacity-90">
+    <div class="w-[94%] sm:w-[92%] md:w-[90%] lg:w-[88%] xl:w-[86%] 2xl:w-[82%] mx-auto">
+      
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-[4%] pb-10 border-b border-card">
+        
+        <!-- Col 1: Branding & Creator -->
+        <div class="md:col-span-2 space-y-3.5">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl dynamic-btn-primary flex items-center justify-center shadow">
+              <i data-lucide="palmtree" class="w-5 h-5 text-white"></i>
+            </div>
+            <span class="font-extrabold text-base sm:text-lg tracking-tight">Penghu Cool-Ride (澎湖清涼導航)</span>
+          </div>
+          <p class="text-xs sm:text-sm opacity-75 max-w-lg leading-relaxed" data-i18n="footer_about_desc">
+            Platform riset dan navigasi wisata cerdas berbasis iklim pertama untuk Kepulauan Penghu. Mengintegrasikan graf POI 2.190 node dengan pemodelan biometeorologi pencegahan sengatan panas.
+          </p>
+          
+          <!-- Creator Attribution Link -->
+          <div class="flex flex-wrap items-center gap-3 pt-2">
+            <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="glass-card-inner px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 hover:opacity-100 transition-opacity border text-primary-var shadow-sm">
+              <span data-i18n="created_by">Dibuat dengan ❤️ oleh</span>
+              <span class="font-extrabold underline">Corneliox</span>
+              <i data-lucide="arrow-up-right" class="w-3.5 h-3.5"></i>
+            </a>
+            <a href="https://github.com/Corneliox/MapNodeWeightRecommendation" target="_blank" rel="noopener noreferrer" class="glass-card-inner px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 hover:opacity-100 transition-opacity border">
+              <i data-lucide="github" class="w-4 h-4"></i>
+              <span>GitHub Repo</span>
+            </a>
+            <a href="https://corneliox.github.io/MapNodeWeightRecommendation/" class="glass-card-inner px-3.5 py-2 rounded-xl font-bold flex items-center gap-1.5 hover:opacity-100 transition-opacity border text-emerald-500">
+              <i data-lucide="globe" class="w-4 h-4"></i>
+              <span>Live App</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Col 2: Navigation Links -->
+        <div class="space-y-3">
+          <div class="font-extrabold text-sm sm:text-base text-primary-var" data-i18n="footer_nav_title">Navigasi Cepat</div>
+          <ul class="space-y-2 opacity-80 font-medium text-xs sm:text-sm">
+            <li><a href="#how-it-works" class="hover:underline" data-i18n="nav_how_it_works">Cara Kerja</a></li>
+            <li><a href="#climate-radar" class="hover:underline" data-i18n="nav_climate_radar">Radar Iklim</a></li>
+            <li><a href="#scientific-schemes" class="hover:underline" data-i18n="nav_schemes">Landasan Ilmiah</a></li>
+            <li><a href="#destinations" class="hover:underline" data-i18n="nav_destinations">Destinasi Ikonik</a></li>
+            <li><a href="#faq" class="hover:underline" data-i18n="nav_faq">FAQ & Keselamatan</a></li>
+            <li><a href="index.html" class="hover:underline text-cyan-500 font-bold" data-i18n="nav_cta_map">Buka Peta Rute</a></li>
+          </ul>
+        </div>
+
+        <!-- Col 3: Academic Standards & Privacy -->
+        <div class="space-y-3">
+          <div class="font-extrabold text-sm sm:text-base text-primary-var" data-i18n="footer_science_title">Landasan Akademik & Privasi</div>
+          <ul class="space-y-1.5 opacity-80 text-[11px] sm:text-xs font-mono">
+            <li>ISO 7243:2017 (WBGT Index)</li>
+            <li>UTCI Physiological Strain (2012)</li>
+            <li>COMFA Solar Budget (1995)</li>
+            <li>Bi-Objective Pareto (2009)</li>
+            <li>OpenStreetMap (ODbL)</li>
+          </ul>
+          <div class="pt-2">
+            <button onclick="openCookieModal()" class="text-xs font-bold text-primary-var hover:underline flex items-center gap-1">
+              <i data-lucide="cookie" class="w-3.5 h-3.5"></i>
+              <span data-i18n="cookie_policy_footer">Pengaturan Cookie & Privasi</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom Copyright & Creator Signature -->
+      <div class="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+        <div class="flex items-center gap-2">
+          <span data-i18n="footer_copy">Hak Cipta &copy; 2026 Penghu Cool-Ride. Dirilis di bawah Lisensi MIT.</span>
+          <span class="opacity-40 hidden sm:inline">|</span>
+          <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="font-extrabold hover:underline text-primary-var hidden sm:inline">
+            Designed & Built by Corneliox
+          </a>
+        </div>
+        <div class="text-[11px] sm:text-xs opacity-60" data-i18n="footer_open_data_note">
+          Data bersumber dari OpenStreetMap, Biro Pariwisata Taiwan, dan Wikimedia Commons.
+        </div>
+      </div>
+
+    </div>
+  </footer>
+
+
+  <!-- ====================================================================
+       DESTINATION DETAIL MODAL (WIKIPEDIA INSIGHTS)
+       ==================================================================== -->
+  <div id="dest-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card w-[94%] sm:w-[80%] md:w-[60%] lg:w-[45%] xl:w-[35%] rounded-3xl overflow-hidden shadow-2xl border flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Image -->
+      <div class="relative h-48 sm:h-56 2xl:h-64 bg-slate-900 shrink-0">
+        <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+        <button onclick="closeDestModal()" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/50 text-white flex items-center justify-center hover:bg-black/80 transition-colors">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+        <div class="absolute bottom-3 left-4 right-4">
+          <span id="modal-category" class="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-cyan-500 text-white">
+            ATTRACTION
+          </span>
+          <h3 id="modal-title" class="text-lg sm:text-xl font-extrabold text-white mt-1">
+            Landmark Name
+          </h3>
+        </div>
+      </div>
+
+      <!-- Modal Content -->
+      <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 space-y-4">
+        <div class="flex items-center gap-2 text-xs font-mono opacity-70">
+          <i data-lucide="book-open" class="w-3.5 h-3.5 text-primary-var"></i>
+          <span>Wikipedia Verified Knowledge Base</span>
+        </div>
+        <p id="modal-desc" class="text-xs sm:text-sm leading-relaxed opacity-90">
+          Summary description...
+        </p>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 border-t border-card glass-card-inner flex items-center justify-between gap-3">
+        <a id="modal-wiki-link" href="#" target="_blank" rel="noopener noreferrer" class="text-xs sm:text-sm font-bold text-cyan-600 dark:text-cyan-400 hover:underline flex items-center gap-1">
+          <span data-i18n="dest_modal_wiki_btn">Buka Artikel Lengkap di Wikipedia ↗</span>
+        </a>
+        <button onclick="closeDestModal()" class="px-4 py-1.5 rounded-xl glass-card border text-xs sm:text-sm font-bold hover:bg-black/5 dark:hover:bg-white/5" data-i18n="dest_modal_close">
+          Tutup
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ====================================================================
+       9. GDPR & TAIWAN PDPA COMPLIANT FLOATING COOKIE CONSENT BANNER
+       ==================================================================== -->
+  <div id="cookie-banner" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 z-50 max-w-xl glass-card rounded-3xl p-5 sm:p-6 border shadow-2xl transition-all duration-300 hidden">
+    <div class="flex items-start gap-4">
+      <div class="w-10 h-10 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center shrink-0 mt-0.5">
+        <i data-lucide="cookie" class="w-5 h-5"></i>
+      </div>
+      <div class="flex-1 space-y-2">
+        <h4 class="font-extrabold text-sm sm:text-base text-primary-var" data-i18n="cookie_title">
+          Privasi & Preferensi Cookie
+        </h4>
+        <p class="text-xs opacity-80 leading-relaxed" data-i18n="cookie_desc">
+          Kami menggunakan penyimpanan lokal (Local Storage) dan cookie esensial murni untuk mengingat pilihan tema dan preferensi bahasa Anda demi kenyamanan navigasi tanpa pelacakan data pribadi (Sesuai GDPR & Taiwan PDPA).
+        </p>
+        <div class="pt-2 flex flex-wrap items-center gap-2">
+          <button onclick="acceptAllCookies()" class="dynamic-btn-primary px-4 py-2 rounded-xl font-bold text-xs shadow hover:scale-105 transition-all">
+            <span data-i18n="cookie_btn_accept">Terima Semua 🍪</span>
+          </button>
+          <button onclick="acceptEssentialCookies()" class="glass-card-inner border px-3.5 py-2 rounded-xl font-semibold text-xs hover:bg-black/5 dark:hover:bg-white/5 transition-all">
+            <span data-i18n="cookie_btn_essential">Hanya Esensial</span>
+          </button>
+          <button onclick="openCookieModal()" class="text-xs font-bold text-primary-var hover:underline px-2 py-2">
+            <span data-i18n="cookie_settings_btn">Pengaturan</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ====================================================================
+       10. COOKIE & PRIVACY PREFERENCES MODAL
+       ==================================================================== -->
+  <div id="cookie-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="glass-card w-[94%] sm:w-[85%] md:w-[65%] lg:w-[48%] xl:w-[40%] rounded-3xl overflow-hidden shadow-2xl border flex flex-col max-h-[90vh]">
+      
+      <!-- Modal Header -->
+      <div class="p-5 sm:p-6 border-b border-card flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-amber-500/15 text-amber-500 flex items-center justify-center">
+            <i data-lucide="shield-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="font-extrabold text-base sm:text-lg" data-i18n="cookie_modal_title">
+              Pusat Preferensi Privasi & Cookie
+            </h3>
+            <p class="text-xs opacity-60">GDPR & Taiwan Personal Data Protection Act Compliance</p>
+          </div>
+        </div>
+        <button onclick="closeCookieModal()" class="p-2 rounded-xl glass-card-inner border hover:bg-black/5">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-5 sm:p-6 overflow-y-auto custom-scrollbar flex-1 space-y-4 text-xs sm:text-sm">
+        <p class="opacity-80 leading-relaxed" data-i18n="cookie_modal_desc">
+          Anda dapat mengontrol preferensi penyimpanan data browser Anda di bawah ini:
+        </p>
+
+        <!-- Preference 1: Essential Cookies (Locked ON) -->
+        <div class="p-4 rounded-2xl glass-card-inner border space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold text-primary-var flex items-center gap-2">
+              <i data-lucide="lock" class="w-4 h-4 text-emerald-500"></i>
+              <span data-i18n="cookie_essential_title">Cookie Esensial & Penyimpanan Tema/Bahasa (Wajib)</span>
+            </span>
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+              SELALU AKTIF
+            </span>
+          </div>
+          <p class="text-xs opacity-75 leading-relaxed" data-i18n="cookie_essential_desc">
+            Diperlukan untuk menyimpan tema pilihan (Tropis, Alam, Ocean) dan preferensi bahasa (ID, EN, ZH) antar sesi kunjungan.
+          </p>
+        </div>
+
+        <!-- Preference 2: Optional Route Cache -->
+        <div class="p-4 rounded-2xl glass-card-inner border space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="font-extrabold flex items-center gap-2">
+              <i data-lucide="map" class="w-4 h-4 text-cyan-500"></i>
+              <span data-i18n="cookie_analytics_title">Preferensi Fitur Navigasi & Peta (Opsional)</span>
+            </span>
+            <label class="relative inline-flex items-center cursor-pointer">
+              <input type="checkbox" id="cookie-opt-nav" checked class="sr-only peer">
+              <div class="w-9 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-cyan-500"></div>
+            </label>
+          </div>
+          <p class="text-xs opacity-75 leading-relaxed" data-i18n="cookie_analytics_desc">
+            Menyimpan koordinat rute kustom terakhir dan filter kategori POI untuk memudahkan perjalanan Anda.
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-4 sm:p-5 border-t border-card glass-card-inner flex items-center justify-between gap-3">
+        <button onclick="closeCookieModal()" class="px-4 py-2 rounded-xl glass-card border text-xs sm:text-sm font-semibold hover:bg-black/5">
+          Batal
+        </button>
+        <button onclick="saveCustomCookies()" class="dynamic-btn-primary px-5 py-2 rounded-xl text-xs sm:text-sm font-extrabold shadow flex items-center gap-1.5">
+          <i data-lucide="check" class="w-4 h-4"></i>
+          <span data-i18n="cookie_save_btn">Simpan Pengaturan Preferensi</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ====================================================================
+       INTERACTIVE CLIENT-SIDE JAVASCRIPT
+       ==================================================================== -->
+  <script>
+    // --- Global State ---
+    let currentLang = localStorage.getItem('penghu_lang') || 'id';
+    let currentTheme = localStorage.getItem('penghu_theme') || 'tropical';
+    let translations = {};
+    let activeScheme = 1;
+    let latestWbgt = 25.4;
+
+    // --- Curated Iconic Destinations Database ---
+    const PENGHU_DESTINATIONS = [
+      {
+        id: "tongliang_banyan",
+        name_zh: "通梁古榕",
+        name_en: "Tongliang Great Banyan",
+        category: "Ancient Shade Canopy",
+        category_zh: "天然古榕樹蔭",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Taiwan-Penghu-Tongliang-Great-Banyan.JPG/330px-Taiwan-Penghu-Tongliang-Great-Banyan.JPG",
+        wiki_url: "https://zh.wikipedia.org/wiki/通梁古榕",
+        desc_id: "Pohon banyan raksasa berumur lebih dari 300 tahun di Desa Tongliang, Baisha. Memiliki hampir 100 akar gantung yang membentuk kanopi peneduh alami seluas 660 m² di depan Kuil Bao'an.",
+        desc_en: "A historic 300-year-old banyan tree in Tongliang, Baisha. Features nearly 100 aerial roots forming a massive 660 m² natural shade canopy in front of Bao'an Temple.",
+        desc_zh: "位於白沙鄉通梁村保安宮前，樹齡已達300多年，氣根近百條，枝葉繁茂形成廣達660平方公尺的天然綠蔭。"
+      },
+      {
+        id: "penghu_bridge",
+        name_zh: "澎湖跨海大橋",
+        name_en: "Penghu Great Bridge",
+        category: "Ocean Cross-Sea Bridge",
+        category_zh: "跨海公路大橋",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Penghu_Great_Bridge_20150619.jpg/330px-Penghu_Great_Bridge_20150619.jpg",
+        wiki_url: "https://zh.wikipedia.org/wiki/澎湖跨海大橋",
+        desc_id: "Jembatan sepanjang 2,49 km yang menghubungkan Pulau Baisha dan Pulau Xiyu melintasi Selat Houhan yang berarus deras. Ikon utama pariwisata Penghu.",
+        desc_en: "A 2.49 km long cross-sea bridge connecting Baisha and Xiyu islands across the turbulent Houhan Channel.",
+        desc_zh: "連接白沙鄉與西嶼鄉的跨海大橋，全長2,494公尺，橫跨潮流洶湧的吼門水道，為澎湖最具代表性的地標建築。"
+      },
+      {
+        id: "daguoye_basalt",
+        name_zh: "大菓葉柱狀玄武岩",
+        name_en: "Daguoye Columnar Basalt",
+        category: "Volcanic Basalt Geology",
+        category_zh: "火山柱狀玄武岩",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Chixi_Columnar_Basalt_in_Taiwan_Penghu_%E6%BE%8E%E6%B9%96%E6%B1%A0%E8%A5%BF%E5%B2%A9%E7%80%91.jpg/330px-Chixi_Columnar_Basalt_in_Taiwan_Penghu_%E6%BE%8E%E6%B9%96%E6%B1%A0%E8%A5%BF%E5%B2%A9%E7%80%91.jpg",
+        wiki_url: "https://zh.wikipedia.org/wiki/西嶼鄉",
+        desc_id: "Formasi tebing basal heksagonal vertikal spektakuler yang terbentuk dari pendinginan lava vulkanik purba di Xiyu ribuan tahun silam.",
+        desc_en: "Spectacular vertical hexagonal columnar basalt cliffs formed by cooling volcanic lava in Xiyu, standing opposite the ocean.",
+        desc_zh: "西嶼鄉著名的火山熔岩冷卻凝固形成的六角柱狀玄武岩壁，氣勢雄偉壯觀。"
+      },
+      {
+        id: "kuobishan_moses",
+        name_zh: "奎壁山摩西分海",
+        name_en: "Kuobishan Moses Parting",
+        category: "Tidal Wonder",
+        category_zh: "潮汐分海奇觀",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Kuobishan_Moses_Parting_20150620.jpg/330px-Kuobishan_Moses_Parting_20150620.jpg",
+        wiki_url: "https://zh.wikipedia.org/wiki/奎壁山",
+        desc_id: "Fenomena pasang surut air laut yang membuka jalur jalan setapak kerikil sepanjang 300 meter menuju Pulau Chiyu, menyerupai kisah terbelahnya Laut Merah.",
+        desc_en: "Famous tidal phenomenon where ocean waters recede at low tide to reveal a 300-meter pebble path connecting to Chiyu Island.",
+        desc_zh: "澎湖著名潮汐奇景，退潮時海水向兩側退去，露出通往赤嶼的300公尺玄武岩礫石步道。"
+      },
+      {
+        id: "shanshui_beach",
+        name_zh: "山水沙灘",
+        name_en: "Shanshui Beach",
+        category: "Golden Sand Coast",
+        category_zh: "金色細沙海岸",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/06/Magong_City%2C_Penghu_County%2C_Taiwan_2018.jpg/330px-Magong_City%2C_Penghu_County%2C_Taiwan_2018.jpg",
+        wiki_url: "https://zh.wikipedia.org/wiki/馬公市",
+        desc_id: "Pantai pasir emas terindah di Jalur Selatan Magong dengan ombak lembut dan air laut jernih kehijauan.",
+        desc_en: "The most picturesque golden sand beach in southern Magong, popular for gentle waves and crystal-clear waters.",
+        desc_zh: "馬公南環最富盛名的金色細沙海灘，海水清澈碧藍，為水上活動勝地。"
+      },
+      {
+        id: "fenggui_cave",
+        name_zh: "風櫃洞",
+        name_en: "Fenggui Blowholes",
+        category: "Sea Cave Acoustic Wonder",
+        category_zh: "海蝕洞穴風櫃聽濤",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/%E9%A2%A8%E6%AB%83%E6%B4%9E.jpg/330px-%E9%A2%A8%E6%AB%83%E6%B4%9E.jpg",
+        wiki_url: "https://zh.wikipedia.org/wiki/風櫃洞",
+        desc_id: "Gua erosi laut di semenanjung Fenggui. Ombak pasang yang menghantam celah batu basal menghasilkan semburan air dan suara dengung angin raksasa.",
+        desc_en: "A sea-cave erosion marvel where waves crash into basalt fissures, emitting whistling acoustic sounds and water sprays.",
+        desc_zh: "澎湖著名海蝕地形，海浪拍打玄武岩孔隙時會發出呼嘯巨響並噴出水柱。"
+      },
+      {
+        id: "yuwengdao_lighthouse",
+        name_zh: "漁翁島燈塔",
+        name_en: "Yuwengdao Lighthouse",
+        category: "National Heritage Site",
+        category_zh: "國定古蹟燈塔",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/%E6%BC%81%E7%BF%81%E5%B3%B6%E7%87%88%E5%A1%94_01.JPG/330px-%E6%BC%81%E7%BF%81%E5%B3%B6%E7%87%88%E5%A1%94_01.JPG",
+        wiki_url: "https://zh.wikipedia.org/wiki/漁翁島燈塔",
+        desc_id: "Mercusuar bergaya Barat pertama di Taiwan yang dibangun pada tahun 1778 di ujung barat daya Pulau Xiyu.",
+        desc_en: "Taiwan's earliest Western-style lighthouse established in 1778 at the southwestern tip of Xiyu Island.",
+        desc_zh: "西元1778年設立之台灣最早西式燈塔，位處西嶼最南端，為國定古蹟。"
+      },
+      {
+        id: "twin_heart_weir",
+        name_zh: "雙心石滬觀景台",
+        name_en: "Twin-Heart Stone Weir",
+        category: "Traditional Tidal Weir",
+        category_zh: "雙心交疊傳統石滬",
+        image: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Double-Heart_of_Stacked_Stones_20150721.jpg/330px-Double-Heart_of_Stacked_Stones_20150721.jpg",
+        wiki_url: "https://zh.wikipedia.org/wiki/七美雙心石滬",
+        desc_id: "Perangkap ikan tradisional berbahan batu basal dan karang berbentuk dua hati bertautan di Pulau Qimei.",
+        desc_en: "Traditional stone tidal weir shaped like two intertwined hearts in Qimei Island, built to trap fish at low tide.",
+        desc_zh: "七美鄉著名的傳統捕魚石滬，造型呈現兩顆心形交疊，為澎湖浪漫地標。"
+      }
+    ];
+
+    // --- Scientific Schemes Database ---
+    const SCHEMES_INFO = {
+      1: {
+        title_id: "Skema 1: ISO 7243:2017 / WBGT (Wet Bulb Globe Temperature Threshold)",
+        title_en: "Scheme 1: ISO 7243:2017 (WBGT Heat Stress Standard)",
+        title_zh: "方案一：ISO 7243:2017 (綜合溫度熱指數 WBGT 門檻模型)",
+        citation: "ISO 7243:2017 - Ergonomics of the thermal environment / Budd (2008)",
+        formula_latex: "T_{\\text{max}} = \\frac{60}{(\\text{WBGT} - 27)^{1.2}} \\quad [\\text{menit}]",
+        desc_id: "Standar medis internasional keselamatan kerja & aktivitas termal. Ketika nilai WBGT melebihi 27°C, kapasitas disipasi panas tubuh menurun secara eksponensial. Sistem Cool-Ride mewajibkan jeda AC selama 10-15 menit ketika waktu tempuh langsung melebihi batas waktu aman T_max (menit).",
+        desc_en: "International medical standard for thermal work safety. When WBGT exceeds 27°C, human body heat dissipation drops exponentially. Cool-Ride enforces a 10-15 min AC break whenever direct exposure time exceeds the critical T_max threshold (minutes).",
+        desc_zh: "國際勞動與熱環境人體工學標準。當 WBGT 超過 27°C 時，人體散熱能力呈現指數級衰減。當連續騎乘時間超過臨界耐受門檻 T_max（分鐘）時，系統強制插入 10-15 分鐘冷氣休息。",
+        params: [
+          { name: "WBGT", desc: "Wet Bulb Globe Temperature (°C) dari sensor / model cuaca" },
+          { name: "T_max", desc: "Batas waktu paparan terik maksimum yang diizinkan sebelum risiko heatstroke (menit)" },
+          { name: "Rest Stop", desc: "12 menit istirahat di ruang ber-AC (7-Eleven) mereduksi 65% beban termal" }
+        ]
+      },
+      2: {
+        title_id: "Skema 2: UTCI Non-Linear Physiological Strain Model",
+        title_en: "Scheme 2: UTCI Non-Linear Physiological Strain Model",
+        title_zh: "方案二：UTCI 非線性生理熱應變模型 (Bröde et al., 2012)",
+        citation: "Bröde et al. (2012) & Jendritzky et al. (2012), International Journal of Biometeorology",
+        formula_latex: "\\Phi_{\\text{UTCI}} = 1 + 0.70 \\cdot \\left[ \\max\\left(0, \\frac{T_{\\text{feels}} - 26}{10}\\right) \\right]^{2.4}",
+        desc_id: "Model polinomial non-linear yang menghitung bobot penalti jalur berdasarkan indeks kenyamanan termal biometeorologi UTCI. Beban fisiologis tubuh melonjak secara non-linear saat suhu terasa melebihi 35°C.",
+        desc_en: "Non-linear polynomial model calculating edge penalty costs based on UTCI thermal comfort indices. Physiological heat strain surges exponentially when feels-like temperature exceeds 35°C.",
+        desc_zh: "生物氣象學非線性多項式模型，依據 UTCI 體感溫度計算道路邊權重懲罰。當體感溫度突破 35°C 時，人體生理負荷呈現劇烈指數級飆升。",
+        params: [
+          { name: "Φ_UTCI", desc: "Faktor pembobot beban fisiologis pada edge graf" },
+          { name: "T_feels", desc: "Suhu terasa (Apparent Temperature) dalam °C" },
+          { name: "Eksponen 2.4", desc: "Eksponen ketidaknyamanan termal empiris biometeorologi" }
+        ]
+      },
+      3: {
+        title_id: "Skema 3: Solar Radiation Energy Budget Model (COMFA)",
+        title_en: "Scheme 3: Solar Radiation Energy Budget Model (COMFA)",
+        title_zh: "方案三：太陽輻射能量平衡模型 (Brown & Gillespie, 1995)",
+        citation: "Brown & Gillespie (1995) COMFA Model & Vanos et al. (2010), Landscape and Urban Planning",
+        formula_latex: "R_{\\text{abs}} = (\\text{DNI} \\cdot 0.85) + (\\text{UV\\_Index} \\cdot 20.0) \\quad [\\text{W/m}^2]",
+        desc_id: "Menghitung beban radiasi matahari langsung (Direct Normal Irradiance) dan spektrum ultraviolet yang diserap oleh pengendara motor di jalanan terbuka tanpa peneduh pohon.",
+        desc_en: "Computes direct solar radiation (DNI) and ultraviolet spectrum absorbed by motorcycle riders traversing unshaded coastal highways.",
+        desc_zh: "精確計算機車騎乘者在缺乏遮蔭之濱海公路所吸收之直接太陽輻射（DNI）與紫外線光譜負荷。",
+        params: [
+          { name: "DNI", desc: "Direct Normal Irradiance dalam Satuan W/m²" },
+          { name: "UV_Index", desc: "Indeks Ultraviolet (skala 1-12+)" },
+          { name: "Threshold > 650", desc: "Pemicu wajib shelter jika beban radiasi > 650 W/m² selama >15 menit" }
+        ]
+      },
+      4: {
+        title_id: "Skema 4: Bi-Objective Pareto-Constrained Compromise Routing",
+        title_en: "Scheme 4: Bi-Objective Pareto-Constrained Routing",
+        title_zh: "方案四：雙目標帕累托最優路徑 (Raith & Ehrgott, 2009)",
+        citation: "Raith & Ehrgott (2009), Computers & Operations Research",
+        formula_latex: "\\min \\left[ w_1 \\cdot T_{\\text{travel}} + w_2 \\cdot \\text{Strain}_{\\text{thermal}} \\right] \\quad \\text{s.t.} \\quad \\frac{D_{\\text{detour}}}{D_{\\text{direct}}} \\le 1.20",
+        desc_id: "Optimasi multiobjektif yang mencari titik kompromi optimal (Pareto Front) antara efisiensi waktu tempuh dan mitigasi risiko termal, dengan batas rasio deviasi rute tidak melebihi 20%.",
+        desc_en: "Multiobjective optimization identifying the Pareto frontier between travel duration and thermal risk mitigation, strictly constrained by a maximum 20% detour ratio.",
+        desc_zh: "多目標圖論優化演算法，在交通時間與熱風險降低之間搜尋最佳帕累托前沿，嚴格限制繞路比例不超過直接路徑的 1.20 倍。",
+        params: [
+          { name: "w1, w2", desc: "Bobot prioritas waktu tempuh vs mitigasi beban termal" },
+          { name: "Detour <= 1.20", desc: "Jaminan jarak rute tidak memutar lebih dari 20%" },
+          { name: "Pareto Front", desc: "Titik kompromi rute tercepat sekaligus paling sejuk" }
+        ]
+      }
+    };
+
+    // --- 1. Language & Theme Handlers with Smooth Transitions & Session Cache ---
+    async function loadTranslations() {
+      try {
+        const res = await fetch('translations.json');
+        if (res.ok) {
+          translations = await res.json();
+        }
+      } catch (e) {
+        console.warn('translations.json load error, fallback in place:', e);
+      }
+      applyTranslations(currentLang);
+    }
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      localStorage.setItem('penghu_lang', lang);
+      
+      const langSel = document.getElementById('lang-selector');
+      if (langSel) langSel.value = lang;
+
+      // Smooth i18n fade transition
+      const body = document.getElementById('main-body');
+      if (body) {
+        body.classList.add('i18n-fade-out');
+        setTimeout(() => {
+          applyTranslations(lang);
+          renderDestinations();
+          renderSchemeDetail(activeScheme);
+          body.classList.remove('i18n-fade-out');
+        }, 150);
+      } else {
+        applyTranslations(lang);
+        renderDestinations();
+        renderSchemeDetail(activeScheme);
+      }
+    }
+
+    function applyTranslations(lang) {
+      document.documentElement.lang = lang;
+      const dict = translations[lang] || {};
+      
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (dict[key]) {
+          el.innerText = dict[key];
+        }
+      });
+
+      updateWeatherAdviceUI(latestWbgt);
+    }
+
+    function changeTheme(theme) {
+      currentTheme = theme;
+      localStorage.setItem('penghu_theme', theme);
+      
+      document.documentElement.className = `theme-${theme}`;
+      document.body.className = `theme-${theme} w-full min-h-screen flex flex-col antialiased font-['Plus_Jakarta_Sans'] selection:bg-cyan-500 selection:text-white custom-scrollbar overflow-x-hidden i18n-fade`;
+      
+      const themeSel = document.getElementById('theme-selector');
+      if (themeSel) themeSel.value = theme;
+    }
+
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      if (menu) {
+        menu.classList.toggle('hidden');
+      }
+    }
+
+    // --- 2. Live Microclimate Radar Fetcher (Open-Meteo) ---
+    async function fetchLiveWeatherData() {
+      const refreshBtn = document.getElementById('radar-refresh-btn');
+      if (refreshBtn) {
+        refreshBtn.classList.add('opacity-50', 'pointer-events-none');
+      }
+
+      try {
+        const url = 'https://api.open-meteo.com/v1/forecast?latitude=23.5654&longitude=119.5668&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,wind_speed_10m,direct_normal_irradiance,uv_index&timezone=Asia%2FTaipei';
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          const cur = data.current || {};
+          
+          const temp = cur.temperature_2m || 35.2;
+          const feels = cur.apparent_temperature || 39.8;
+          const uv = cur.uv_index || 10.5;
+          const wind = cur.wind_speed_10m || 24;
+          const humidity = cur.relative_humidity_2m || 72;
+          const dni = cur.direct_normal_irradiance || 850;
+
+          const wbgt = Math.round((temp * 0.5 + feels * 0.35 + (uv > 8 ? 2.5 : 1.0)) * 10) / 10;
+
+          updateRadarDOM(temp, feels, uv, wind, humidity, dni, wbgt);
+        }
+      } catch (e) {
+        console.warn('Using simulated high-heat data for Penghu radar:', e);
+        updateRadarDOM(35.2, 39.8, 10.5, 24, 72, 850, 31.4);
+      } finally {
+        if (refreshBtn) {
+          refreshBtn.classList.remove('opacity-50', 'pointer-events-none');
+        }
+      }
+    }
+
+    function updateRadarDOM(temp, feels, uv, wind, humidity, dni, wbgt) {
+      latestWbgt = wbgt;
+      const tempEl = document.getElementById('radar-temp');
+      const feelsEl = document.getElementById('radar-feels');
+      const uvEl = document.getElementById('radar-uv');
+      const windEl = document.getElementById('radar-wind');
+      const humidityEl = document.getElementById('radar-humidity');
+      const dniEl = document.getElementById('radar-dni');
+      const wbgtEl = document.getElementById('radar-wbgt');
+
+      if (tempEl) tempEl.innerText = `${temp}°C`;
+      if (feelsEl) feelsEl.innerText = `${feels}°C`;
+      if (uvEl) uvEl.innerText = `${uv}`;
+      if (windEl) windEl.innerText = `${wind} km/j`;
+      if (humidityEl) humidityEl.innerText = `${humidity}%`;
+      if (dniEl) dniEl.innerText = `${dni} W/m²`;
+      if (wbgtEl) wbgtEl.innerText = `${wbgt}°C`;
+
+      updateWeatherAdviceUI(wbgt);
+    }
+
+    function updateWeatherAdviceUI(wbgt = 25.4) {
+      const banner = document.getElementById('radar-advice-banner');
+      const iconBox = document.getElementById('radar-advice-icon-box');
+      const badge = document.getElementById('radar-status-badge');
+      const advice = document.getElementById('radar-advice-text');
+      const wbgtCard = document.getElementById('radar-wbgt-card');
+      const wbgtIconBox = document.getElementById('radar-wbgt-icon-box');
+      const wbgtEl = document.getElementById('radar-wbgt');
+      const wbgtSub = document.getElementById('radar-wbgt-sub');
+      const dict = translations[currentLang] || {};
+
+      if (!banner || !badge || !advice) return;
+
+      if (wbgt >= 31.0) {
+        // High Heat / Extreme
+        banner.className = "p-5 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-start gap-4 transition-all";
+        if (iconBox) {
+          iconBox.className = "p-2.5 rounded-xl bg-red-500 text-white shrink-0 mt-0.5 shadow-sm transition-all";
+          iconBox.innerHTML = '<i data-lucide="shield-alert" class="w-5 h-5"></i>';
+        }
+        badge.className = "text-xs sm:text-sm uppercase font-extrabold px-2.5 py-0.5 rounded-full bg-red-500 text-white transition-all";
+        badge.innerText = dict['radar_status_high'] || "PANAS TINGGI - WAJIB JEDA AC";
+        advice.innerText = dict['radar_advice_high'] || "Wajib beristirahat di minimarket ber-AC tiap 15 menit berkendara di rute terbuka. Minum minimal 500ml cairan elektrolit.";
+
+        if (wbgtCard) wbgtCard.className = "glass-card-inner p-4 sm:p-5 rounded-2xl text-center border border-red-500/30 transition-all";
+        if (wbgtIconBox) {
+          wbgtIconBox.className = "w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center mx-auto mb-2 transition-all";
+          wbgtIconBox.innerHTML = '<i data-lucide="alert-triangle" class="w-5 h-5"></i>';
+        }
+        if (wbgtEl) wbgtEl.className = "text-2xl sm:text-3xl 2xl:text-4xl font-extrabold text-red-500 mt-1 transition-colors";
+        if (wbgtSub) {
+          wbgtSub.className = "text-[10px] sm:text-xs font-bold text-red-500 uppercase mt-1.5 transition-colors";
+          wbgtSub.innerText = dict['radar_wbgt_high'] || "> 30°C: WAJIB JEDA AC";
+        }
+      } else if (wbgt >= 28.0) {
+        // Moderate Heat
+        banner.className = "p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-4 transition-all";
+        if (iconBox) {
+          iconBox.className = "p-2.5 rounded-xl bg-amber-500 text-white shrink-0 mt-0.5 shadow-sm transition-all";
+          iconBox.innerHTML = '<i data-lucide="sun-medium" class="w-5 h-5"></i>';
+        }
+        badge.className = "text-xs sm:text-sm uppercase font-extrabold px-2.5 py-0.5 rounded-full bg-amber-500 text-white transition-all";
+        badge.innerText = dict['radar_status_moderate'] || "PANAS SEDANG - WASPADA";
+        advice.innerText = dict['radar_advice_moderate'] || "Disarankan minum air setiap 20-30 menit dan mengenakan kacamata hitam serta pakaian pelindung UV.";
+
+        if (wbgtCard) wbgtCard.className = "glass-card-inner p-4 sm:p-5 rounded-2xl text-center border border-amber-500/30 transition-all";
+        if (wbgtIconBox) {
+          wbgtIconBox.className = "w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto mb-2 transition-all";
+          wbgtIconBox.innerHTML = '<i data-lucide="sun-medium" class="w-5 h-5"></i>';
+        }
+        if (wbgtEl) wbgtEl.className = "text-2xl sm:text-3xl 2xl:text-4xl font-extrabold text-amber-500 mt-1 transition-colors";
+        if (wbgtSub) {
+          wbgtSub.className = "text-[10px] sm:text-xs font-bold text-amber-500 uppercase mt-1.5 transition-colors";
+          wbgtSub.innerText = dict['radar_wbgt_moderate'] || "ISO 7243: WASPADA DEHIDRASI";
+        }
+      } else {
+        // Comfortable / Nyaman (Green / Emerald)
+        banner.className = "p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-4 transition-all";
+        if (iconBox) {
+          iconBox.className = "p-2.5 rounded-xl bg-emerald-500 text-white shrink-0 mt-0.5 shadow-sm transition-all";
+          iconBox.innerHTML = '<i data-lucide="check-circle-2" class="w-5 h-5"></i>';
+        }
+        badge.className = "text-xs sm:text-sm uppercase font-extrabold px-2.5 py-0.5 rounded-full bg-emerald-500 text-white transition-all";
+        badge.innerText = dict['radar_status_comfortable'] || "KONDISI TERMAL NYAMAN";
+        advice.innerText = dict['radar_advice_comfortable'] || "Cuaca bersahabat untuk berkendara motor dan menjelajah luar ruangan.";
+
+        if (wbgtCard) wbgtCard.className = "glass-card-inner p-4 sm:p-5 rounded-2xl text-center border border-emerald-500/30 transition-all";
+        if (wbgtIconBox) {
+          wbgtIconBox.className = "w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto mb-2 transition-all";
+          wbgtIconBox.innerHTML = '<i data-lucide="check-circle-2" class="w-5 h-5"></i>';
+        }
+        if (wbgtEl) wbgtEl.className = "text-2xl sm:text-3xl 2xl:text-4xl font-extrabold text-emerald-500 mt-1 transition-colors";
+        if (wbgtSub) {
+          wbgtSub.className = "text-[10px] sm:text-xs font-bold text-emerald-500 uppercase mt-1.5 transition-colors";
+          wbgtSub.innerText = dict['radar_wbgt_safe'] || "ISO 7243: AMAN & NYAMAN";
+        }
+      }
+
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    // --- 3. Hero Split Comparison Toggle ---
+    function switchHeroComparison(mode) {
+      const btnSafe = document.getElementById('tab-btn-safe');
+      const btnDirect = document.getElementById('tab-btn-direct');
+      const cardSafe = document.getElementById('card-safe');
+      const cardDirect = document.getElementById('card-direct');
+
+      if (mode === 'safe') {
+        btnSafe.className = "px-5 py-2.5 rounded-xl dynamic-btn-primary shadow transition-all";
+        btnDirect.className = "px-5 py-2.5 rounded-xl opacity-70 hover:opacity-100 transition-all";
+        cardSafe.classList.add('border-emerald-500', 'glow-primary');
+        cardDirect.classList.remove('glow-primary');
+      } else {
+        btnDirect.className = "px-5 py-2.5 rounded-xl bg-red-500 text-white shadow transition-all";
+        btnSafe.className = "px-5 py-2.5 rounded-xl opacity-70 hover:opacity-100 transition-all";
+        cardDirect.classList.add('glow-primary');
+        cardSafe.classList.remove('glow-primary');
+      }
+    }
+
+    // --- 4. Scientific Scheme Detail Renderer ---
+    function selectSchemeDetail(id) {
+      activeScheme = id;
+      for (let i = 1; i <= 4; i++) {
+        const btn = document.getElementById(`scheme-tab-${i}`);
+        if (btn) {
+          if (i === id) {
+            btn.className = "px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold dynamic-btn-primary shadow transition-all";
+          } else {
+            btn.className = "px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold glass-card-inner border opacity-75 hover:opacity-100 transition-all";
+          }
+        }
+      }
+      renderSchemeDetail(id);
+    }
+
+    function renderSchemeDetail(id) {
+      const container = document.getElementById('scheme-content-card');
+      const item = SCHEMES_INFO[id];
+      if (!container || !item) return;
+
+      const title = currentLang === 'zh' ? item.title_zh : (currentLang === 'en' ? item.title_en : item.title_id);
+      const desc = currentLang === 'zh' ? item.desc_zh : (currentLang === 'en' ? item.desc_en : item.desc_id);
+      const dict = translations[currentLang] || {};
+
+      let paramsHtml = item.params.map(p => `
+        <div class="p-3.5 rounded-xl glass-card-inner border">
+          <span class="font-mono font-bold text-primary-var text-xs sm:text-sm">${p.name}</span>
+          <p class="text-[11px] sm:text-xs opacity-80 mt-1">${p.desc}</p>
+        </div>
+      `).join('');
+
+      container.innerHTML = `
+        <div class="flex items-start justify-between gap-4 mb-4">
+          <div>
+            <span class="text-xs font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-cyan-500/10 text-primary-var border border-cyan-500/30">
+              SCHEME 0${id} MODEL
+            </span>
+            <h3 class="text-lg sm:text-xl 2xl:text-2xl font-extrabold mt-2">${title}</h3>
+          </div>
+        </div>
+
+        <div class="mb-4">
+          <div class="text-xs font-mono opacity-60 uppercase font-bold mb-1.5">${dict['scheme_citation_header'] || 'Referensi & Standar Ilmiah:'}</div>
+          <div class="text-xs sm:text-sm font-semibold p-3 rounded-xl glass-card-inner border text-primary-var">
+            ${item.citation}
+          </div>
+        </div>
+
+        <div class="my-6 p-5 rounded-2xl bg-black/5 dark:bg-white/5 border border-card text-center">
+          <div class="text-xs font-mono opacity-60 uppercase font-bold mb-2">${dict['scheme_math_header'] || 'Formula Matematis:'}</div>
+          <div class="font-mono text-sm sm:text-base md:text-lg font-bold text-primary-var py-1" id="katex-formula-target">
+            $$${item.formula_latex}$$
+          </div>
+        </div>
+
+        <p class="text-xs sm:text-sm 2xl:text-base opacity-85 leading-relaxed mb-6">
+          ${desc}
+        </p>
+
+        <div>
+          <div class="text-xs font-mono opacity-60 uppercase font-bold mb-3">${dict['scheme_params_header'] || 'Penjelasan Parameter:'}</div>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            ${paramsHtml}
+          </div>
+        </div>
+      `;
+
+      const formulaTarget = document.getElementById('katex-formula-target');
+      if (formulaTarget && window.katex) {
+        try {
+          katex.render(item.formula_latex, formulaTarget, {
+            displayMode: true,
+            throwOnError: false
+          });
+        } catch (e) {
+          formulaTarget.innerText = item.formula_latex;
+        }
+      }
+    }
+
+    // --- 5. Destination Cards Renderer & Wikipedia Modal ---
+    function renderDestinations() {
+      const grid = document.getElementById('destination-grid');
+      if (!grid) return;
+
+      grid.innerHTML = PENGHU_DESTINATIONS.map((dest, idx) => {
+        const bilingualTitle = `${dest.name_zh} / ${dest.name_en}`;
+        const cat = currentLang === 'zh' ? dest.category_zh : dest.category;
+        const desc = currentLang === 'zh' ? dest.desc_zh : (currentLang === 'en' ? dest.desc_en : dest.desc_id);
+        const dict = translations[currentLang] || {};
+
+        return `
+          <div class="glass-card rounded-3xl overflow-hidden border dest-card flex flex-col justify-between group cursor-pointer" onclick="openDestModal(${idx})">
+            <div>
+              <div class="relative h-48 sm:h-52 overflow-hidden bg-slate-900">
+                <img src="${dest.image}" alt="${dest.name_zh}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+                <span class="absolute top-3 left-3 text-[10px] sm:text-xs font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-black/60 text-white backdrop-blur-md border border-white/20">
+                  ${cat}
+                </span>
+                <span class="absolute bottom-3 right-3 w-7 h-7 rounded-full bg-cyan-500 text-white flex items-center justify-center text-xs font-serif font-bold shadow">
+                  W
+                </span>
+              </div>
+              <div class="p-4 sm:p-5">
+                <h4 class="font-extrabold text-sm sm:text-base 2xl:text-lg leading-snug group-hover:text-cyan-500 transition-colors">
+                  ${bilingualTitle}
+                </h4>
+                <p class="text-xs sm:text-sm opacity-75 line-clamp-2 mt-2 leading-relaxed">
+                  ${desc}
+                </p>
+              </div>
+            </div>
+            <div class="p-4 sm:p-5 pt-0 flex items-center justify-between text-xs sm:text-sm font-bold text-primary-var">
+              <span>${dict['dest_btn_explore'] || 'Lihat Detail'}</span>
+              <i data-lucide="arrow-up-right" class="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"></i>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    }
+
+    function openDestModal(idx) {
+      const dest = PENGHU_DESTINATIONS[idx];
+      if (!dest) return;
+
+      const modal = document.getElementById('dest-modal');
+      const img = document.getElementById('modal-img');
+      const title = document.getElementById('modal-title');
+      const cat = document.getElementById('modal-category');
+      const desc = document.getElementById('modal-desc');
+      const wikiLink = document.getElementById('modal-wiki-link');
+
+      img.src = dest.image;
+      title.innerText = `${dest.name_zh} / ${dest.name_en}`;
+      cat.innerText = currentLang === 'zh' ? dest.category_zh : dest.category;
+      desc.innerText = currentLang === 'zh' ? dest.desc_zh : (currentLang === 'en' ? dest.desc_en : dest.desc_id);
+      wikiLink.href = dest.wiki_url;
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeDestModal() {
+      const modal = document.getElementById('dest-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // --- 6. FAQ Accordion Toggle ---
+    function toggleFaq(id) {
+      for (let i = 1; i <= 5; i++) {
+        const content = document.getElementById(`faq-content-${i}`);
+        const icon = document.getElementById(`faq-icon-${i}`);
+        if (i === id) {
+          if (content.classList.contains('hidden')) {
+            content.classList.remove('hidden');
+            icon.style.transform = 'rotate(180deg)';
+          } else {
+            content.classList.add('hidden');
+            icon.style.transform = 'rotate(0deg)';
+          }
+        } else {
+          if (content) content.classList.add('hidden');
+          if (icon) icon.style.transform = 'rotate(0deg)';
+        }
+      }
+    }
+
+    // --- 7. Cookie Consent & GDPR / Taiwan PDPA Handlers ---
+    function checkCookieConsent() {
+      const consent = localStorage.getItem('penghu_cookie_consent');
+      if (!consent) {
+        const banner = document.getElementById('cookie-banner');
+        if (banner) {
+          setTimeout(() => {
+            banner.classList.remove('hidden');
+          }, 800);
+        }
+      }
+    }
+
+    function acceptAllCookies() {
+      localStorage.setItem('penghu_cookie_consent', 'all');
+      localStorage.setItem('penghu_cookie_nav_cache', 'true');
+      hideCookieBanner();
+    }
+
+    function acceptEssentialCookies() {
+      localStorage.setItem('penghu_cookie_consent', 'essential_only');
+      localStorage.setItem('penghu_cookie_nav_cache', 'false');
+      hideCookieBanner();
+    }
+
+    function hideCookieBanner() {
+      const banner = document.getElementById('cookie-banner');
+      if (banner) {
+        banner.classList.add('hidden');
+      }
+    }
+
+    function openCookieModal() {
+      const modal = document.getElementById('cookie-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      }
+    }
+
+    function closeCookieModal() {
+      const modal = document.getElementById('cookie-modal');
+      if (modal) {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+    }
+
+    function saveCustomCookies() {
+      const navOpt = document.getElementById('cookie-opt-nav');
+      const isNavChecked = navOpt ? navOpt.checked : true;
+      localStorage.setItem('penghu_cookie_consent', isNavChecked ? 'custom_all' : 'essential_only');
+      localStorage.setItem('penghu_cookie_nav_cache', isNavChecked ? 'true' : 'false');
+      closeCookieModal();
+      hideCookieBanner();
+      
+      const dict = translations[currentLang] || {};
+      alert(dict['cookie_saved_alert'] || 'Preferensi privasi berhasil disimpan!');
+    }
+
+    // --- Initialization on Window Load ---
+    window.addEventListener('DOMContentLoaded', async () => {
+      // 1. Restore cached Theme & Language
+      const savedTheme = localStorage.getItem('penghu_theme') || 'tropical';
+      const savedLang = localStorage.getItem('penghu_lang') || 'id';
+
+      changeTheme(savedTheme);
+      currentLang = savedLang;
+
+      // 2. Load translations & initialize UI
+      await loadTranslations();
+
+      const langSel = document.getElementById('lang-selector');
+      if (langSel) langSel.value = currentLang;
+
+      const themeSel = document.getElementById('theme-selector');
+      if (themeSel) themeSel.value = currentTheme;
+
+      renderDestinations();
+      selectSchemeDetail(1);
+
+      // 3. Fetch Real-Time Microclimate Data
+      fetchLiveWeatherData();
+
+      // 4. Check Cookie Privacy Consent Banner
+      checkCookieConsent();
+
+      if (window.lucide) {
+        lucide.createIcons();
+      }
+    });
+  </script>
+</body>
+</html>

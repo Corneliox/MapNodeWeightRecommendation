@@ -277,6 +277,7 @@ function changeTheme(theme) {
 function setTheme(theme) {
   currentTheme = theme;
   localStorage.setItem('penghu_theme', theme);
+  document.documentElement.className = `theme-${theme}`;
   document.body.className = `theme-${theme} flex flex-col h-screen overflow-hidden antialiased font-['Plus_Jakarta_Sans'] selection:bg-cyan-500 selection:text-white`;
 
   const themeSelect = document.getElementById('theme-selector');
@@ -336,15 +337,18 @@ async function fetchLiveWeather() {
     const solarDni = data.hourly?.direct_normal_irradiance?.[currentHour] || 850;
     const approxWbgt = Math.round((feelsLike * 0.75) + (uvIndex * 0.3));
 
-    let heatLevelKey = 'heat_moderate';
-    let badgeClass = 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/30';
+    let heatLevelKey = 'heat_low';
+    let badgeClass = 'bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border-emerald-500/30';
 
     if (feelsLike >= 38 || uvIndex >= 11) {
       heatLevelKey = 'heat_extreme';
       badgeClass = 'bg-red-500/20 text-red-600 dark:text-red-300 border-red-500/40 animate-pulse';
     } else if (feelsLike >= 34 || uvIndex >= 8) {
       heatLevelKey = 'heat_high';
-      badgeClass = 'bg-orange-500/20 text-orange-600 dark:text-orange-300 border-orange-500/40';
+      badgeClass = 'bg-red-500/20 text-red-600 dark:text-red-300 border-red-500/40';
+    } else if (feelsLike >= 30 || uvIndex >= 6) {
+      heatLevelKey = 'heat_moderate';
+      badgeClass = 'bg-amber-500/20 text-amber-600 dark:text-amber-300 border-amber-500/30';
     }
 
     currentWeatherData = { temp: currentTemp, feelsLike, uvIndex, wbgt: approxWbgt, solarDni, heatLevelKey };

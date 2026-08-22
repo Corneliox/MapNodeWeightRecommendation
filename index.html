@@ -20,6 +20,16 @@
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
+  <!-- Instant Theme Cache Script to eliminate FOUC -->
+  <script>
+    (function() {
+      try {
+        const savedTheme = localStorage.getItem('penghu_theme') || 'tropical';
+        document.documentElement.className = 'theme-' + savedTheme;
+      } catch (e) {}
+    })();
+  </script>
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
@@ -52,7 +62,7 @@
       </div>
     </div>
 
-    <!-- Right Controls: Weather Widget + Language & Theme Dropdowns -->
+    <!-- Right Controls: Weather Widget + Creator + Language & Theme Dropdowns -->
     <div class="flex items-center gap-2 sm:gap-3">
       
       <!-- Live Weather Pill -->
@@ -69,6 +79,12 @@
           PANAS TINGGI
         </span>
       </div>
+
+      <!-- Creator Link (Href to GitHub) -->
+      <a href="https://github.com/Corneliox" target="_blank" rel="noopener noreferrer" class="dynamic-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold flex items-center gap-1 hover:opacity-100 transition-opacity text-primary-var shadow-sm" title="Created by Corneliox">
+        <i data-lucide="github" class="w-3.5 h-3.5"></i>
+        <span class="hidden xl:inline">Corneliox</span>
+      </a>
 
       <!-- Theme Switcher Selector -->
       <div class="relative">
@@ -88,14 +104,20 @@
         </select>
       </div>
 
+      <!-- Landing Page / Home Link Button -->
+      <a href="landing.html" class="dynamic-card-inner border rounded-xl px-2.5 py-1.5 text-xs font-bold flex items-center gap-1 hover:opacity-100 transition-opacity" title="Landing Page">
+        <i data-lucide="home" class="w-3.5 h-3.5 text-primary-var"></i>
+        <span data-i18n="nav_home" class="hidden sm:inline">Beranda</span>
+      </a>
+
     </div>
   </header>
 
   <!-- Main App Workspace -->
   <div class="flex flex-1 relative overflow-hidden">
 
-    <!-- Responsive Navigation Sidebar / Drawer -->
-    <aside id="sidebar" class="w-full sm:w-[420px] md:w-[460px] dynamic-sidebar border-r flex flex-col z-20 transition-all duration-300 h-full absolute sm:relative shadow-2xl sm:shadow-none -translate-x-full sm:translate-x-0">
+    <!-- Responsive Navigation Sidebar / Drawer (Fluid Percentage Width) -->
+    <aside id="sidebar" class="w-full sm:w-[42%] md:w-[36%] lg:w-[32%] xl:w-[28%] 2xl:w-[25%] min-w-[320px] max-w-[580px] dynamic-sidebar border-r flex flex-col z-20 transition-all duration-300 h-full absolute sm:relative shadow-2xl sm:shadow-none -translate-x-full sm:translate-x-0">
       
       <!-- Tab Header Navigation -->
       <div class="p-2.5 border-b border-inherit">
