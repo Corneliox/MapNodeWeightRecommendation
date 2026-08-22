@@ -602,6 +602,9 @@ async function fetchRoadRouteOSRM(coords, mode = 'scooter') {
   };
 }
 
+let currentRouteCache = null;
+let activeRouteView = 'safe';
+
 async function calculateSmartRoute() {
   const startKey = document.getElementById('select-start').value;
   const endKey = document.getElementById('select-end').value;
@@ -611,7 +614,7 @@ async function calculateSmartRoute() {
 
   routePolylineLayer.clearLayers();
 
-  // 1. Fetch Direct Road Route first
+  // 1. Fetch Direct Road Route
   const directRouteData = await fetchRoadRouteOSRM(
     [[start.lat, start.lon], [destination.lat, destination.lon]],
     currentTravelMode
@@ -619,7 +622,6 @@ async function calculateSmartRoute() {
 
   const directDistanceKm = directRouteData.distanceKm;
   const directTravelMinutes = directRouteData.travelMinutes;
-
   const schemeMeta = SCIENTIFIC_SCHEMES_META[selectedSchemeId];
   
   // 2. Evaluate Scientific Climate Thresholds
@@ -654,49 +656,133 @@ async function calculateSmartRoute() {
     );
   }
 
-  const finalRoute = safeRouteData || directRouteData;
-
-  // 3. Render High-Contrast Google Maps Style Road Polyline
-  // Underlay shadow casing
-  L.polyline(finalRoute.coords, {
-    color: '#0F172A',
-    weight: 8,
-    opacity: 0.6,
-    lineJoin: 'round',
-    lineCap: 'round'
-  }).addTo(routePolylineLayer);
-
-  // Main Route Core Line
-  const polyline = L.polyline(finalRoute.coords, {
-    color: recommendedShelter ? '#00A8B5' : '#06D6A0',
-    weight: 5,
-    opacity: 1,
-    lineJoin: 'round',
-    lineCap: 'round'
-  }).addTo(routePolylineLayer);
-
   const startTitle = getUniversalBilingualTitle(start);
   const destTitle = getUniversalBilingualTitle(destination);
 
-  addRouteMarker(start.lat, start.lon, 'A', startTitle, '#00A8B5');
-  if (recommendedShelter) {
-    const shelterTitle = getUniversalBilingualTitle(recommendedShelter);
-    addRouteMarker(recommendedShelter.latitude, recommendedShelter.longitude, '❄️', `Shelter: ${shelterTitle}`, '#06D6A0');
-  }
-  addRouteMarker(destination.lat, destination.lon, 'B', destTitle, '#E07A5F');
+  // Cache route computation result for interactive card toggling
+  currentRouteCache = {
+    start,
+    destination,
+    startTitle,
+    destTitle,
+    directRouteData,
+    safeRouteData,
+    recommendedShelter,
+    schemeMeta,
+    needsCoolingStop
+  };
 
-  map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
-
-  // Update UI Metrics with Real Road Distances
+  // Update card metric numbers
   document.getElementById('direct-time-display').textContent = `${directTravelMinutes} Min`;
-  document.getElementById('route-distance-text').textContent = `${finalRoute.distanceKm.toFixed(1)} km`;
-
-  const safeMinutes = recommendedShelter ? (finalRoute.travelMinutes + schemeMeta.restMins) : directTravelMinutes;
-  document.getElementById('safe-time-display').textContent = `${safeMinutes} Min`;
+  const safeTotalMinutes = safeRouteData ? (safeRouteData.travelMinutes + schemeMeta.restMins) : directTravelMinutes;
+  document.getElementById('safe-time-display').textContent = `${safeTotalMinutes} Min`;
   document.getElementById('reduction-badge').textContent = `-${schemeMeta.strainReduction}% ${t('strain_reduced')}`;
 
-  renderRouteTimeline(startTitle, destTitle, recommendedShelter, finalRoute.distanceKm, finalRoute.travelMinutes, schemeMeta);
   document.getElementById('route-result-card').classList.remove('hidden');
+
+  // Default to Safe Route view if available, else Direct
+  activeRouteView = recommendedShelter ? 'safe' : 'direct';
+  renderSelectedRouteView(activeRouteView);
+}
+
+// Interactive Toggle between Direct Route and Safe Cool-Ride Route
+function toggleRouteView(type) {
+  if (!currentRouteCache) return;
+  activeRouteView = type;
+  renderSelectedRouteView(type);
+}
+
+function renderSelectedRouteView(type) {
+  if (!currentRouteCache) return;
+
+  const { start, destination, startTitle, destTitle, directRouteData, safeRouteData, recommendedShelter, schemeMeta } = currentRouteCache;
+
+  routePolylineLayer.clearLayers();
+
+  const directCard = document.getElementById('card-route-direct');
+  const safeCard = document.getElementById('card-route-safe');
+  const directBadge = document.getElementById('badge-direct-active');
+  const safeBadge = document.getElementById('badge-safe-active');
+
+  let activeRouteData;
+
+  if (type === 'direct' || !safeRouteData) {
+    // --- 1. DISPLAY DIRECT ROUTE ON MAP ---
+    activeRouteData = directRouteData;
+
+    // Visual Card Selection
+    if (directCard && safeCard) {
+      directCard.className = 'route-card-option dynamic-card-inner border-2 border-red-500 rounded-2xl p-3 space-y-1.5 cursor-pointer shadow-md';
+      safeCard.className = 'route-card-option dynamic-card border border-inherit rounded-2xl p-3 space-y-1.5 cursor-pointer opacity-75 hover:opacity-100 transition-all';
+      if (directBadge) directBadge.classList.remove('hidden');
+      if (safeBadge) safeBadge.classList.add('hidden');
+    }
+
+    // Direct Route Polyline (High-Risk Orange/Red)
+    L.polyline(directRouteData.coords, {
+      color: '#0F172A',
+      weight: 8,
+      opacity: 0.6,
+      lineJoin: 'round',
+      lineCap: 'round'
+    }).addTo(routePolylineLayer);
+
+    const polyline = L.polyline(directRouteData.coords, {
+      color: '#EF4444',
+      weight: 5,
+      opacity: 1,
+      dashArray: '4, 8',
+      lineJoin: 'round',
+      lineCap: 'round'
+    }).addTo(routePolylineLayer);
+
+    addRouteMarker(start.lat, start.lon, 'A', startTitle, '#00A8B5');
+    addRouteMarker(destination.lat, destination.lon, 'B', destTitle, '#EF4444');
+    map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+
+    document.getElementById('route-distance-text').textContent = `${directRouteData.distanceKm.toFixed(1)} km (Direct)`;
+    renderDirectTimeline(startTitle, destTitle, directRouteData);
+
+  } else {
+    // --- 2. DISPLAY COOL-RIDE SAFE ROUTE ON MAP ---
+    activeRouteData = safeRouteData;
+
+    // Visual Card Selection
+    if (directCard && safeCard) {
+      safeCard.className = 'route-card-option dynamic-card-inner border-2 border-emerald-500 rounded-2xl p-3 space-y-1.5 cursor-pointer shadow-md';
+      directCard.className = 'route-card-option dynamic-card border border-inherit rounded-2xl p-3 space-y-1.5 cursor-pointer opacity-75 hover:opacity-100 transition-all';
+      if (safeBadge) safeBadge.classList.remove('hidden');
+      if (directBadge) directBadge.classList.add('hidden');
+    }
+
+    // Safe Route Polyline (Vibrant Cyan / Emerald)
+    L.polyline(safeRouteData.coords, {
+      color: '#0F172A',
+      weight: 8,
+      opacity: 0.6,
+      lineJoin: 'round',
+      lineCap: 'round'
+    }).addTo(routePolylineLayer);
+
+    const polyline = L.polyline(safeRouteData.coords, {
+      color: '#00A8B5',
+      weight: 5,
+      opacity: 1,
+      lineJoin: 'round',
+      lineCap: 'round'
+    }).addTo(routePolylineLayer);
+
+    const shelterTitle = getUniversalBilingualTitle(recommendedShelter);
+    addRouteMarker(start.lat, start.lon, 'A', startTitle, '#00A8B5');
+    addRouteMarker(recommendedShelter.latitude, recommendedShelter.longitude, '❄️', `Shelter: ${shelterTitle}`, '#06D6A0');
+    addRouteMarker(destination.lat, destination.lon, 'B', destTitle, '#E07A5F');
+    map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
+
+    document.getElementById('route-distance-text').textContent = `${safeRouteData.distanceKm.toFixed(1)} km (Safe Route)`;
+    renderSafeTimeline(startTitle, destTitle, recommendedShelter, safeRouteData, schemeMeta);
+  }
+
+  lucide.createIcons();
 }
 
 function addRouteMarker(lat, lon, label, title, colorHex) {
@@ -710,60 +796,108 @@ function addRouteMarker(lat, lon, label, title, colorHex) {
   L.marker([lat, lon], { icon }).bindPopup(`<b>${title}</b>`).addTo(routePolylineLayer);
 }
 
-function renderRouteTimeline(startTitle, destTitle, shelter, distanceKm, totalMins, schemeMeta) {
+// Rich Narrative Itinerary for Safe Route
+function renderSafeTimeline(startTitle, destTitle, shelter, routeData, schemeMeta) {
+  const container = document.getElementById('route-timeline-steps');
+  const shelterTitle = getUniversalBilingualTitle(shelter);
+  
+  const totalMins = routeData.travelMinutes;
+  const leg1Mins = Math.max(6, Math.round(totalMins * 0.45));
+  const leg2Mins = Math.max(6, Math.round(totalMins * 0.55));
+  const leg1Km = (routeData.distanceKm * 0.48).toFixed(1);
+  const leg2Km = (routeData.distanceKm * 0.52).toFixed(1);
+
+  container.innerHTML = `
+    <!-- Step 1: Origin Ride -->
+    <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
+      <span class="w-6 h-6 rounded-full dynamic-btn-primary font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</span>
+      <div class="space-y-0.5 flex-1">
+        <p class="font-extrabold text-xs leading-snug">${t('step_origin')} <span class="text-primary-var">${startTitle}</span></p>
+        <p class="text-[11px] opacity-75 leading-relaxed">
+          ${t('step_via_highway')} sejauh <b>${leg1Km} km</b> (${leg1Mins} menit berkendara).
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 2: Cooling Hub Pit-Stop (Hero Highlight) -->
+    <div class="flex items-start gap-3 p-3 rounded-2xl dynamic-card-inner border-2 border-emerald-500/60 shadow-sm">
+      <span class="w-6 h-6 rounded-full bg-emerald-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">❄️</span>
+      <div class="space-y-1 flex-1">
+        <div class="flex items-center justify-between">
+          <p class="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">
+            ${t('step_rest')} (${schemeMeta.restMins} Min)
+          </p>
+          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">AC + Rehidrasi</span>
+        </div>
+        <p class="text-xs font-bold">${shelterTitle}</p>
+        <p class="text-[11px] opacity-80 leading-relaxed">
+          ${t('step_rest_desc')} <b>${shelterTitle}</b> untuk menurunkan beban termal sebesar <b class="text-emerald-600 dark:text-emerald-400">-${schemeMeta.strainReduction}%</b> ${t('step_rest_desc_end')}
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 3: Scenic Crossing -->
+    <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
+      <span class="w-6 h-6 rounded-full dynamic-btn-primary font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">2</span>
+      <div class="space-y-0.5 flex-1">
+        <p class="font-extrabold text-xs leading-snug">${t('step_cross_bridge')}</p>
+        <p class="text-[11px] opacity-75 leading-relaxed">
+          Melanjutkan perjalanan pesisir berangin sejuk sejauh <b>${leg2Km} km</b> (${leg2Mins} menit).
+        </p>
+      </div>
+    </div>
+
+    <!-- Step 4: Destination Arrival -->
+    <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border border-amber-500/40">
+      <span class="w-6 h-6 rounded-full bg-amber-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">🎯</span>
+      <div class="space-y-0.5 flex-1">
+        <p class="font-extrabold text-xs leading-snug">${t('step_dest')} <span class="text-amber-500">${destTitle}</span></p>
+        <p class="text-[11px] opacity-75 leading-relaxed">
+          Total perjalanan <b>${totalMins + schemeMeta.restMins} menit</b>. Suhu tubuh tetap terjaga aman dari risiko dehidrasi dan heatstroke.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+// Narrative Itinerary for Direct Route
+function renderDirectTimeline(startTitle, destTitle, routeData) {
   const container = document.getElementById('route-timeline-steps');
   
-  if (shelter) {
-    const leg1Mins = Math.max(8, Math.round(totalMins * 0.45));
-    const leg2Mins = Math.max(8, Math.round(totalMins * 0.55));
-    const shelterTitle = getUniversalBilingualTitle(shelter);
+  container.innerHTML = `
+    <!-- Step 1: Start -->
+    <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
+      <span class="w-6 h-6 rounded-full bg-slate-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</span>
+      <div class="space-y-0.5 flex-1">
+        <p class="font-extrabold text-xs leading-snug">${t('step_origin')} <b>${startTitle}</b></p>
+        <p class="text-[11px] opacity-75">
+          Memulai perjalanan langsung tanpa jeda menempuh <b>${routeData.distanceKm.toFixed(1)} km</b> (${routeData.travelMinutes} menit).
+        </p>
+      </div>
+    </div>
 
-    container.innerHTML = `
-      <div class="flex items-start gap-2.5">
-        <span class="w-5 h-5 rounded-full dynamic-btn-primary font-bold flex items-center justify-center text-[10px] shrink-0">1</span>
-        <div>
-          <p class="font-bold">${startTitle}</p>
-          <p class="text-[11px] opacity-75">${t('step_origin')} (${leg1Mins} min - ${Math.round(distanceKm*0.5)} km).</p>
-        </div>
+    <!-- Warning Step -->
+    <div class="flex items-start gap-3 p-3 rounded-2xl dynamic-card-inner border-2 border-red-500/60 shadow-sm">
+      <span class="w-6 h-6 rounded-full bg-red-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">⚠️</span>
+      <div class="space-y-1 flex-1">
+        <p class="font-extrabold text-xs text-red-500">Peringatan Paparan Terik Berkelanjutan</p>
+        <p class="text-[11px] opacity-85 leading-relaxed">
+          ${t('step_direct_desc')} Paparan sinar UV ${currentWeatherData.uvIndex} selama ${routeData.travelMinutes} menit tanpa pendinginan dapat memicu dehidrasi dan heat exhaustion.
+        </p>
       </div>
+    </div>
 
-      <div class="flex items-start gap-2.5 dynamic-card-inner border-2 border-emerald-500/50 p-3 rounded-2xl shadow-sm">
-        <span class="w-5 h-5 rounded-full bg-emerald-500 text-white font-bold flex items-center justify-center text-[10px] shrink-0">❄️</span>
-        <div class="space-y-1">
-          <p class="font-extrabold text-emerald-600 dark:text-emerald-400 text-xs">${t('step_rest')} ${schemeMeta.restMins} Min @ ${shelterTitle}</p>
-          <p class="text-[11px] opacity-80 leading-relaxed">
-            ${t('step_rest_desc')} <b>${schemeMeta.strainReduction}%</b> ${t('step_rest_desc_end')}
-          </p>
-        </div>
+    <!-- Step 2: Arrival -->
+    <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
+      <span class="w-6 h-6 rounded-full bg-slate-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">2</span>
+      <div class="space-y-0.5 flex-1">
+        <p class="font-extrabold text-xs leading-snug">${t('step_dest')} <b>${destTitle}</b></p>
+        <p class="text-[11px] opacity-75">
+          Tiba di destinasi akhir. Disarankan segera mencari tempat berteduh dan minum air.
+        </p>
       </div>
-
-      <div class="flex items-start gap-2.5">
-        <span class="w-5 h-5 rounded-full dynamic-btn-primary font-bold flex items-center justify-center text-[10px] shrink-0">2</span>
-        <div>
-          <p class="font-bold">${destTitle}</p>
-          <p class="text-[11px] opacity-75">${t('step_dest')} (${leg2Mins} min).</p>
-        </div>
-      </div>
-    `;
-  } else {
-    container.innerHTML = `
-      <div class="flex items-start gap-2.5">
-        <span class="w-5 h-5 rounded-full dynamic-btn-primary font-bold flex items-center justify-center text-[10px] shrink-0">1</span>
-        <div>
-          <p class="font-bold">${startTitle}</p>
-          <p class="text-[11px] opacity-75">${distanceKm.toFixed(1)} km direct.</p>
-        </div>
-      </div>
-      <div class="flex items-start gap-2.5">
-        <span class="w-5 h-5 rounded-full dynamic-btn-primary font-bold flex items-center justify-center text-[10px] shrink-0">2</span>
-        <div>
-          <p class="font-bold">${destTitle}</p>
-          <p class="text-[11px] opacity-75">${t('step_direct_desc')}</p>
-        </div>
-      </div>
-    `;
-  }
-
+    </div>
+  `;
   lucide.createIcons();
 }
 
