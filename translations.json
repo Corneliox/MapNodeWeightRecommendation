@@ -32,7 +32,8 @@
     "itinerary_title": "Rencana Singgah & Itinerary",
     "step_origin": "Mulai berkendara",
     "step_rest": "Wajib Istirahat",
-    "step_rest_desc": "Penurunan beban termal tubuh sebelum menyeberang jalur terbuka.",
+    "step_rest_desc": "Penurunan beban termal tubuh sebesar",
+    "step_rest_desc_end": "sebelum menyeberang jalur terbuka.",
     "step_dest": "Tiba di destinasi akhir dengan selamat",
     "step_direct_desc": "Durasi singkat, aman dari resiko heatstroke akut.",
     "schemes_header": "Landasan Ilmiah & Formula Jurnal",
@@ -65,9 +66,11 @@
     "legend_store": "Minimarket (AC Hub)",
     "legend_shelter": "Kedai Es Kaktus / Shelter",
     "legend_hotel": "Hotel & Minshuku",
-    "wiki_title": "Informasi Wikipedia",
+    "wiki_title": "Wikipedia",
     "wiki_see_more": "Buka di Wikipedia",
-    "wiki_preview_btn": "Lihat Info Wikipedia"
+    "wiki_btn_close": "Tutup",
+    "menu_route_title": "Menu & Skema Rute",
+    "btn_open_map": "Buka Peta Interaktif"
   },
   "en": {
     "app_title": "Penghu Cool-Ride",
@@ -102,7 +105,8 @@
     "itinerary_title": "Pit-stop & Route Itinerary",
     "step_origin": "Start ride",
     "step_rest": "Mandatory Rest",
-    "step_rest_desc": "Core body temperature reduction before crossing open bridges.",
+    "step_rest_desc": "Core body temperature reduction of",
+    "step_rest_desc_end": "before crossing open sun bridges.",
     "step_dest": "Arrive safely at destination",
     "step_direct_desc": "Short duration, safe from acute heatstroke risk.",
     "schemes_header": "Scientific Foundation & Journal Formulas",
@@ -135,9 +139,11 @@
     "legend_store": "Convenience Store (AC Hub)",
     "legend_shelter": "Cactus Ice Cream / Shelter",
     "legend_hotel": "Hotel & Minshuku",
-    "wiki_title": "Wikipedia Information",
+    "wiki_title": "Wikipedia",
     "wiki_see_more": "See more on Wikipedia",
-    "wiki_preview_btn": "View Wikipedia Info"
+    "wiki_btn_close": "Close",
+    "menu_route_title": "Menu & Route Schemes",
+    "btn_open_map": "Open Interactive Map"
   },
   "zh": {
     "app_title": "澎湖清涼導航",
@@ -172,7 +178,8 @@
     "itinerary_title": "詳細休息節點與行程",
     "step_origin": "出發騎乘",
     "step_rest": "強制降溫休息",
-    "step_rest_desc": "降低核心體溫以預防熱衰竭，再繼續通過曝曬路段。",
+    "step_rest_desc": "降低核心體溫",
+    "step_rest_desc_end": "以預防熱衰竭，再繼續通過曝曬路段。",
     "step_dest": "平安抵達目的地",
     "step_direct_desc": "距離短，無急性中暑風險。",
     "schemes_header": "學術基礎與期刊計算公式",
@@ -205,8 +212,10 @@
     "legend_store": "超商便利店 (冷氣站)",
     "legend_shelter": "仙人掌冰 / 庇護站",
     "legend_hotel": "民宿與飯店",
-    "wiki_title": "維基百科導覽資訊",
+    "wiki_title": "維基百科",
     "wiki_see_more": "在維基百科查看完整內容",
-    "wiki_preview_btn": "查看維基百科介紹"
+    "wiki_btn_close": "關閉",
+    "menu_route_title": "功能選單與模型",
+    "btn_open_map": "開啟互動式地圖"
   }
 }
