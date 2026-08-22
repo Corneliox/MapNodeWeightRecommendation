@@ -1577,3 +1577,19 @@ function generateCuratedNodes() {
     { title: "易家仙人掌冰 / Yijia Cactus Ice Cream", name_zh: "易家仙人掌冰", name_en: "Yijia Cactus Ice Cream", category: "shelter", latitude: 23.6571, longitude: 119.5587, has_ac: true }
   ];
 }
+
+// API Schedule & Overhead Monitor Modal Controls
+function openApiScheduleModal() {
+  const modal = document.getElementById('api-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    lucide.createIcons();
+  }
+}
+
+function closeApiScheduleModal() {
+  const modal = document.getElementById('api-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
