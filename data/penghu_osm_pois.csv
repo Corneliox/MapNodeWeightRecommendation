@@ -1,0 +1,506 @@
+﻿osm_id,osm_type,category,name,name_zh,name_en,brand,opening_hours,wheelchair,air_conditioning,latitude,longitude
+2976852242,node,tourist_attraction,雙心石滬觀景台,雙心石滬觀景台,,,,,,23.2196248,119.4464207
+2976852243,node,tourist_attraction,望夫石,望夫石,Waiting for Husband Rock,,,,,23.1874149,119.4297408
+2978380911,node,tourist_attraction,龍埕,龍埕,,,,,,23.2020896,119.4391311
+2990309116,node,tourist_attraction,Tanpa Nama,,,,,,,23.2049261,119.4424672
+2990313506,node,food_and_drink,阿婆肉粽,阿婆肉粽,,,,,,23.1954283,119.4220089
+3038462204,node,tourist_attraction,鼻頭坪玄武岩石柱,鼻頭坪玄武岩石柱,,,,,,23.619109,119.500487
+3400931864,node,tourist_attraction,澎湖開拓館,澎湖開拓館,Penghu Reclamation Hall,,,,,23.5699364,119.5673261
+3665944278,node,tourist_attraction,四眼井,四眼井,,,,,,23.5649404,119.5650548
+3665944280,node,tourist_attraction,媽宮城遺址 (順承門),媽宮城遺址 (順承門),,,,,,23.5630831,119.5622204
+3665944283,node,tourist_attraction,摸乳巷,摸乳巷,,,,,,23.5644061,119.5648723
+3665944284,node,tourist_attraction,施公祠,施公祠,,,,,,23.5646016,119.5642454
+3665944287,node,food_and_drink,王冠嫩仙草,王冠嫩仙草,,,Mo-Su 10:00-22:00,,,23.5660682,119.5685402
+3665944317,node,tourist_attraction,萬軍井,萬軍井,,,,,,23.5644841,119.5642579
+3665944318,node,tourist_attraction,西瀛虹橋,西瀛虹橋,,,,,,23.5683072,119.5600665
+3679147942,node,tourist_attraction,南寮古厝群,南寮古厝群,,,,,,23.5847884,119.6707021
+3679148018,node,shelter,Tanpa Nama,,,,,,,23.5974135,119.6720096
+3679148019,node,shelter,Tanpa Nama,,,,,,,23.5974951,119.6719088
+3679148021,node,shelter,Tanpa Nama,,,,,,,23.5975997,119.6720945
+3679155052,node,food_and_drink,老菜牛肉麵,老菜牛肉麵,,,,,,23.5846406,119.6593382
+3679155054,node,tourist_attraction,菓葉灰窯,菓葉灰窯,Guoye Cement Kiln,,,,,23.5752849,119.6806128
+3679155056,node,shelter,菓葉觀日樓,菓葉觀日樓,,,,,,23.5789829,119.681033
+3686397370,node,tourist_attraction,古厝遺址,古厝遺址,,,,,,23.511513,119.5167781
+3686397870,node,tourist_attraction,蓮花池,蓮花池,,,,,,23.5095086,119.5145103
+3686397871,node,tourist_attraction,西南石柱群,西南石柱群,,,,,,23.5089722,119.5189768
+3686397872,node,tourist_attraction,貓江石,貓江石,,,,,,23.5142355,119.5165667
+3732368814,node,shelter,Tanpa Nama,,,,09:00-17:00,yes,,23.3648411,119.5069181
+3733834562,node,shelter,Tanpa Nama,,,,,,,23.566725,119.5726872
+3733836560,node,shelter,Tanpa Nama,,,,,,,23.5559909,119.6065933
+3735435192,node,shelter,Tanpa Nama,,,,,,,23.6538548,119.5172864
+3735439981,node,shelter,Tanpa Nama,,,,,,,23.6686877,119.6028777
+3755246226,node,shelter,Tanpa Nama,,,,,,,23.567974,119.5621374
+3869475161,node,food_and_drink,七美漁村餐廳,七美漁村餐廳,,,,,,23.1962498,119.421031
+3869481774,node,tourist_attraction,Tanpa Nama,,,,,,,23.1917829,119.4225933
+3869489054,node,tourist_attraction,Tanpa Nama,,,,,,,23.1894592,119.4304635
+3869494846,node,tourist_attraction,龍埕生態,龍埕生態,,,,,,23.2030886,119.4386665
+3869534331,node,tourist_attraction,Tanpa Nama,,,,,,,23.2050625,119.4420463
+4011349872,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.3620596,119.5075298
+4011359363,node,tourist_attraction,Tanpa Nama,,,,,,,23.2165716,119.4435029
+4011361409,node,tourist_attraction,小台灣,小台灣,Little Taiwan,,,,,23.2089177,119.44244
+4011368631,node,shelter,Tanpa Nama,,,,,,,23.1894484,119.4303743
+4078426692,node,shelter,Tanpa Nama,,,,,,,23.4844837,119.5137067
+4106961789,node,food_and_drink,夏至23.5攝影文創咖啡,夏至23.5攝影文創咖啡,,,,,,23.5648216,119.5644877
+4115927471,node,shelter,inova瑛誼綠生活,inova瑛誼綠生活,,,Mo-Su 12:00-12:00,,,23.565718,119.565942
+4115947631,node,shelter,Tanpa Nama,,,久天養身館飲水點,Mo-Su 12:00-24:00,,,23.5657238,119.5656489
+4122135010,node,shelter,Tanpa Nama,,,澎湖淨水有限公司,Tu-Fr 13:00-20:00,,,23.5660196,119.5673701
+4123071225,node,tourist_attraction,五德餌砲,五德餌砲,Wude fake cannon,,,,,23.5225933,119.5848038
+4123071226,node,tourist_attraction,外垵餌砲,外垵餌砲,Waian fake cannon,,,,,23.5646314,119.47572
+4161520292,node,tourist_attraction,南嶼城,南嶼城,,,,,,23.2000136,119.4270223
+4161520296,node,tourist_attraction,福龍寶塔,福龍寶塔,,,,,,23.1914788,119.4224662
+4161520297,node,tourist_attraction,福龍龜王塔,福龍龜王塔,,,,,,23.1937966,119.4276775
+4161520298,node,shelter,Tanpa Nama,,,,,,,23.189644,119.4291273
+4161520305,node,shelter,Tanpa Nama,,,,,,,23.1923478,119.4269924
+4161520306,node,shelter,Tanpa Nama,,,,,,,23.1925328,119.4267604
+4161521221,node,shelter,Tanpa Nama,,,,,,,23.2202285,119.4420284
+4184653297,node,food_and_drink,鍾記燒餅,鍾記燒餅,,,,,,23.5719426,119.5719702
+4191725540,node,convenience_store,Tanpa Nama,,,,,,,23.5625237,119.6364422
+4191727341,node,food_and_drink,Tanpa Nama,,,,,,,23.5644775,119.6351898
+4191766008,node,tourist_attraction,華航525澎湖空難紀念碑,華航525澎湖空難紀念碑,Memorial of China Airlines 611,,,,,23.5593211,119.640032
+4191795934,node,tourist_attraction,Tanpa Nama,,,,,,,23.5585065,119.6396092
+4191825181,node,shelter,Tanpa Nama,,,,,,,23.5589074,119.6424617
+4191831201,node,food_and_drink,Tanpa Nama,,,,,,,23.5547315,119.6382492
+4191890998,node,food_and_drink,Tanpa Nama,,,,,,,23.6391196,119.5414532
+4191903681,node,tourist_attraction,Tanpa Nama,,,,,,,23.6402812,119.5420674
+4191937552,node,food_and_drink,Tanpa Nama,,,,,,,23.6584405,119.5549086
+4191940354,node,tourist_attraction,Tanpa Nama,,,,,,,23.6579914,119.555311
+4192649570,node,tourist_attraction,小門鯨魚洞,小門鯨魚洞,,,,,,23.6550857,119.5198539
+4194212552,node,tourist_attraction,Tanpa Nama,,,,,,,23.5630655,119.5602486
+4194245352,node,tourist_attraction,日軍松島戰艦沈船紀念碑,日軍松島戰艦沈船紀念碑,Matsushima Japanese Cruiser Wreck Monument,,,,,23.550051,119.5481035
+4194264545,node,tourist_attraction,Tanpa Nama,,,,,,,23.5377444,119.5437287
+4194265846,node,tourist_attraction,Tanpa Nama,,,,,,,23.5505297,119.5471337
+4194280833,node,shelter,Tanpa Nama,,,,,,,23.5244076,119.5697461
+4194283324,node,convenience_store,和興商店,和興商店,,,,,,23.5249365,119.569812
+4219753091,node,food_and_drink,甜馨早餐店,甜馨早餐店,,,,,,23.1961322,119.4219851
+4271405193,node,shelter,Tanpa Nama,,,賀眾,08:00-18:00,,,23.5629814,119.5732846
+4271405194,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.5812758,119.5831195
+4271405195,node,shelter,Tanpa Nama,,,全螢,24/7,,,23.5849966,119.5697865
+4271405196,node,shelter,Tanpa Nama,,,龍泉,,,,23.5271938,119.605119
+4271405199,node,shelter,Tanpa Nama,,,偉志,24/7,,,23.5279949,119.5716868
+4271405200,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.5434574,119.55037
+4271405201,node,shelter,Tanpa Nama,,,偉志,24/7,,,23.5982126,119.6401166
+4274952021,node,shelter,Tanpa Nama,,,偉志,24/7,,,23.5954823,119.6605294
+4285825340,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.5952993,119.6714967
+4285825341,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.5785532,119.6809012
+4285825342,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.558966,119.67694
+4285825343,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.5626373,119.6685069
+4285825345,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.1956568,119.4189013
+4285825346,node,shelter,Tanpa Nama,,,全螢,24/7,,,23.5492476,119.5946765
+4303602649,node,shelter,Tanpa Nama,,,賀眾,24/7,,,23.606841,119.6256102
+4303602650,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.6120651,119.6026466
+4303602651,node,shelter,Tanpa Nama,,,海巡署,24/7,,,23.6347965,119.6002634
+4303602652,node,shelter,Tanpa Nama,,,偉志,24/7,,,23.6490643,119.6100928
+4303602653,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.667996,119.6029912
+4303602654,node,shelter,Tanpa Nama,,,東方,24/7,,,23.6712311,119.5711441
+4303602655,node,shelter,Tanpa Nama,,,東方,24/7,,,23.6559658,119.5570521
+4303602656,node,shelter,Tanpa Nama,,,晶工,24/7,,,23.6499165,119.5184679
+4303602657,node,shelter,Tanpa Nama,,,賀眾,24/7,,,23.6336408,119.5389395
+4303602658,node,shelter,Tanpa Nama,,,偉志,24/7,,,23.6309185,119.523082
+4303602659,node,shelter,Tanpa Nama,,,偉志,24/7,,,23.5820986,119.511637
+4303602660,node,shelter,Tanpa Nama,,,偉志,24/7,,,23.6162159,119.5052941
+4303602661,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.5750897,119.5007955
+4303602662,node,shelter,Tanpa Nama,,,賀眾,24/7,,,23.567159,119.5014609
+4303602663,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.5637251,119.4829907
+4303602664,node,shelter,Tanpa Nama,,,偉志,24/7,,,23.7403953,119.6137456
+4303602665,node,shelter,Tanpa Nama,,,龍泉,24/7,,,23.6602308,119.6567895
+4303602666,node,shelter,Tanpa Nama,,,晶工,24/7,,,23.6183105,119.5702239
+4303602667,node,shelter,Tanpa Nama,,,賀眾,24/7,,,23.6471439,119.6317538
+4469760591,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.5520876,119.6108666
+4469887089,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5654528,119.5652436
+4470788993,node,food_and_drink,易家,易家,,,,limited,,23.6572608,119.555345
+4470900392,node,tourist_attraction,Tanpa Nama,,,,,,,23.5655113,119.4844848
+4470900393,node,food_and_drink,滿拿炸粿,滿拿炸粿,,,,,,23.5662147,119.4809098
+4470903989,node,food_and_drink,咖啡廳,咖啡廳v,,,,,,23.6015997,119.5102116
+4470940792,node,food_and_drink,牧羊人咖啡館,牧羊人咖啡館,,,,,,23.6023389,119.5186207
+4470959589,node,tourist_attraction,大菓葉玄武岩,大菓葉玄武岩,,,24/7,,,23.5952123,119.5162316
+4607342093,node,tourist_attraction,夢幻沙灘,夢幻沙灘,,,,,,23.610845,119.5085795
+4738101785,node,tourist_attraction,Tanpa Nama,,,,,,,23.7378577,119.5967789
+4738143803,node,shelter,Tanpa Nama,,,,,,,23.7342128,119.6046613
+4739915466,node,food_and_drink,鳳嬌姊小吃部,鳳嬌姊小吃部,,,,,,23.7418483,119.6129624
+4741586514,node,food_and_drink,香香冰店,香香冰店,,,,,,23.7393032,119.6088506
+4741586517,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.7398083,119.6093639
+4741586518,node,food_and_drink,戀戀海豚灣,戀戀海豚灣,,,,,,23.7395999,119.609372
+4741586520,node,food_and_drink,紅毛港小吃部,紅毛港小吃部,,,,,,23.7395032,119.6092338
+4741588437,node,food_and_drink,盛發小吃店,盛發小吃店,,,,,,23.7389896,119.6079084
+4889557221,node,convenience_store,7-Eleven,7-Eleven,7-Eleven,7-Eleven,24/7,,,23.5247269,119.5976438
+4971648628,node,shelter,Tanpa Nama,,,,,,,23.6631334,119.5522177
+5614583860,node,tourist_attraction,陸軍用地界柱 防8,陸軍用地界柱 防8,,,,,,23.5798333,119.51025
+5614583885,node,tourist_attraction,澎湖要塞第二地帶標 7,澎湖要塞第二地帶標 7,,,,,,23.3776248,119.5052833
+5614583886,node,tourist_attraction,澎湖要塞第二地帶標 5,澎湖要塞第二地帶標 5,,,,,,23.3843343,119.5052207
+5614583887,node,tourist_attraction,澎湖要塞第二地帶標 3,澎湖要塞第二地帶標 3,,,,,,23.3889407,119.5020881
+5614583888,node,tourist_attraction,澎湖要塞第二地帶標 1,澎湖要塞第二地帶標 1,,,,,,23.3916677,119.4936164
+5760222725,node,food_and_drink,鳳姐碳烤店,鳳姐碳烤店,,,,,,23.5748715,119.5676057
+5840929686,node,food_and_drink,廟前燒肉飯,廟前燒肉飯,,,,,,23.5660287,119.5664634
+5841564985,node,tourist_attraction,大獅龍埕特產市集,大獅龍埕特產市集,Traditional market,,Mo-Su 08:00-14:00,,,23.2021717,119.4352011
+5841690385,node,food_and_drink,福牡蠣屋,福牡蠣屋,,,,,,23.5671391,119.5646085
+5841741585,node,food_and_drink,四海日式串燒,四海日式串燒,,,,,,23.5654957,119.5639915
+5841741586,node,food_and_drink,阿豹香腸,阿豹香腸,,,,,,23.5656284,119.5640057
+5841766785,node,food_and_drink,鮮食堂,鮮食堂,,,,,,23.5656274,119.5647943
+5843377846,node,shelter,Tanpa Nama,,,,,,,23.6172235,119.5694333
+5843379322,node,shelter,Tanpa Nama,,,,,,,23.6175012,119.5695422
+5843379859,node,shelter,Tanpa Nama,,,,,,,23.6178241,119.5680133
+5843502385,node,food_and_drink,阿姨仙人掌冰,阿姨仙人掌冰,,,,,,23.6567401,119.5574949
+5843502386,node,food_and_drink,彩韻榕園,彩韻榕園,,,,,,23.6566204,119.557381
+5843502387,node,food_and_drink,阿虹の店,阿虹の店,,,,,,23.6532704,119.5176725
+5843502389,node,food_and_drink,阿挺海鮮小吃部,阿挺海鮮小吃部,,,,,,23.6529008,119.5172632
+5843502785,node,food_and_drink,小萍の店,小萍の店,,,,,,23.6531854,119.5174644
+5843502786,node,food_and_drink,秀鳳姐の店,秀鳳姐の店,,,,,,23.6534934,119.5177144
+5843830685,node,food_and_drink,海之味,海之味,,,,,,23.5650731,119.5671826
+5843830885,node,food_and_drink,永春小館,永春小館,,,,,,23.5651103,119.5670924
+5843868787,node,food_and_drink,富園小吃 (百元海鮮),富園小吃 (百元海鮮),,,,,,23.5659508,119.5683601
+5843935086,node,food_and_drink,一級棒鐵板燒,一級棒鐵板燒,,,,,,23.5651529,119.5673213
+5843984991,node,food_and_drink,文康滷菜,文康滷菜,,,Mo-Su 17:00-23:00,,,23.57523,119.5743174
+5847487086,node,food_and_drink,益豐豆漿店,益豐豆漿店,,,,,,23.5685867,119.5672979
+5847492985,node,food_and_drink,香亭𩵚魠魚羮,香亭𩵚魠魚羮,,,,,,23.5679606,119.5670658
+5847492986,node,food_and_drink,北新橋牛雜湯,北新橋牛雜湯,,,Mo-Su 05:00-11:30,,,23.5683755,119.567266
+5951170563,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5709608,119.5698044
+5981404591,node,tourist_attraction,鴛鴦窟,鴛鴦窟,,,,,,23.381232,119.506849
+6070666188,node,tourist_attraction,Tanpa Nama,,,,,,,23.218576,119.4255437
+6070696085,node,tourist_attraction,Tanpa Nama,,,,,,,23.1982151,119.4210169
+6436548586,node,food_and_drink,海鮮炸粿,海鮮炸粿,,,Mo-Su 13:00-17:45,,,23.6323504,119.5985331
+6436548785,node,food_and_drink,三哥雞排,三哥雞排,,,Mo-Su 15:30-21:00,,,23.5743902,119.5779598
+6436549085,node,food_and_drink,鐘記燒餅,鐘記燒餅,,,Mo-Su 07:00-10:30,,,23.5684722,119.5671533
+6436549086,node,food_and_drink,麗洋手作伴手禮,麗洋手作伴手禮,,,Mo-Su 10:00-21:00,,,23.5642572,119.5646631
+6436601014,node,tourist_attraction,篤行十村,篤行十村,,,Mo-Su 08:00-21:30,,,23.5637425,119.5608446
+6436608185,node,food_and_drink,乾益堂藥膳蛋,乾益堂藥膳蛋,,,Mo-Su 09:00-19:30,,,23.5651869,119.5650117
+6440585562,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5633155,119.5828389
+6451385391,node,food_and_drink,澎湖大姐自助碳烤廣場,澎湖大姐自助碳烤廣場,,,Mo-Su 17:00-00:00,,,23.5725302,119.5667008
+6451385392,node,food_and_drink,馬路益燒肉飯,馬路益燒肉飯,,,"Mo-Su 11:00-14:00, 16:30-22:00",,yes,23.5660739,119.5647975
+6451386487,node,food_and_drink,花干菜人文懷舊餐廳,花干菜人文懷舊餐廳,,,"Mo-Su 11:00-14:00, 17:00-21:00",,,23.5643075,119.586734
+6452249585,node,tourist_attraction,順承門,順承門,,,,,,23.5631134,119.5623068
+6467761236,node,tourist_attraction,Tanpa Nama,,,,,,,23.6543815,119.5182279
+6467761264,node,tourist_attraction,外垵餌砲觀景台,外垵餌砲觀景台,,,,,,23.5647887,119.4757033
+6690306586,node,shelter,Tanpa Nama,,,,,,,23.6589245,119.6607416
+6690306787,node,food_and_drink,將軍餅休息站,將軍餅休息站,,,Mo-Su 09:00-18:00,,,23.6483772,119.5994688
+6690306986,node,shelter,Tanpa Nama,,,,,,,23.6614552,119.6644076
+6776276085,node,tourist_attraction,Tanpa Nama,,,,,,,23.654684,119.5241605
+6776478487,node,tourist_attraction,二崁,二崁,Er Kan Historical Village,,,,,23.604944,119.5188809
+6776688285,node,tourist_attraction,日落岩,日落岩,Sunset cliff,,,,,23.5632909,119.4693368
+6791935485,node,tourist_attraction,觀夕崖頂,觀夕崖頂,Sunset cliff,,,,,23.5665225,119.4745991
+6912087185,node,food_and_drink,澎湖印地安平價活海鮮餐廳,澎湖印地安平價活海鮮餐廳,Yin Di An Fish Restaurant,,,,,23.566232,119.5690989
+7136916936,node,shelter,尖山腳觀海亭,尖山腳觀海亭,Jianshanjiao Pavilion,,,,,23.5942081,119.5837926
+7136916937,node,tourist_attraction,尖山腳,尖山腳,Jianshanjiao,,,,,23.5941098,119.5836666
+7292566529,node,shelter,Tanpa Nama,,,,,,,23.5653639,119.6636078
+7614192924,node,tourist_attraction,通樑大榕樹,通樑大榕樹,,,,,,23.6566647,119.5571338
+7614192925,node,tourist_attraction,螃蟹博物館,螃蟹博物館,,,,,,23.6328527,119.5217979
+7741942990,node,tourist_attraction,西嶼地標,西嶼地標,,,,,,23.6364554,119.5322692
+7745760485,node,tourist_attraction,池西玄武岩,池西玄武岩,Chixi basalt column,,,,,23.6037319,119.5025311
+7780515253,node,food_and_drink,阿東海鮮餐廳,阿東海鮮餐廳,,,,,,23.5692704,119.5727988
+7780515258,node,food_and_drink,皇家海洋商務旅館,皇家海洋商務旅館,,,,,,23.5687727,119.5759246
+7780515259,node,food_and_drink,星光港灣BBQ4,星光港灣BBQ4,,,,,,23.568319,119.5755883
+7780515260,node,food_and_drink,宜客樂海港百匯自助餐廳,宜客樂海港百匯自助餐廳,,,,,,23.5682625,119.5758364
+7780515261,node,food_and_drink,聚味軒海鮮中餐廳,聚味軒海鮮中餐廳,,,,,,23.5681924,119.5760281
+7780515262,node,food_and_drink,藍洞Apatite,藍洞Apatite,,,,,,23.5679921,119.5758089
+7780516734,node,food_and_drink,上揚早餐,上揚早餐,,,,,,23.569343,119.5715971
+7780532023,node,food_and_drink,幀記碳烤,幀記碳烤,,,,,,23.5690525,119.5706691
+7780532024,node,food_and_drink,小阿姨平價快炒,小阿姨平價快炒,,,,,,23.5685415,119.5695368
+7780532025,node,food_and_drink,銘饗美式牛排,銘饗美式牛排,,,,,,23.5686614,119.5693528
+7780532026,node,food_and_drink,義慈熱炒,義慈熱炒,,,,,,23.5688126,119.5692817
+7780532027,node,food_and_drink,好好丸手工肉丸,好好丸手工肉丸,,,,,,23.5696219,119.570066
+7780532028,node,food_and_drink,烘丼50,烘丼50,,,,,,23.5696859,119.5701689
+7780532029,node,food_and_drink,利樂拉精緻早餐城,利樂拉精緻早餐城,,,,,,23.5699539,119.5708012
+7834065482,node,tourist_attraction,故鄉自寶碑,故鄉自寶碑,,,,,,23.3990567,119.3217054
+7834065483,node,shelter,Tanpa Nama,,,,,,,23.3994832,119.3217002
+7834166015,node,tourist_attraction,望而心安,望而心安,,,,,,23.3988568,119.317794
+7834772656,node,shelter,Tanpa Nama,,,,,,,23.5663412,119.5722536
+7834826207,node,tourist_attraction,日軍上陸紀念碑,日軍上陸紀念碑,,,,,,23.5545521,119.6815446
+8385313452,node,food_and_drink,八方雲集,八方雲集,Bafang Dumpling,八方雲集,,,,23.572586,119.575312
+8385313692,node,food_and_drink,八方雲集,八方雲集,Bafang Dumpling,八方雲集,,,,23.564648,119.585176
+8564372021,node,shelter,Tanpa Nama,,,,,,,23.5126972,119.5980584
+8564395235,node,shelter,Tanpa Nama,,,,,,,23.5127964,119.5984626
+8613284902,node,tourist_attraction,自由塔,自由塔,Freedom Water Tower,,,,,23.5699281,119.5711854
+8625167217,node,food_and_drink,老家餡餅,老家餡餅,,,,,,23.5661552,119.5677981
+8625650217,node,food_and_drink,馬路益燒肉飯,馬路益燒肉飯,,,,,,23.565951,119.5651673
+8661870559,node,food_and_drink,萬波島嶼紅茶澎湖店,萬波島嶼紅茶澎湖店,,,Mo-Su 10:00-22:00,,,23.5671072,119.5648524
+8661870560,node,food_and_drink,郵局蔥油餅,郵局蔥油餅,,,,,,23.5672903,119.5647843
+8871249047,node,tourist_attraction,天堂路秘境,天堂路秘境,,,,,,23.6759812,119.5785996
+9333323061,node,tourist_attraction,彩虹消波塊,彩虹消波塊,,,,,,23.5660536,119.4998936
+9687735258,node,shelter,Tanpa Nama,,,,,,,23.2550938,119.6681378
+9701864173,node,tourist_attraction,東吉之眼,東吉之眼,,,,,,23.2573533,119.666402
+9701957432,node,tourist_attraction,飛機殘骸,飛機殘骸,,,,,,23.2573925,119.6720669
+9709064153,node,shelter,Tanpa Nama,,,,,,,23.2545985,119.6679106
+9709282007,node,shelter,Tanpa Nama,,,,,,,23.2568125,119.5128434
+9709380702,node,shelter,綠蠵龜涼亭,綠蠵龜涼亭,,,,,,23.3589537,119.4902216
+9709420612,node,tourist_attraction,望而心安,望而心安,,,,,,23.3632445,119.5077252
+9709460952,node,shelter,Tanpa Nama,,,,,,,23.3549873,119.498337
+9709528637,node,tourist_attraction,灶籠,灶籠,,,,,,23.2511332,119.6093721
+9709602457,node,shelter,Tanpa Nama,,,,,,,23.2580502,119.6692587
+9709708297,node,tourist_attraction,Tanpa Nama,,,,,,,23.3807809,119.4938
+9719732457,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.5664469,119.5722171
+9749314468,node,tourist_attraction,Tanpa Nama,,,,,,,23.737347,119.5970483
+9749383736,node,tourist_attraction,東方龍馬,東方龍馬,,,,,,23.7416545,119.6191603
+9750756681,node,tourist_attraction,三石壁,三石壁,,,,,,23.5974926,119.5150735
+9753671318,node,tourist_attraction,View From Fort,View From Fort,View From Fort,,,,,23.5632667,119.5588172
+9849273856,node,food_and_drink,外垵刈包 福氣早餐店,外垵刈包 福氣早餐店,,,,,,23.5646483,119.4795245
+9849273857,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.5647128,119.4804631
+9849273858,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.5647381,119.4810851
+9849297818,node,food_and_drink,麗敏の店,麗敏の店,,,,,,23.5646997,119.4818367
+9849297819,node,food_and_drink,海村川味活海鮮,海村川味活海鮮,,,,,,23.5646089,119.4828082
+9849297843,node,food_and_drink,漁村川菜活海鮮,漁村川菜活海鮮,,,,,,23.5644038,119.4831858
+9849603262,node,shelter,Tanpa Nama,,,,,,,23.564792,119.475334
+9849603337,node,tourist_attraction,三仙塔,三仙塔,,,,,,23.5622217,119.4772676
+9849603340,node,tourist_attraction,外垵漁港觀景臺,外垵漁港觀景臺,,,,,,23.5639198,119.4774995
+9849603341,node,tourist_attraction,東三仙塔,東三仙塔,,,,,,23.5638817,119.4869131
+9880133795,node,tourist_attraction,海賊洞,海賊洞,,,,,,23.5598333,119.4731371
+9884148958,node,tourist_attraction,內垵沙灘,內垵沙灘,,,,,,23.5698189,119.4938708
+9885451732,node,tourist_attraction,赤馬沙灘,赤馬沙灘,,,,,,23.5860642,119.5045119
+9889304410,node,tourist_attraction,虎目滬,虎目滬,,,,,,23.5993084,119.49873
+9889304415,node,tourist_attraction,西嶼東臺軍事史蹟園區,西嶼東臺軍事史蹟園區,,,,,,23.5686203,119.5081277
+9889304416,node,tourist_attraction,西嶼西堡壘,西嶼西堡壘,,,,,,23.5677118,119.5041269
+9889304417,node,tourist_attraction,西嶼東堡壘,西嶼東堡壘,,,,,,23.5656595,119.5128955
+9889304418,node,tourist_attraction,西嶼東臺,西嶼東臺,Siyu East Fort,,,,,23.5661648,119.5143051
+9890817350,node,shelter,Tanpa Nama,,,,,,,23.6469778,119.5123845
+9891326611,node,tourist_attraction,後寮沙灘,後寮沙灘,,,,,,23.6724405,119.571982
+9892596363,node,tourist_attraction,後寮村東港舊碼頭整建工程碑,後寮村東港舊碼頭整建工程碑,,,,,,23.6757313,119.579013
+9900871056,node,tourist_attraction,五孔頂,五孔頂,,,,,,23.5798833,119.5101916
+9900871082,node,food_and_drink,三山商號功夫刈包,三山商號功夫刈包,,,,,,23.564737,119.4795283
+9901895015,node,tourist_attraction,風櫃尾荷蘭城堡遺址石碑,風櫃尾荷蘭城堡遺址石碑,,,,,,23.5527087,119.5478012
+9901895016,node,tourist_attraction,法軍陣亡將士碑,法軍陣亡將士碑,Monument to Fallen French Officers,,,,,23.5510232,119.5474015
+10073042785,node,food_and_drink,福春豆花伯,福春豆花伯,,,,,,23.254671,119.6690382
+10101235413,node,food_and_drink,壹咖啡,壹咖啡,,,,,,23.5633948,119.5649307
+10201626732,node,tourist_attraction,洪根深美術館,洪根深美術館,,,,,,23.5644833,119.5636646
+10201626744,node,tourist_attraction,澎湖海洋資源館,澎湖海洋資源館,,,,,,23.5711835,119.5780677
+10832926777,node,tourist_attraction,土地公,土地公,,,,,,23.2603957,119.5148414
+10832930514,node,tourist_attraction,前嶼坪國小大門,前嶼坪國小大門,,,,,,23.2564376,119.5123488
+10844237194,node,tourist_attraction,俯瞰,俯瞰,,,,,,23.2598866,119.5161818
+10844894600,node,tourist_attraction,俯瞰,俯瞰,,,,,,23.2629079,119.5165119
+10859486178,node,tourist_attraction,玉天祠,玉天祠,,,,,,23.1965126,119.4292118
+10860031311,node,food_and_drink,七美極品鹽水雞,七美極品鹽水雞,,,,,,23.1963448,119.4208636
+10866434057,node,tourist_attraction,俯看大獅與龍埕,俯看大獅與龍埕,,,,,,23.2018458,119.4352944
+11251954717,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,24/7,,,23.5636322,119.5670988
+11252135441,node,food_and_drink,Louisa Café,Louisa Café,Louisa Café,,,,,23.5656124,119.5649296
+11261727260,node,food_and_drink,村莊-打章魚,村莊-打章魚,,,,,,23.6470541,119.6325825
+11447375142,node,tourist_attraction,大倉北營頭,大倉北營頭,Datsang Northern Camp General Stele,,,,,23.6188983,119.567822
+11447425894,node,tourist_attraction,大倉南營頭,大倉南營頭,Datsang Southern Camp General Stele,,,,,23.6185245,119.5700875
+11447439098,node,tourist_attraction,大倉東營頭,大倉東營頭,,,,,,23.6183743,119.5694426
+11447476758,node,tourist_attraction,大倉西營頭,大倉西營頭,Datsang Western Camp General Stele,,,,,23.6181486,119.5673092
+11862512171,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,24/7,,,23.5769993,119.5732768
+11865304067,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,Mo-Su 07:00-23:00,,,23.5696347,119.5679721
+11865323372,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.5675396,119.564471
+11865323373,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5663879,119.5653596
+11865323374,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.567245,119.5679533
+11865323375,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,24/7,,,23.5673467,119.5676168
+11868690383,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,24/7,,,23.5660047,119.5654977
+11868690423,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,24/7,,,23.5717756,119.5740646
+11868690424,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5718234,119.5744533
+11873803862,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.5649755,119.584264
+11873818977,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5634823,119.5807194
+11873818978,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,24/7,,,23.5632974,119.5826064
+11917803157,node,tourist_attraction,陸軍用地界柱 防4,陸軍用地界柱 防4,,,,,,23.5640304,119.5610932
+11949111955,node,tourist_attraction,Tanpa Nama,,,,,,,23.25726,119.6672085
+12043863088,node,tourist_attraction,Tanpa Nama,,,,,,,23.6424351,119.539876
+12043863089,node,tourist_attraction,Tanpa Nama,,,,,,,23.6479966,119.543786
+12043863090,node,tourist_attraction,Tanpa Nama,,,,,,,23.6534829,119.5476953
+12043863091,node,tourist_attraction,Tanpa Nama,,,,,,,23.6586978,119.5514128
+12157515866,node,tourist_attraction,澎湖要塞第二地帶標 24,澎湖要塞第二地帶標 24,,,,,,23.555023,119.675152
+12157515867,node,tourist_attraction,澎湖要塞第一地帶標 2,澎湖要塞第一地帶標 2,,,,,,23.567172,119.601656
+12425158902,node,food_and_drink,紫玉仙草,紫玉仙草,,,,,,23.5677203,119.5680995
+12432220763,node,tourist_attraction,Tanpa Nama,,,,,,,23.5914917,119.6131694
+12432220766,node,tourist_attraction,鼎灣社區,鼎灣社區,,,,,,23.5911894,119.6131539
+12774552974,node,tourist_attraction,陽明妙塔,陽明妙塔,,,,,,23.6035946,119.6508296
+12774644244,node,tourist_attraction,Tanpa Nama,,,,,,,23.5274381,119.5706852
+12784928087,node,tourist_attraction,澎湖要塞第二地帶標,澎湖要塞第二地帶標,,,,,,23.5714583,119.5768033
+12894609201,node,food_and_drink,傳統豆花冰,傳統豆花冰,Traditional Beancurd Shaved Ice,,Mo-Su 09:00-17:00,,,23.6608891,119.6590556
+12896536301,node,food_and_drink,湖西小館 （台南擔仔麵）,湖西小館 （台南擔仔麵）,,,"We-Mo 10:00-14:00, 17:00-20:00",,,23.5849835,119.6597892
+13110221501,node,shelter,Tanpa Nama,,,,,,,23.5720355,119.5637558
+13110242201,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.5670511,119.5653832
+13110280501,node,food_and_drink,All Fresh,All Fresh,All Fresh,,,,,23.564894,119.5652616
+13110385601,node,food_and_drink,Kheh-Thiann,Kheh-Thiann,Kheh-Thiann,,Mo-Su 14:00-00:00,,,23.5663806,119.5639458
+13111265470,node,food_and_drink,麥當勞,麥當勞,McDonald's,麥當勞,,,,23.5663501,119.5655238
+13111353601,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.6323328,119.5993637
+13111684601,node,food_and_drink,逸茶嶼,逸茶嶼,Yicha.Yu,,Mo-Su 10:00-19:00,,,23.6619824,119.5704643
+13111851062,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.5945201,119.5169899
+13112287801,node,food_and_drink,Tanpa Nama,,,,,,,23.5664053,119.5691921
+13112287901,node,food_and_drink,可不可熟成紅茶,可不可熟成紅茶,Kebuke,可不可熟成紅茶,,,,23.5670668,119.5682148
+13114079701,node,tourist_attraction,絕美嗨景,絕美嗨景,Grand Beauty View,,,,,23.6010318,119.6711062
+13114082201,node,tourist_attraction,風車陶景,風車陶景,Wind Turbine View,,,,,23.5998727,119.671407
+13114273331,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.5847739,119.6595104
+13114273333,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.5849998,119.6590187
+13114587401,node,food_and_drink,The Wave House,The Wave House,The Wave House,,,,,23.5673568,119.567814
+13114587403,node,food_and_drink,Tanpa Nama,,,,,,,23.5673094,119.5653637
+13115663502,node,food_and_drink,Tanpa Nama,,,,,,,23.5684761,119.5693714
+13115675902,node,food_and_drink,Nikoni,Nikoni,Nikoni,,,,,23.5696491,119.5701226
+13204376963,node,food_and_drink,Dagoya,Dagoya,,,,,,23.5950086,119.5168358
+13206227513,node,food_and_drink,澎湖小卷麵館,澎湖小卷麵館,,,"Mo-Su 10:00-15:00,16:30-20:00+",,,23.5241948,119.5988027
+13396891206,node,tourist_attraction,蛇頭山,蛇頭山,,,,,,23.5494637,119.5482881
+13396891208,node,tourist_attraction,継往開來,継往開來,,,,,,23.5520405,119.5474747
+13396891209,node,tourist_attraction,頂天立地,頂天立地,,,,,,23.5520479,119.547478
+13616482214,node,tourist_attraction,陸軍用地界柱 防279,陸軍用地界柱 防279,,,,,,23.56936,119.508614
+13701588323,node,food_and_drink,爭鮮,爭鮮,Sushi Express,爭鮮,,,,23.5676839,119.5723451
+13701689124,node,tourist_attraction,澎湖文化局文馨畫廊,澎湖文化局文馨畫廊,,,,,,23.5711527,119.5774393
+13702734390,node,food_and_drink,金醬府,金醬府,,,,,,23.5679261,119.572233
+13703369782,node,food_and_drink,咖哩郎丼飯咖哩專賣,咖哩郎丼飯咖哩專賣,,,,,,23.5670894,119.5648993
+13718186616,node,food_and_drink,星巴克,星巴克,Starbucks,星巴克,Mo-Su 07:70-21:30,,,23.5678433,119.5758695
+13838056487,node,tourist_attraction,Tanpa Nama,,,,,,,23.2577417,119.672129
+13838056546,node,food_and_drink,東吉冰厝,東吉冰厝,,,,,,23.2548182,119.6687813
+14051293002,node,food_and_drink,Toko Debby,Toko Debby,,,Mo-Su 18:00-21:00,,,23.564653,119.4833828
+14063653817,node,shelter,Tanpa Nama,,,,,,,23.4901244,119.5114867
+14065705583,node,shelter,Tanpa Nama,,,,,,,23.6616907,119.665627
+225400813,way,tourist_attraction,小門地質探索館,小門地質探索館,Xiaomen Geology Gallery,,,,,23.6539816,119.517318
+257946566,way,tourist_attraction,綠蠵龜觀光保育中心,綠蠵龜觀光保育中心,,,,yes,,23.3650304,119.506859
+257946578,way,tourist_attraction,望安納骨塔,望安納骨塔,,,,,,23.3559191,119.5087878
+294455800,way,tourist_attraction,分岔仔,分岔仔,Fenchazi,,,,,23.2048482,119.4431285
+295319065,way,tourist_attraction,七美人塚,七美人塚,Seven Beauties Tomb,,,,,23.1924537,119.4263828
+330868213,way,tourist_attraction,開臺澎湖天后宮,開臺澎湖天后宮,Penghu Tianhou Temple,,,,,23.5647115,119.5640221
+332797863,way,tourist_attraction,中央街,中央街,Zhongyang Street,,,,,23.564771,119.5647636
+334405192,way,shelter,Tanpa Nama,,,,,,,23.5794318,119.5806962
+378467416,way,shelter,Tanpa Nama,,,,,,,23.568635,119.5624355
+383635710,way,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.19606,119.4195749
+383636297,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.1961875,119.4198891
+418982216,way,food_and_drink,及林村咖啡,及林村咖啡,Gilly Primavera,,Mo-Su 10:00-19:00,,,23.5593426,119.64281
+418982404,way,shelter,Tanpa Nama,,,,,,,23.5589075,119.6424598
+480843348,way,tourist_attraction,吉貝石滬文化館,吉貝石滬文化館,,,,,,23.7384756,119.6127115
+480856845,way,tourist_attraction,白沙鄉魚加簸嶼紀念館,白沙鄉魚加簸嶼紀念館,,,,,,23.7510326,119.61388
+495110461,way,tourist_attraction,西嶼東臺,西嶼東臺,Siyu East Fort,,,,,23.5656938,119.5140913
+495121369,way,tourist_attraction,西嶼東臺軍事史蹟園區,西嶼東臺軍事史蹟園區,,,,,,23.5679086,119.5073436
+495181586,way,shelter,Tanpa Nama,,,,,,,23.6544222,119.5189511
+495181588,way,shelter,Tanpa Nama,,,,,,,23.6545001,119.5190996
+495181589,way,shelter,Tanpa Nama,,,,,,,23.6545204,119.5190566
+495182194,way,shelter,Tanpa Nama,,,,,,,23.6551289,119.5225655
+495182195,way,shelter,Tanpa Nama,,,,,,,23.6548252,119.5235404
+495190905,way,tourist_attraction,西台古堡,西台古堡,,,,,,23.5640877,119.4896236
+507683778,way,shelter,Tanpa Nama,,,,,,,23.5557027,119.6753645
+584853386,way,tourist_attraction,澎湖文化園區,澎湖文化園區,,,,,,23.5704671,119.5772679
+584853387,way,tourist_attraction,忠烈祠,忠烈祠,,,,,,23.5696473,119.5772017
+674369518,way,tourist_attraction,菜園納骨塔,菜園納骨塔,,,,,,23.5519593,119.600176
+687012204,way,tourist_attraction,澎湖警察文物館,澎湖警察文物館,Police Cultural Relic Hall,,,,,23.5632355,119.5635815
+687012207,way,food_and_drink,摩斯漢堡,摩斯漢堡,MOS Burger,摩斯漢堡,,,,23.5629361,119.5653643
+687050655,way,tourist_attraction,澎湖化石館,澎湖化石館,,,,,,23.5704651,119.5770124
+687050656,way,tourist_attraction,二呆藝館,二呆藝館,Erdai Art Museum,,,,,23.5712368,119.5766801
+687128062,way,tourist_attraction,澎湖生活博物館,澎湖生活博物館,Penghu Living Museum,,,,,23.5671681,119.5795403
+687283761,way,tourist_attraction,澎湖郵便局,澎湖郵便局,Former Penghu Post Office,,,,,23.5634196,119.5639264
+687864179,way,tourist_attraction,慈航堂,慈航堂,,,,,,23.5197971,119.5876201
+687864180,way,tourist_attraction,陵巖塔,陵巖塔,,,,,,23.5198231,119.5870658
+687864185,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5194675,119.5761533
+689444611,way,shelter,Tanpa Nama,,,,,,,23.5793648,119.5129711
+689566910,way,food_and_drink,廚房,廚房,,,,,,23.5283303,119.5905164
+689566917,way,food_and_drink,廚房,廚房,,,,,,23.5271508,119.5902421
+690722016,way,shelter,Tanpa Nama,,,,,,,23.365837,119.5228432
+779446389,way,tourist_attraction,馬公市第四公墓,馬公市第四公墓,,,,,,23.5712394,119.5899833
+830694208,way,tourist_attraction,澎湖舊發電廠,澎湖舊發電廠,,,,,,23.5681412,119.5706694
+833470351,way,food_and_drink,富國海鮮餐廳,富國海鮮餐廳,,,,,,23.5686329,119.573252
+839541093,way,tourist_attraction,望安鄉花嶼村納骨堂,望安鄉花嶼村納骨堂,,,,,,23.4047258,119.3233746
+881526091,way,tourist_attraction,神像基座廢墟,神像基座廢墟,,,,,,23.6212517,119.5686702
+1055856263,way,tourist_attraction,東吉防備衛所（兵厝）,東吉防備衛所（兵厝）,,,,,,23.2577078,119.6768637
+1055858590,way,shelter,Tanpa Nama,,,,,,,23.2622533,119.6726776
+1055858592,way,shelter,Tanpa Nama,,,,,,,23.2605954,119.6765681
+1055858594,way,shelter,Tanpa Nama,,,,,,,23.2584637,119.6714754
+1056616692,way,shelter,Tanpa Nama,,,,,,,23.3617939,119.5075808
+1056619230,way,shelter,Tanpa Nama,,,,,,,23.380134,119.5052395
+1056619233,way,shelter,Tanpa Nama,,,,,,,23.3751391,119.5091411
+1056620684,way,shelter,Tanpa Nama,,,,,,,23.3663806,119.5352361
+1056620685,way,shelter,Tanpa Nama,,,,,,,23.3669623,119.5404495
+1056620687,way,shelter,Tanpa Nama,,,,,,,23.3662542,119.5411621
+1056620688,way,shelter,Tanpa Nama,,,,,,,23.3658219,119.5419707
+1056620689,way,shelter,Tanpa Nama,,,,,,,23.3657901,119.5420502
+1056620692,way,tourist_attraction,望安鄉將軍澳懷親堂,望安鄉將軍澳懷親堂,Huai-gin-tang Columbarium,,,,,23.3696943,119.5298415
+1056621007,way,shelter,Tanpa Nama,,,,,,,23.362165,119.5213639
+1056621008,way,shelter,Tanpa Nama,,,,,,,23.3657277,119.523693
+1056642590,way,shelter,Tanpa Nama,,,,,,,23.3561116,119.5027072
+1056642591,way,shelter,Tanpa Nama,,,,,,,23.356103,119.5029391
+1056642840,way,food_and_drink,沙灘體驗屋,沙灘體驗屋,,,,,,23.3562649,119.5033933
+1056642975,way,food_and_drink,望安民宿小吃部,望安民宿小吃部,,,,,,23.3562205,119.4999088
+1056644523,way,shelter,Tanpa Nama,,,,,,,23.359248,119.4901179
+1056648903,way,food_and_drink,仙人掌冷飲店、租車,仙人掌冷飲店、租車,,,,,,23.3614392,119.5074645
+1056648904,way,food_and_drink,潭門港小吃部 自助餐,潭門港小吃部 自助餐,,,,,,23.3603733,119.5079351
+1056651174,way,food_and_drink,站長咖啡,站長咖啡,,,,,,23.3722047,119.4966077
+1056653089,way,shelter,Tanpa Nama,,,,,,,23.3721371,119.4951583
+1056655092,way,shelter,Tanpa Nama,,,,,,,23.381707,119.5069158
+1056656545,way,shelter,Tanpa Nama,,,,,,,23.364451,119.5068452
+1056656898,way,shelter,Tanpa Nama,,,,,,,23.3566348,119.5026377
+1056660425,way,shelter,Tanpa Nama,,,,,,,23.389386,119.5008414
+1056687831,way,shelter,Tanpa Nama,,,,,,,23.3809708,119.4950153
+1056690849,way,shelter,Tanpa Nama,,,,,,,23.3630045,119.5209571
+1056690850,way,shelter,Tanpa Nama,,,,,,,23.3633021,119.5206989
+1056690851,way,shelter,Tanpa Nama,,,,,,,23.3634894,119.5204132
+1056690852,way,shelter,Tanpa Nama,,,,,,,23.3628457,119.520969
+1060291948,way,shelter,Tanpa Nama,,,,,,,23.7555438,119.6102706
+1061105610,way,shelter,Tanpa Nama,,,,,,,23.7466842,119.6056694
+1061105613,way,shelter,Tanpa Nama,,,,,,,23.7416712,119.6189574
+1061105614,way,shelter,Tanpa Nama,,,,,,,23.7416644,119.6190366
+1061109591,way,shelter,Tanpa Nama,,,,,,,23.5640777,119.4774532
+1061113314,way,shelter,Tanpa Nama,,,,,,,23.656324,119.556669
+1061258644,way,tourist_attraction,七美鄉第一納骨堂,七美鄉第一納骨堂,,,,,,23.2199803,119.4390209
+1061258645,way,tourist_attraction,祥園莊,祥園莊,Xiang Yuan Farmstead,,,,,23.2200079,119.4387105
+1061258647,way,tourist_attraction,永澤堂,永澤堂,,,,,,23.2200516,119.4382386
+1073755945,way,tourist_attraction,廢棄軍營,廢棄軍營,,,,,,23.5619321,119.4769292
+1073755946,way,tourist_attraction,Tanpa Nama,,,,,,,23.5620059,119.476823
+1073755947,way,tourist_attraction,Tanpa Nama,,,,,,,23.5620977,119.4768879
+1073755948,way,tourist_attraction,Tanpa Nama,,,,,,,23.562086,119.4769768
+1077575370,way,food_and_drink,海村川味活海鮮,海村川味活海鮮,,,,,,23.5646487,119.4827896
+1077575371,way,food_and_drink,漁村川菜活海鮮,漁村川菜活海鮮,,,,,,23.5644033,119.4831995
+1077601415,way,food_and_drink,阿美便利小吃部,阿美便利小吃部,,,,,,23.5648644,119.4795464
+1077601416,way,food_and_drink,福氣早餐 - 外垵刈包,福氣早餐 - 外垵刈包,,,,,,23.5646309,119.479497
+1078263953,way,tourist_attraction,Tanpa Nama,,,,,,,23.5656305,119.5140887
+1078283759,way,shelter,Tanpa Nama,,,,,,,23.574683,119.513416
+1078736801,way,shelter,Tanpa Nama,,,,,,,23.5711243,119.5039939
+1078760259,way,shelter,Tanpa Nama,,,,,,,23.5858169,119.5044462
+1078760266,way,shelter,Tanpa Nama,,,,,,,23.5785812,119.5094508
+1078760268,way,shelter,Tanpa Nama,,,,,,,23.579724,119.5107575
+1078760269,way,shelter,Tanpa Nama,,,,,,,23.5796604,119.5102322
+1078760282,way,tourist_attraction,Tanpa Nama,,,,,,,23.5772136,119.5048551
+1078771171,way,food_and_drink,三山商號功夫刈包,三山商號功夫刈包,,,,,,23.5647249,119.4794741
+1078820817,way,shelter,Tanpa Nama,,,,,,,23.5941982,119.5837946
+1078855375,way,food_and_drink,清心飲食店,清心飲食店,,,,,,23.6003199,119.5096071
+1078855385,way,food_and_drink,西嶼餐廳,西嶼餐廳,,,,,,23.5986253,119.5054095
+1078866064,way,shelter,Tanpa Nama,,,,,,,23.5946768,119.5146967
+1078866069,way,shelter,Tanpa Nama,,,,,,,23.5945181,119.5169926
+1078866070,way,shelter,Tanpa Nama,,,,,,,23.5944356,119.5170707
+1078874293,way,shelter,Tanpa Nama,,,,,,,23.6500976,119.5187934
+1078941024,way,shelter,Tanpa Nama,,,,,,,23.6675866,119.5751903
+1078941038,way,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.6585406,119.5556239
+1078941818,way,shelter,Tanpa Nama,,,,,,,23.6562243,119.5563482
+1078992961,way,shelter,Tanpa Nama,,,,,,,23.6565302,119.5562944
+1078992962,way,shelter,Tanpa Nama,,,,,,,23.6565656,119.5562256
+1078992963,way,shelter,Tanpa Nama,,,,,,,23.6566121,119.556135
+1078992965,way,tourist_attraction,後寮許謀古厝,後寮許謀古厝,,,,,,23.666511,119.5762788
+1079151575,way,shelter,機車停車場,機車停車場,,,,,,23.6704261,119.5708173
+1079151577,way,tourist_attraction,Tanpa Nama,,,,,,,23.6734921,119.5758804
+1080156393,way,shelter,Tanpa Nama,,,,,,,23.580755,119.5110883
+1080157554,way,tourist_attraction,永成古厝,永成古厝,,,,,,23.6387482,119.5295526
+1080157556,way,tourist_attraction,Tanpa Nama,,,,,,,23.6386257,119.5295209
+1080157557,way,tourist_attraction,Tanpa Nama,,,,,,,23.6384842,119.529467
+1080158343,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.6370754,119.5285285
+1080286993,way,shelter,蛇頭山遊憩區,蛇頭山遊憩區,,,,,,23.5502065,119.5477343
+1093500110,way,tourist_attraction,澎湖跨海大橋,澎湖跨海大橋,Penghu Great Bridge,,,,,23.6487336,119.5472223
+1100625545,way,shelter,不要亭,不要亭,,,,,,23.2555531,119.6682104
+1100625546,way,shelter,Tanpa Nama,,,,,,,23.2547488,119.667458
+1167657359,way,shelter,Tanpa Nama,,,,,,,23.1967953,119.4295745
+1167657361,way,shelter,露營棚屋群,露營棚屋群,,,,,,23.1971951,119.4298667
+1167657365,way,shelter,Tanpa Nama,,,,,,,23.1896396,119.4291424
+1167657368,way,shelter,Tanpa Nama,,,,,,,23.1894652,119.4303932
+1167657374,way,shelter,Tanpa Nama,,,,,,,23.2021321,119.4351837
+1167657377,way,shelter,Tanpa Nama,,,,,,,23.2021516,119.4354502
+1167657381,way,shelter,Tanpa Nama,,,,,,,23.2029971,119.4384257
+1167657382,way,shelter,Tanpa Nama,,,,,,,23.2028177,119.4389464
+1167657383,way,shelter,Tanpa Nama,,,,,,,23.2021066,119.4390871
+1167657388,way,shelter,Tanpa Nama,,,,,,,23.2087182,119.4423499
+1167657392,way,food_and_drink,越南大骨湯麵,越南大骨湯麵,,,,,,23.1995192,119.4231989
+1167690578,way,tourist_attraction,小台灣,小台灣,Little Taiwan,,,,,23.2080212,119.4437211
+1167695075,way,tourist_attraction,龍埕,龍埕,,,,,,23.2014644,119.4390141
+1212999070,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5794947,119.5793802
+1213002395,way,food_and_drink,老上海臭臭鍋,老上海臭臭鍋,,,,,,23.5797255,119.5792125
+1216971941,way,tourist_attraction,澎湖孔廟,澎湖孔廟,Penghu Confucius Temple,,,,,23.5671602,119.5802292
+1276757791,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5757781,119.574765
+1276757799,way,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,24/7,,,23.5733433,119.5719912
+1277852648,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5774511,119.5714966
+1278730917,way,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,24/7,,,23.5744875,119.5783227
+1278730918,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.574162,119.5794152
+1278781615,way,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,24/7,,,23.5295758,119.6003237
+1278781616,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5278628,119.6038792
+1279032924,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5685128,119.5832804
+1279032943,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5619436,119.5849048
+1279032947,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.5594208,119.5825799
+1321832364,way,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.5692311,119.5987779
+1321832365,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.5694431,119.5988048
+1354785560,way,tourist_attraction,白馬公園,白馬公園,,,,,,23.2165065,119.4435943
+1379623744,way,shelter,Tanpa Nama,,,,,,,23.5617508,119.4782226
+1379623745,way,shelter,Tanpa Nama,,,,,,,23.5618421,119.4782922
+1427723262,way,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.5812382,119.5754288
+1431647894,way,food_and_drink,可口冰城,可口冰城,Exquisite Ice Cream,,Mo-Su 00:00-17:00,,,23.6119665,119.5146496
+1450213490,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,24/7,,,23.58103,119.5759339
+1453095083,way,shelter,三號涼亭觀景區,三號涼亭觀景區,,,,,,23.6481582,119.6342671
+1453095084,way,shelter,員貝二號亭,員貝二號亭,,,,,,23.6501922,119.6359662
+1472674688,way,food_and_drink,台灣陽春麵,台灣陽春麵,,,Mo-Fr 09:00-17:00,,,23.5718951,119.579181
+1531383190,way,tourist_attraction,潘安邦紀念館,潘安邦紀念館,,,,,,23.5630992,119.5608246
+1531383191,way,tourist_attraction,張雨生故事館,張雨生故事館,Chang Yu-sheng Memorial Museum,,,,,23.5632898,119.5604864
