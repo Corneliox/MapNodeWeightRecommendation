@@ -660,15 +660,6 @@ async function fetchRoadRouteOSRM(coords, mode = 'scooter') {
 let currentRouteCache = null;
 let activeRouteView = 'safe';
 
-async function calculateSmartRoute() {
-  const startKey = document.getElementById('select-start').value;
-  const endKey = document.getElementById('select-end').value;
-
-  const start = KEY_PRESET_LOCATIONS[startKey] || KEY_PRESET_LOCATIONS.magong_port;
-  const destination = KEY_PRESET_LOCATIONS[endKey] || KEY_PRESET_LOCATIONS.tongliang_banyan;
-
-  routePolylineLayer.clearLayers();
-
 // Dynamic Risk Tier for Direct Route (UV >= 6: Red, 3-6: Yellow/Amber, < 3: Green)
 function getDirectRouteRiskConfig() {
   const uv = (typeof currentWeatherData.uvIndex === 'number') ? currentWeatherData.uvIndex : 0;
@@ -895,6 +886,8 @@ function renderSelectedRouteView(type) {
 
     document.getElementById('route-distance-text').textContent = `${safeRouteData.distanceKm.toFixed(1)} km (Safe Route)`;
     renderSafeTimeline(startTitle, destTitle, recommendedShelter, safeRouteData, schemeMeta);
+  }
+
   lucide.createIcons();
 }
 
