@@ -477,140 +477,72 @@ async function fetchLiveWeather() {
 }
 
 // ====================================================================
-// VECTOR REGIONAL BIOMETEOROLOGICAL MICROCLIMATE ZONES ENGINE
-// (Replaces Point-Based KDE to Eliminate Accumulation & Small Circular Dots)
+// CONTINUOUS 2D IDW METEOROLOGICAL FIELD ENGINE
+// (Inverse Distance Weighting Canvas Overlay - True Continuous Radar Gradient)
 // ====================================================================
 let activeHeatmapMode = 'normal'; // 'normal' | 'temp' | 'uv'
 let liveHeatmapLayer = null;
 
-const PENGHU_MICROCLIMATE_ZONES = [
-  {
-    id: 'magong_urban',
-    name_zh: '馬公市區核心 (Magong Urban Core)',
-    name_en: 'Magong City Core',
-    tempOffset: +1.5, // Asphalt & dense concrete heat island
-    uvFactor: 0.85,   // Building shade reduces direct albedo
-    coords: [
-      [23.585, 119.545], [23.585, 119.595], [23.555, 119.600], [23.545, 119.565], [23.560, 119.540]
-    ]
-  },
-  {
-    id: 'magong_south',
-    name_zh: '山水沙灘與風櫃半島 (Shanshui & Fenggui Peninsula)',
-    name_en: 'South Peninsula & Beaches',
-    tempOffset: +0.5,
-    uvFactor: 1.10,   // High coral sand solar albedo
-    coords: [
-      [23.545, 119.540], [23.555, 119.600], [23.505, 119.615], [23.500, 119.560], [23.535, 119.530]
-    ]
-  },
-  {
-    id: 'huxi_plains',
-    name_zh: '湖西鄉與機場平原 (Huxi Plains & Airport)',
-    name_en: 'Huxi Plains & Airport',
-    tempOffset: +0.8,
-    uvFactor: 1.05,
-    coords: [
-      [23.615, 119.595], [23.615, 119.690], [23.540, 119.690], [23.555, 119.595]
-    ]
-  },
-  {
-    id: 'baisha_peninsula',
-    name_zh: '白沙鄉與中屯 (Baisha Peninsula & Windmills)',
-    name_en: 'Baisha & Windmills',
-    tempOffset: -0.5, // Coastal breeze moderation
-    uvFactor: 0.95,
-    coords: [
-      [23.670, 119.565], [23.670, 119.640], [23.605, 119.640], [23.605, 119.570]
-    ]
-  },
-  {
-    id: 'tongliang_banyan',
-    name_zh: '通梁古榕與跨海大橋 (Tongliang Banyan & Bridge)',
-    name_en: 'Tongliang Banyan Shade Sink',
-    tempOffset: -1.5, // Dense 300yo banyan canopy & sea wind channel
-    uvFactor: 0.35,   // Maximum foliage shade protection
-    coords: [
-      [23.665, 119.535], [23.668, 119.568], [23.645, 119.568], [23.642, 119.535]
-    ]
-  },
-  {
-    id: 'xiyu_island',
-    name_zh: '西嶼鄉柱狀玄武岩區 (Xiyu Basalt Island)',
-    name_en: 'Xiyu Basalt Island',
-    tempOffset: +0.2,
-    uvFactor: 1.05, // Basalt cliff reflection
-    coords: [
-      [23.655, 119.485], [23.655, 119.535], [23.590, 119.535], [23.545, 119.470], [23.580, 119.460]
-    ]
-  },
-  {
-    id: 'jibei_island',
-    name_zh: '吉貝沙尾與目斗嶼 (Jibei Sand Spit & Mudouyu)',
-    name_en: 'Jibei North Coral Sand Reefs',
-    tempOffset: -0.2,
-    uvFactor: 1.25, // White coral sand maximum solar reflection
-    coords: [
-      [23.800, 119.570], [23.800, 119.630], [23.715, 119.630], [23.715, 119.570]
-    ]
-  },
-  {
-    id: 'wangan_island',
-    name_zh: '望安綠蠵龜保護區 (Wang\'an Turtle Island)',
-    name_en: 'Wang\'an Island',
-    tempOffset: 0.0,
-    uvFactor: 1.15,
-    coords: [
-      [23.410, 119.465], [23.410, 119.550], [23.330, 119.550], [23.330, 119.465]
-    ]
-  },
-  {
-    id: 'qimei_island',
-    name_zh: '七美雙心石滬 (Qimei Island)',
-    name_en: 'Qimei Southern Island',
-    tempOffset: +0.4,
-    uvFactor: 1.25, // Southernmost open ocean radiation
-    coords: [
-      [23.245, 119.410], [23.245, 119.470], [23.190, 119.470], [23.190, 119.410]
-    ]
-  },
-  {
-    id: 'dongji_marine',
-    name_zh: '南方四島國家公園 (South Marine Park)',
-    name_en: 'South Marine National Park',
-    tempOffset: -0.8,
-    uvFactor: 1.10,
-    coords: [
-      [23.280, 119.630], [23.280, 119.710], [23.220, 119.710], [23.220, 119.630]
-    ]
-  },
-  {
-    id: 'inland_sea',
-    name_zh: '澎湖內海風道 (Penghu Inland Sea & Marine Channel)',
-    name_en: 'Penghu Inland Sea Channels',
-    tempOffset: -1.8, // Cool maritime water body buffer
-    uvFactor: 0.70,
-    coords: [
-      [23.630, 119.510], [23.630, 119.570], [23.570, 119.570], [23.570, 119.510]
-    ]
+// Smooth Piecewise Color Interpolator for Temperature (°C)
+function getInterpolatedTempRgba(t) {
+  // t range: ~24°C to 38°C
+  // Color stops:
+  // <= 25°C: Blue [59, 130, 246]
+  // 27°C: Cyan [6, 214, 160]
+  // 29°C: Emerald Green [16, 185, 129]
+  // 31°C: Amber [251, 191, 36]
+  // 33°C: Orange [249, 115, 22]
+  // >= 36°C: Red [239, 68, 68]
+  if (t <= 25) return [59, 130, 246, 120];
+  if (t <= 27) {
+    const f = (t - 25) / 2;
+    return [Math.round(59 + f * (6 - 59)), Math.round(130 + f * (214 - 130)), Math.round(246 + f * (160 - 246)), 125];
   }
-];
-
-function getTempColor(t) {
-  if (t <= 26) return { fill: '#3B82F6', stroke: '#2563EB', label: 'Sejuk (<26°C)' };
-  if (t <= 28) return { fill: '#06D6A0', stroke: '#059669', label: 'Segar (27-28°C)' };
-  if (t <= 30) return { fill: '#10B981', stroke: '#047857', label: 'Nyaman (29-30°C)' };
-  if (t <= 32) return { fill: '#FBBF24', stroke: '#D97706', label: 'Hangat (31-32°C)' };
-  if (t <= 34) return { fill: '#F97316', stroke: '#EA580C', label: 'Panas (33-34°C)' };
-  return { fill: '#EF4444', stroke: '#DC2626', label: 'Sangat Panas (35°C+)' };
+  if (t <= 29) {
+    const f = (t - 27) / 2;
+    return [Math.round(6 + f * (16 - 6)), Math.round(214 + f * (185 - 214)), Math.round(160 + f * (129 - 160)), 130];
+  }
+  if (t <= 31) {
+    const f = (t - 29) / 2;
+    return [Math.round(16 + f * (251 - 16)), Math.round(185 + f * (191 - 185)), Math.round(129 + f * (36 - 129)), 135];
+  }
+  if (t <= 33) {
+    const f = (t - 31) / 2;
+    return [Math.round(251 + f * (249 - 251)), Math.round(191 + f * (115 - 191)), Math.round(36 + f * (22 - 36)), 140];
+  }
+  if (t <= 36) {
+    const f = (t - 33) / 3;
+    return [Math.round(249 + f * (239 - 249)), Math.round(115 + f * (68 - 115)), Math.round(22 + f * (68 - 22)), 150];
+  }
+  return [239, 68, 68, 160];
 }
 
-function getUvColor(uv) {
-  if (uv <= 2.0) return { fill: '#10B981', stroke: '#059669', label: 'UV Aman (0-2)' };
-  if (uv <= 5.0) return { fill: '#FBBF24', stroke: '#D97706', label: 'UV Sedang (3-5)' };
-  if (uv <= 7.0) return { fill: '#F97316', stroke: '#EA580C', label: 'UV Tinggi (6-7)' };
-  if (uv <= 10.0) return { fill: '#EF4444', stroke: '#DC2626', label: 'UV Sangat Tinggi (8-10)' };
-  return { fill: '#9333EA', stroke: '#7E22CE', label: 'UV Ekstrem (11+)' };
+// Smooth Piecewise Color Interpolator for UV Index
+function getInterpolatedUvRgba(uv) {
+  // uv range: 0.0 to 12.0
+  // <= 2.0: Emerald Green [16, 185, 129] (100% Calm Green at Night!)
+  // 4.5: Amber [251, 191, 36]
+  // 6.5: Orange [249, 115, 22]
+  // 8.5: Red [239, 68, 68]
+  // >= 11.0: Violet [147, 51, 234]
+  if (uv <= 2.0) return [16, 185, 129, 120];
+  if (uv <= 4.5) {
+    const f = (uv - 2.0) / 2.5;
+    return [Math.round(16 + f * (251 - 16)), Math.round(185 + f * (191 - 185)), Math.round(129 + f * (36 - 129)), 125];
+  }
+  if (uv <= 6.5) {
+    const f = (uv - 4.5) / 2.0;
+    return [Math.round(251 + f * (249 - 251)), Math.round(191 + f * (115 - 191)), Math.round(36 + f * (22 - 36)), 130];
+  }
+  if (uv <= 8.5) {
+    const f = (uv - 6.5) / 2.0;
+    return [Math.round(249 + f * (239 - 249)), Math.round(115 + f * (68 - 115)), Math.round(22 + f * (68 - 22)), 140];
+  }
+  if (uv <= 11.0) {
+    const f = (uv - 8.5) / 2.5;
+    return [Math.round(239 + f * (147 - 239)), Math.round(68 + f * (51 - 68)), Math.round(68 + f * (234 - 68)), 150];
+  }
+  return [147, 51, 234, 160];
 }
 
 function setHeatmapMode(mode) {
@@ -633,7 +565,7 @@ function setHeatmapMode(mode) {
   if (btnTemp) btnTemp.className = mode === 'temp' ? baseActive : baseInactive;
   if (btnUv) btnUv.className = mode === 'uv' ? baseActive : baseInactive;
 
-  // Remove existing microclimate zone layer
+  // Remove existing continuous field layer
   if (liveHeatmapLayer && map && map.hasLayer(liveHeatmapLayer)) {
     map.removeLayer(liveHeatmapLayer);
     liveHeatmapLayer = null;
@@ -646,14 +578,10 @@ function setHeatmapMode(mode) {
 
   if (legendEl) legendEl.classList.remove('hidden');
 
-  liveHeatmapLayer = L.layerGroup();
   const baseT = currentWeatherData.temp || 28;
   const baseUv = typeof currentWeatherData.uvIndex === 'number' ? currentWeatherData.uvIndex : 0.0;
 
   if (mode === 'temp') {
-    // -------------------------------------------------------------
-    // 1. CELSIUS (°C) VECTOR MICROCLIMATE REGIONAL CHOROPLETH
-    // -------------------------------------------------------------
     if (legendTitle) legendTitle.innerHTML = `<i data-lucide="thermometer" class="w-3.5 h-3.5 text-amber-500"></i> ${t('heatmap_temp_title')}`;
     if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 via-orange-500 to-red-600 shadow-inner";
     if (legendLabels) {
@@ -665,33 +593,7 @@ function setHeatmapMode(mode) {
       `;
     }
     if (legendDesc) legendDesc.textContent = t('heatmap_temp_desc');
-
-    PENGHU_MICROCLIMATE_ZONES.forEach(zone => {
-      const zoneTemp = Math.round(baseT + zone.tempOffset);
-      const style = getTempColor(zoneTemp);
-
-      const polygon = L.polygon(zone.coords, {
-        color: style.stroke,
-        weight: 1.5,
-        fillColor: style.fill,
-        fillOpacity: 0.28,
-        smoothFactor: 1.5
-      });
-
-      polygon.bindTooltip(`
-        <div class="text-xs p-1">
-          <p class="font-extrabold text-slate-800 dark:text-slate-100">${zone.name_zh}</p>
-          <p class="text-[11px] opacity-80 mt-0.5">Suhu Spasial: <b style="color: ${style.stroke}">${zoneTemp}°C</b> (${style.label})</p>
-        </div>
-      `, { sticky: true });
-
-      polygon.addTo(liveHeatmapLayer);
-    });
-
   } else if (mode === 'uv') {
-    // -------------------------------------------------------------
-    // 2. SOLAR UV RADIATION VECTOR MICROCLIMATE REGIONAL CHOROPLETH
-    // -------------------------------------------------------------
     if (legendTitle) legendTitle.innerHTML = `<i data-lucide="sun" class="w-3.5 h-3.5 text-purple-500"></i> ${t('heatmap_uv_title')}`;
     if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-emerald-500 via-amber-400 via-orange-500 via-red-500 to-purple-700 shadow-inner";
     if (legendLabels) {
@@ -703,31 +605,96 @@ function setHeatmapMode(mode) {
       `;
     }
     if (legendDesc) legendDesc.textContent = t('heatmap_uv_desc');
-
-    PENGHU_MICROCLIMATE_ZONES.forEach(zone => {
-      const zoneUv = Number((baseUv * zone.uvFactor).toFixed(1));
-      const style = getUvColor(zoneUv);
-
-      const polygon = L.polygon(zone.coords, {
-        color: style.stroke,
-        weight: 1.5,
-        fillColor: style.fill,
-        fillOpacity: 0.28,
-        smoothFactor: 1.5
-      });
-
-      polygon.bindTooltip(`
-        <div class="text-xs p-1">
-          <p class="font-extrabold text-slate-800 dark:text-slate-100">${zone.name_zh}</p>
-          <p class="text-[11px] opacity-80 mt-0.5">Paparan UV: <b style="color: ${style.stroke}">${zoneUv}</b> (${style.label})</p>
-        </div>
-      `, { sticky: true });
-
-      polygon.addTo(liveHeatmapLayer);
-    });
   }
 
-  liveHeatmapLayer.addTo(map);
+  // Generate Continuous IDW Canvas Overlay Field
+  const bounds = [[23.15, 119.35], [23.85, 119.75]];
+  const width = 140;
+  const height = 240;
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  const imgData = ctx.createImageData(width, height);
+  const data = imgData.data;
+
+  // Regional weather anchor stations
+  const stations = [
+    // Magong Urban & Peninsula
+    { lat: 23.565, lon: 119.566, temp: baseT + 1.5, uv: Number((baseUv * 0.85).toFixed(1)) },
+    { lat: 23.570, lon: 119.580, temp: baseT + 1.2, uv: Number((baseUv * 0.88).toFixed(1)) },
+    { lat: 23.541, lon: 119.544, temp: baseT + 0.4, uv: Number((baseUv * 1.05).toFixed(1)) },
+    { lat: 23.513, lon: 119.591, temp: baseT + 0.5, uv: Number((baseUv * 1.10).toFixed(1)) }, // Shanshui Beach
+
+    // Huxi & Airport
+    { lat: 23.580, lon: 119.635, temp: baseT + 0.8, uv: Number((baseUv * 1.05).toFixed(1)) },
+    { lat: 23.597, lon: 119.674, temp: baseT + 0.2, uv: Number((baseUv * 1.05).toFixed(1)) },
+    { lat: 23.575, lon: 119.660, temp: baseT + 0.3, uv: Number((baseUv * 1.10).toFixed(1)) },
+
+    // Baisha & Tongliang
+    { lat: 23.615, lon: 119.590, temp: baseT - 0.4, uv: Number((baseUv * 0.95).toFixed(1)) },
+    { lat: 23.635, lon: 119.575, temp: baseT - 0.5, uv: Number((baseUv * 0.95).toFixed(1)) },
+    { lat: 23.657, lon: 119.559, temp: baseT - 1.6, uv: Number((baseUv * 0.35).toFixed(1)) }, // Tongliang Banyan Tree Shade Sink
+    { lat: 23.650, lon: 119.539, temp: baseT - 1.2, uv: Number((baseUv * 0.80).toFixed(1)) }, // Great Bridge
+
+    // Xiyu Island
+    { lat: 23.593, lon: 119.516, temp: baseT + 0.3, uv: Number((baseUv * 1.05).toFixed(1)) },
+    { lat: 23.605, lon: 119.510, temp: baseT + 0.1, uv: Number((baseUv * 1.00).toFixed(1)) },
+    { lat: 23.560, lon: 119.467, temp: baseT - 0.2, uv: Number((baseUv * 1.00).toFixed(1)) },
+
+    // Outer Islands
+    { lat: 23.738, lon: 119.598, temp: baseT - 0.2, uv: Number((baseUv * 1.25).toFixed(1)) }, // Jibei
+    { lat: 23.785, lon: 119.601, temp: baseT - 0.6, uv: Number((baseUv * 1.20).toFixed(1)) }, // Mudouyu
+    { lat: 23.365, lon: 119.500, temp: baseT + 0.0, uv: Number((baseUv * 1.15).toFixed(1)) }, // Wang'an
+    { lat: 23.220, lon: 119.444, temp: baseT + 0.4, uv: Number((baseUv * 1.25).toFixed(1)) }, // Qimei
+    { lat: 23.256, lon: 119.671, temp: baseT - 0.6, uv: Number((baseUv * 1.10).toFixed(1)) }, // Dongji
+
+    // Surrounding Ocean Breezes (Maritime Cooling Buffer)
+    { lat: 23.520, lon: 119.480, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { lat: 23.620, lon: 119.480, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { lat: 23.620, lon: 119.640, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { lat: 23.700, lon: 119.550, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }
+  ];
+
+  // Compute smooth continuous IDW scalar field
+  for (let y = 0; y < height; y++) {
+    const lat = 23.85 - (y / height) * (23.85 - 23.15);
+    for (let x = 0; x < width; x++) {
+      const lon = 119.35 + (x / width) * (119.75 - 119.35);
+
+      let weightSum = 0;
+      let valueSum = 0;
+
+      for (const s of stations) {
+        const dLat = (lat - s.lat) * 111.0;
+        const dLon = (lon - s.lon) * 102.0;
+        const d2 = dLat * dLat + dLon * dLon + 0.35; // Epsilon prevents singularity & smooths
+        const w = 1.0 / (d2 * d2); // IDW power 2
+
+        const val = (mode === 'temp') ? s.temp : s.uv;
+        weightSum += w;
+        valueSum += w * val;
+      }
+
+      const interpolated = valueSum / weightSum;
+      const rgba = (mode === 'temp') ? getInterpolatedTempRgba(interpolated) : getInterpolatedUvRgba(interpolated);
+
+      const idx = (y * width + x) * 4;
+      data[idx] = rgba[0];
+      data[idx + 1] = rgba[1];
+      data[idx + 2] = rgba[2];
+      data[idx + 3] = rgba[3];
+    }
+  }
+
+  ctx.putImageData(imgData, 0, 0);
+  const dataUrl = canvas.toDataURL();
+
+  liveHeatmapLayer = L.imageOverlay(dataUrl, bounds, {
+    opacity: 0.38,
+    interactive: false,
+    crossOrigin: true
+  }).addTo(map);
 
   if (window.lucide) lucide.createIcons();
 }
