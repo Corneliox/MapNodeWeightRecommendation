@@ -1119,16 +1119,16 @@ async function calculateSmartRoute() {
       currentTravelMode
     );
 
-    recommendedShelter = findBestCorridorShelter(start, destination);
-    if (recommendedShelter) {
-      safeRouteData = await fetchRoadRouteOSRM(
-        [
-          [start.lat, start.lon],
-          [recommendedShelter.latitude, recommendedShelter.longitude],
-          [destination.lat, destination.lon]
-        ],
-        currentTravelMode
-      );
+    recommendedShelters = findBestCorridorShelters(start, destination, directRouteData);
+    if (recommendedShelters && recommendedShelters.length > 0) {
+      const waypoints = [
+        [start.lat, start.lon],
+        ...recommendedShelters.map(s => [s.latitude, s.longitude]),
+        [destination.lat, destination.lon]
+      ];
+      safeRouteData = await fetchRoadRouteOSRM(waypoints, currentTravelMode);
+    } else {
+      safeRouteData = directRouteData;
     }
   }
 
@@ -1143,7 +1143,8 @@ async function calculateSmartRoute() {
     destTitle,
     directRouteData,
     safeRouteData,
-    recommendedShelter,
+    recommendedShelters: recommendedShelters || [],
+    recommendedShelter: (recommendedShelters && recommendedShelters[0]) || null,
     schemeMeta,
     multiModalData
   };
@@ -1309,14 +1310,18 @@ function renderSelectedRouteView(type) {
       lineCap: 'round'
     }).addTo(routePolylineLayer);
 
-    const shelterTitle = getUniversalBilingualTitle(recommendedShelter);
+    const shelters = recommendedShelters || [];
     addRouteMarker(start.lat, start.lon, 'A', startTitle, '#00A8B5');
-    addRouteMarker(recommendedShelter.latitude, recommendedShelter.longitude, '❄️', `Shelter: ${shelterTitle}`, '#06D6A0');
+    shelters.forEach((s, idx) => {
+      const sTitle = getUniversalBilingualTitle(s);
+      const label = shelters.length > 1 ? `❄️${idx + 1}` : '❄️';
+      addRouteMarker(s.latitude, s.longitude, label, `Pit-stop ${idx + 1}: ${sTitle}`, '#06D6A0');
+    });
     addRouteMarker(destination.lat, destination.lon, 'B', destTitle, '#E07A5F');
     map.fitBounds(polyline.getBounds(), { padding: [50, 50] });
 
     document.getElementById('route-distance-text').textContent = `${safeRouteData.distanceKm.toFixed(1)} km (Safe Route)`;
-    renderSafeTimeline(startTitle, destTitle, recommendedShelter, safeRouteData, schemeMeta);
+    renderSafeTimeline(startTitle, destTitle, shelters, safeRouteData, schemeMeta);
   }
 
   lucide.createIcons();
@@ -1339,7 +1344,6 @@ function renderMultiModalTimeline(startTitle, destTitle, multiModalData) {
         <p class="font-extrabold text-xs flex items-center gap-1.5">
           ${status.alertTitle}
         </p>
-        <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-black/10 dark:bg-white/10">NT$ ${ferry.ticket_price_ntd}</span>
       </div>
       <p class="text-[11px] opacity-90 leading-relaxed font-normal">
         ${status.alertDesc}
@@ -1402,7 +1406,7 @@ function renderMultiModalTimeline(startTitle, destTitle, multiModalData) {
 function generateGoogleMapsUrl(routeCache, activeView) {
   if (!routeCache) return "https://www.google.com/maps";
 
-  const { start, destination, recommendedShelter, multiModalData } = routeCache;
+  const { start, destination, recommendedShelters, multiModalData } = routeCache;
 
   if (multiModalData) {
     // For Multi-Modal: Navigate to the departure ferry terminal
@@ -1411,12 +1415,12 @@ function generateGoogleMapsUrl(routeCache, activeView) {
   }
 
   const travelModeParam = currentTravelMode === 'walk' ? 'walking' : 'driving';
+  const shelters = recommendedShelters || [];
 
-  if (activeView === 'safe' && recommendedShelter) {
-    // Multi-stop route: Origin -> 7-Eleven/Cooling Shelter -> Destination
-    const stopLat = recommendedShelter.latitude;
-    const stopLon = recommendedShelter.longitude;
-    return `https://www.google.com/maps/dir/?api=1&origin=${start.lat},${start.lon}&destination=${destination.lat},${destination.lon}&waypoints=${stopLat},${stopLon}&travelmode=${travelModeParam}`;
+  if (activeView === 'safe' && shelters.length > 0) {
+    // Multi-stop route: Origin -> All Cooling Shelters -> Destination
+    const waypointsStr = shelters.map(s => `${s.latitude},${s.longitude}`).join('|');
+    return `https://www.google.com/maps/dir/?api=1&origin=${start.lat},${start.lon}&destination=${destination.lat},${destination.lon}&waypoints=${waypointsStr}&travelmode=${travelModeParam}`;
   }
 
   // Direct Route: Origin -> Destination
@@ -1439,11 +1443,12 @@ function exportRouteAsJSON() {
     return;
   }
 
-  const { start, destination, startTitle, destTitle, directRouteData, safeRouteData, recommendedShelter, schemeMeta, multiModalData } = currentRouteCache;
+  const { start, destination, startTitle, destTitle, directRouteData, safeRouteData, recommendedShelters, schemeMeta, multiModalData } = currentRouteCache;
   const activeRouteData = activeRouteView === 'direct' ? directRouteData : (safeRouteData || directRouteData);
+  const shelters = recommendedShelters || [];
 
   const payload = {
-    app_version: "2.1.0",
+    app_version: "2.2.0",
     export_timestamp: new Date().toISOString(),
     route_name: `${startTitle} -> ${destTitle}`,
     travel_mode: currentTravelMode,
@@ -1465,13 +1470,14 @@ function exportRouteAsJSON() {
       latitude: destination.lat,
       longitude: destination.lon
     },
-    cooling_pitstop: recommendedShelter ? {
-      name: getUniversalBilingualTitle(recommendedShelter),
-      latitude: recommendedShelter.latitude,
-      longitude: recommendedShelter.longitude,
+    cooling_pitstops: shelters.map((s, idx) => ({
+      stop_index: idx + 1,
+      name: getUniversalBilingualTitle(s),
+      latitude: s.latitude,
+      longitude: s.longitude,
       has_ac: true,
       suggested_rest_minutes: schemeMeta ? schemeMeta.restMins : 12
-    } : null,
+    })),
     navigation: {
       total_distance_km: activeRouteData ? activeRouteData.distanceKm : 0,
       estimated_travel_minutes: activeRouteData ? activeRouteData.travelMinutes : 0,
@@ -1512,17 +1518,14 @@ function addRouteMarker(lat, lon, label, title, colorHex) {
   L.marker([lat, lon], { icon }).bindPopup(`<b>${title}</b>`).addTo(routePolylineLayer);
 }
 
-// Rich Narrative Itinerary for Safe Route
-function renderSafeTimeline(startTitle, destTitle, shelter, routeData, schemeMeta) {
+// Rich Narrative Itinerary for Safe Route (Multi-Stage Pit-Stops)
+function renderSafeTimeline(startTitle, destTitle, shelters, routeData, schemeMeta) {
   const container = document.getElementById('route-timeline-steps');
-  const shelterTitle = getUniversalBilingualTitle(shelter);
   const isAnomaly = currentRouteCache ? checkRouteAnomaly(currentRouteCache.start, currentRouteCache.destination, routeData) : false;
   
   const totalMins = routeData.travelMinutes;
-  const leg1Mins = Math.max(6, Math.round(totalMins * 0.45));
-  const leg2Mins = Math.max(6, Math.round(totalMins * 0.55));
-  const leg1Km = (routeData.distanceKm * 0.48).toFixed(1);
-  const leg2Km = (routeData.distanceKm * 0.52).toFixed(1);
+  const numShelters = shelters.length;
+  const totalRestMins = (schemeMeta ? schemeMeta.restMins : 12) * numShelters;
 
   const anomalyHtml = isAnomaly ? `
     <!-- Anomaly Hand-off Banner -->
@@ -1543,63 +1546,79 @@ function renderSafeTimeline(startTitle, destTitle, shelter, routeData, schemeMet
     </div>
   ` : '';
 
-  container.innerHTML = `
-    ${anomalyHtml}
+  let stepsHtml = `${anomalyHtml}`;
 
-    <!-- Step 1: Origin Ride -->
-    <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
-      <span class="w-6 h-6 rounded-full dynamic-btn-primary font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">1</span>
-      <div class="space-y-0.5 flex-1">
-        <p class="font-extrabold text-xs leading-snug">${t('step_origin')} <span class="text-primary-var">${startTitle}</span></p>
-        <p class="text-[11px] opacity-75 leading-relaxed">
-          ${t('step_via_highway')} sejauh <b>${leg1Km} km</b> (${leg1Mins} menit berkendara).
-        </p>
-      </div>
-    </div>
+  // Build sequential legs and cooling pit-stops
+  shelters.forEach((shelter, idx) => {
+    const shelterTitle = getUniversalBilingualTitle(shelter);
+    const legNum = idx + 1;
+    const legDistance = (routeData.distanceKm / (numShelters + 1)).toFixed(1);
+    const legMinutes = Math.max(5, Math.round(totalMins / (numShelters + 1)));
 
-    <!-- Step 2: Cooling Hub Pit-Stop (Hero Highlight) -->
-    <div class="flex items-start gap-3 p-3 rounded-2xl dynamic-card-inner border-2 border-emerald-500/60 shadow-sm">
-      <span class="w-6 h-6 rounded-full bg-emerald-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">❄️</span>
-      <div class="space-y-1 flex-1">
-        <div class="flex items-center justify-between">
-          <p class="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">
-            ${t('step_rest')} (${schemeMeta.restMins} Min)
+    stepsHtml += `
+      <!-- Step ${legNum}: Ride Leg -->
+      <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
+        <span class="w-6 h-6 rounded-full dynamic-btn-primary font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">${legNum}</span>
+        <div class="space-y-0.5 flex-1">
+          <p class="font-extrabold text-xs leading-snug">${idx === 0 ? t('step_origin') : 'Melanjutkan etape:'} <span class="text-primary-var">${idx === 0 ? startTitle : getUniversalBilingualTitle(shelters[idx - 1])}</span></p>
+          <p class="text-[11px] opacity-75 leading-relaxed">
+            ${t('step_via_highway')} sejauh <b>~${legDistance} km</b> (${legMinutes} menit berkendara).
           </p>
-          <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">AC + Rehidrasi</span>
         </div>
-        <p class="text-xs font-bold">${shelterTitle}</p>
-        <p class="text-[11px] opacity-80 leading-relaxed">
-          ${t('step_rest_desc')} <b>${shelterTitle}</b> untuk menurunkan beban termal sebesar <b class="text-emerald-600 dark:text-emerald-400">-${schemeMeta.strainReduction}%</b> ${t('step_rest_desc_end')}
-        </p>
       </div>
-    </div>
 
-    <!-- Step 3: Scenic Crossing -->
+      <!-- Cooling Hub Pit-Stop -->
+      <div class="flex items-start gap-3 p-3 rounded-2xl dynamic-card-inner border-2 border-emerald-500/60 shadow-sm">
+        <span class="w-6 h-6 rounded-full bg-emerald-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">❄️</span>
+        <div class="space-y-1 flex-1">
+          <div class="flex items-center justify-between">
+            <p class="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">
+              ${numShelters > 1 ? `Pit-Stop ${idx + 1}: ` : ''}${t('step_rest')} (${schemeMeta ? schemeMeta.restMins : 12} Min)
+            </p>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">AC + Rehidrasi</span>
+          </div>
+          <p class="text-xs font-bold">${shelterTitle}</p>
+          <p class="text-[11px] opacity-80 leading-relaxed">
+            ${t('step_rest_desc')} <b>${shelterTitle}</b> untuk menurunkan suhu inti tubuh dan beban termal sebesar <b class="text-emerald-600 dark:text-emerald-400">-${schemeMeta ? schemeMeta.strainReduction : 65}%</b> ${t('step_rest_desc_end')}
+          </p>
+        </div>
+      </div>
+    `;
+  });
+
+  // Final Leg to Destination
+  const finalLegDistance = (routeData.distanceKm / (numShelters + 1)).toFixed(1);
+  const finalLegMinutes = Math.max(5, Math.round(totalMins / (numShelters + 1)));
+
+  stepsHtml += `
+    <!-- Final Leg Crossing -->
     <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
-      <span class="w-6 h-6 rounded-full dynamic-btn-primary font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">2</span>
+      <span class="w-6 h-6 rounded-full dynamic-btn-primary font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">${numShelters + 1}</span>
       <div class="space-y-0.5 flex-1">
         <p class="font-extrabold text-xs leading-snug">${t('step_cross_bridge')}</p>
         <p class="text-[11px] opacity-75 leading-relaxed">
-          Melanjutkan perjalanan pesisir berangin sejuk sejauh <b>${leg2Km} km</b> (${leg2Mins} menit).
+          Menempuh etape terakhir sejauh <b>~${finalLegDistance} km</b> (${finalLegMinutes} menit) menuju destinasi.
         </p>
       </div>
     </div>
 
-    <!-- Step 4: Destination Arrival -->
+    <!-- Final Destination Arrival -->
     <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border border-amber-500/40">
       <span class="w-6 h-6 rounded-full bg-amber-500 text-white font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">🎯</span>
       <div class="space-y-0.5 flex-1">
         <p class="font-extrabold text-xs leading-snug">${t('step_dest')} <span class="text-amber-500">${destTitle}</span></p>
         <p class="text-[11px] opacity-75 leading-relaxed">
-          Total perjalanan <b>${totalMins + schemeMeta.restMins} menit</b>. Suhu tubuh tetap terjaga aman dari risiko dehidrasi dan heatstroke.
+          Total perjalanan <b>${totalMins + totalRestMins} menit</b> (${totalMins} mnt berkendara + ${totalRestMins} mnt pendinginan di ${numShelters} titik perhentian AC). Suhu tubuh terlindungi dari sengatan dehidrasi dan heatstroke.
         </p>
       </div>
     </div>
   `;
+
+  container.innerHTML = stepsHtml;
 }
 
 // Narrative Itinerary for Direct Route
-function renderDirectTimeline(startTitle, destTitle, routeData) {
+function renderDirectTimeline(startTitle, destTitle, routeData, risk) {
   const container = document.getElementById('route-timeline-steps');
   const isAnomaly = currentRouteCache ? checkRouteAnomaly(currentRouteCache.start, currentRouteCache.destination, routeData) : false;
   
@@ -1661,69 +1680,91 @@ function renderDirectTimeline(startTitle, destTitle, routeData) {
   lucide.createIcons();
 }
 
-// Smart Road Corridor Shelter Finder (Prevents Island-Hopping & Giant Detours)
-function findBestCorridorShelter(start, destination) {
-  const directDist = getDistanceKm(start.lat, start.lon, destination.lat, destination.lon);
-  
-  // Is this route on the main connected island system? (Magong, Huxi, Baisha, Xiyu connected by bridges)
-  const isMainIslandRoute = start.lat >= 23.50 && start.lat <= 23.68 && destination.lat >= 23.50 && destination.lat <= 23.68;
+// Road-Polyline-Aware Multi-Stage Cooling Pit-Stop Selector
+function findBestCorridorShelters(start, destination, directRouteData) {
+  if (!directRouteData || !directRouteData.coords || directRouteData.coords.length < 2) {
+    return [{
+      name_zh: "7-Eleven 通梁門市",
+      name_en: "7-Eleven Tongliang Store",
+      latitude: 23.6558,
+      longitude: 119.5582,
+      category: "convenience_store",
+      has_ac: true
+    }];
+  }
 
-  // Filter candidate cooling shelters (Strictly prioritize 24/7 AC Convenience Stores on connected land)
-  let candidateShelters = allNodes.filter(n => {
+  const coords = directRouteData.coords; // [[lat, lon], ...]
+  const totalKm = directRouteData.distanceKm;
+
+  // Build cumulative distance array along the actual road polyline
+  const cumDistances = [0];
+  for (let i = 1; i < coords.length; i++) {
+    const d = getDistanceKm(coords[i - 1][0], coords[i - 1][1], coords[i][0], coords[i][1]);
+    cumDistances.push(cumDistances[i - 1] + d);
+  }
+
+  // Determine number and target progress fractions of cooling pit-stops
+  // Routes >= 14 km (e.g. 21 km Magong -> Tongliang) get 2 staged cooling stops
+  let targetFractions = [0.50];
+  if (totalKm >= 14.0) {
+    targetFractions = [0.35, 0.70]; // ~7 km and ~15 km marks along road
+  }
+
+  // Filter valid 24/7 AC Convenience Stores / Shelters on main island
+  const isMainIsland = start.lat >= 23.50 && start.lat <= 23.68 && destination.lat >= 23.50 && destination.lat <= 23.68;
+  const candidates = allNodes.filter(n => {
     if (!n.latitude || !n.longitude) return false;
-    
-    // If on main island, filter out remote ferry islands (Jibei / Qimei / Wang'an / Huayu)
-    if (isMainIslandRoute) {
-      if (n.latitude > 23.675 || n.latitude < 23.50 || n.longitude < 119.50 || n.longitude > 119.68) {
-        return false;
-      }
+    if (isMainIsland) {
+      if (n.latitude > 23.675 || n.latitude < 23.50 || n.longitude < 119.50 || n.longitude > 119.68) return false;
     }
-
     return n.category === 'convenience_store' || (n.has_ac === true && (n.category === 'shelter' || n.category === 'food_and_drink'));
   });
 
-  if (candidateShelters.length === 0) {
-    candidateShelters = allNodes.filter(n => n.category === 'convenience_store');
+  const selectedShelters = [];
+  const usedIds = new Set();
+
+  for (const fraction of targetFractions) {
+    const targetDist = totalKm * fraction;
+    
+    // Find point on polyline closest to targetDist
+    let targetCoord = coords[0];
+    for (let i = 0; i < cumDistances.length; i++) {
+      if (cumDistances[i] >= targetDist) {
+        targetCoord = coords[i];
+        break;
+      }
+    }
+
+    // Find closest candidate store to this target road point
+    let bestStore = null;
+    let minDist = Infinity;
+
+    for (const store of candidates) {
+      const storeId = `${store.latitude.toFixed(4)},${store.longitude.toFixed(4)}`;
+      if (usedIds.has(storeId)) continue;
+
+      const distToRoadTarget = getDistanceKm(targetCoord[0], targetCoord[1], store.latitude, store.longitude);
+      if (distToRoadTarget < minDist) {
+        minDist = distToRoadTarget;
+        bestStore = store;
+      }
+    }
+
+    if (bestStore) {
+      const storeId = `${bestStore.latitude.toFixed(4)},${bestStore.longitude.toFixed(4)}`;
+      usedIds.add(storeId);
+      selectedShelters.push(bestStore);
+    }
   }
 
-  // Calculate corridor detour score for every shelter
-  const scored = candidateShelters.map(s => {
-    const d1 = getDistanceKm(start.lat, start.lon, s.latitude, s.longitude);
-    const d2 = getDistanceKm(s.latitude, s.longitude, destination.lat, destination.lon);
-    const detourRatio = (d1 + d2) / directDist;
-    const balancePenalty = (Math.abs(d1 - d2) / directDist) * 0.20; // Prefers midway cooling stops
-    return {
-      shelter: s,
-      d1,
-      d2,
-      detourRatio,
-      score: detourRatio + balancePenalty
-    };
-  });
-
-  // Strict detour limit: max 25% deviation from direct route (no massive loop detours!)
-  const onCorridor = scored.filter(item => item.detourRatio <= 1.25);
-  if (onCorridor.length > 0) {
-    onCorridor.sort((a, b) => a.score - b.score);
-    return onCorridor[0].shelter;
-  }
-
-  // Relaxed fallback if route is very short or in rural spot (max 40% detour)
-  const relaxed = scored.filter(item => item.detourRatio <= 1.40);
-  if (relaxed.length > 0) {
-    relaxed.sort((a, b) => a.score - b.score);
-    return relaxed[0].shelter;
-  }
-
-  // Fallback default safe store along Route 203
-  return {
+  return selectedShelters.length > 0 ? selectedShelters : [{
     name_zh: "7-Eleven 通梁門市",
     name_en: "7-Eleven Tongliang Store",
     latitude: 23.6558,
     longitude: 119.5582,
     category: "convenience_store",
     has_ac: true
-  };
+  }];
 }
 
 // 8. Wikipedia Interactive Modal System
