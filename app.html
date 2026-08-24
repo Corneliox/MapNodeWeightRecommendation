@@ -17,6 +17,9 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
   <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
   
+  <!-- Leaflet Heatmap Layer CDN -->
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+  
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest"></script>
 
@@ -438,6 +441,49 @@
         Menu & Skema Rute
       </button>
 
+      <!-- Floating Heatmap Mode Switcher & Dynamic Legend -->
+      <div class="absolute top-4 right-4 z-20 flex flex-col items-end gap-2 max-w-[calc(100vw-80px)] sm:max-w-none">
+        <div class="dynamic-sidebar border p-1 rounded-2xl shadow-2xl flex items-center gap-1 backdrop-blur-md">
+          <button id="btn-heatmap-normal" onclick="setHeatmapMode('normal')" class="px-2 sm:px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1 dynamic-btn-primary shadow-sm">
+            <i data-lucide="map" class="w-3.5 h-3.5"></i>
+            <span data-i18n="layer_normal">Normal</span>
+          </button>
+          <button id="btn-heatmap-temp" onclick="setHeatmapMode('temp')" class="px-2 sm:px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1 opacity-70 hover:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i data-lucide="thermometer" class="w-3.5 h-3.5 text-amber-500"></i>
+            <span data-i18n="layer_temp">Suhu (°C)</span>
+          </button>
+          <button id="btn-heatmap-uv" onclick="setHeatmapMode('uv')" class="px-2 sm:px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1 opacity-70 hover:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-800">
+            <i data-lucide="sun" class="w-3.5 h-3.5 text-purple-500"></i>
+            <span data-i18n="layer_uv">Indeks UV</span>
+          </button>
+        </div>
+
+        <!-- Dynamic Live Heatmap Legend (Appears when Temp or UV is selected) -->
+        <div id="heatmap-legend" class="hidden dynamic-sidebar border p-3 rounded-2xl shadow-2xl text-xs space-y-2 min-w-[210px] max-w-[260px] backdrop-blur-md transition-all">
+          <div class="flex items-center justify-between border-b border-inherit pb-1">
+            <span id="heatmap-legend-title" class="font-extrabold text-[11px] flex items-center gap-1">
+              🌡️ Intensitas Suhu Spasial (°C)
+            </span>
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          </div>
+          
+          <!-- Gradient Bar -->
+          <div id="heatmap-gradient-bar" class="h-2.5 rounded-full w-full bg-gradient-to-r from-blue-500 via-green-400 via-amber-400 via-orange-500 to-red-600 shadow-inner"></div>
+          
+          <!-- Scale Labels -->
+          <div id="heatmap-legend-labels" class="flex justify-between text-[10px] font-mono font-bold opacity-85">
+            <span>≤26°C</span>
+            <span>29°C</span>
+            <span>33°C</span>
+            <span>36°C+</span>
+          </div>
+          
+          <p id="heatmap-legend-desc" class="text-[10px] opacity-70 leading-tight">
+            Gradien termal spasial mikroiklim pulau Penghu bergerak real-time.
+          </p>
+        </div>
+      </div>
+
       <!-- Desktop Map Legend -->
       <div class="absolute bottom-6 right-6 z-20 hidden md:flex flex-col gap-2 dynamic-sidebar border p-3.5 rounded-2xl shadow-2xl text-xs min-w-[210px]">
         <div class="flex items-center justify-between border-b border-inherit pb-1.5">
@@ -581,7 +627,7 @@
     </div>
   </div>
 
-  <script src="app.js?v=2.1.0"></script>
+  <script src="app.js?v=2.2.0"></script>
   <script>
     lucide.createIcons();
   </script>

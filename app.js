@@ -456,11 +456,195 @@ async function fetchLiveWeather() {
     badgeEl.textContent = t(heatLevelKey);
     badgeEl.className = `text-[9px] uppercase font-extrabold px-2 py-0.5 rounded-full border ${badgeClass}`;
 
+    // Live update active heatmap layer if enabled
+    if (activeHeatmapMode !== 'normal') {
+      setHeatmapMode(activeHeatmapMode);
+    }
+
   } catch (err) {
     console.warn('Weather fallback used:', err);
     document.getElementById('temp-display').textContent = '28°C (Terasa 30°C)';
     document.getElementById('uv-display').textContent = 'UV: 0.0 🌙';
   }
+}
+
+// ====================================================================
+// LIVE BIOMETEOROLOGICAL HEATMAP LAYER ENGINE (Celsius °C & UV Index)
+// ====================================================================
+let activeHeatmapMode = 'normal'; // 'normal' | 'temp' | 'uv'
+let liveHeatmapLayer = null;
+
+function setHeatmapMode(mode) {
+  activeHeatmapMode = mode;
+
+  // Update button visual styles
+  const btnNormal = document.getElementById('btn-heatmap-normal');
+  const btnTemp = document.getElementById('btn-heatmap-temp');
+  const btnUv = document.getElementById('btn-heatmap-uv');
+  const legendEl = document.getElementById('heatmap-legend');
+  const legendTitle = document.getElementById('heatmap-legend-title');
+  const legendGradient = document.getElementById('heatmap-gradient-bar');
+  const legendLabels = document.getElementById('heatmap-legend-labels');
+  const legendDesc = document.getElementById('heatmap-legend-desc');
+
+  const baseInactive = "px-2 sm:px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1 opacity-70 hover:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-800";
+  const baseActive = "px-2 sm:px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1 dynamic-btn-primary shadow-sm";
+
+  if (btnNormal) btnNormal.className = mode === 'normal' ? baseActive : baseInactive;
+  if (btnTemp) btnTemp.className = mode === 'temp' ? baseActive : baseInactive;
+  if (btnUv) btnUv.className = mode === 'uv' ? baseActive : baseInactive;
+
+  // Remove existing heatmap layer
+  if (liveHeatmapLayer && map && map.hasLayer(liveHeatmapLayer)) {
+    map.removeLayer(liveHeatmapLayer);
+    liveHeatmapLayer = null;
+  }
+
+  if (mode === 'normal') {
+    if (legendEl) legendEl.classList.add('hidden');
+    return;
+  }
+
+  if (!window.L || typeof L.heatLayer !== 'function') {
+    console.warn("Leaflet.heat plugin is not loaded yet.");
+    return;
+  }
+
+  if (legendEl) legendEl.classList.remove('hidden');
+
+  if (mode === 'temp') {
+    // -------------------------------------------------------------
+    // 1. CELSIUS (°C) SPATIAL MICROCLIMATE HEATMAP
+    // -------------------------------------------------------------
+    if (legendTitle) legendTitle.innerHTML = `<i data-lucide="thermometer" class="w-3.5 h-3.5 text-amber-500"></i> ${t('heatmap_temp_title')}`;
+    if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 via-orange-500 to-red-600 shadow-inner";
+    if (legendLabels) {
+      const baseT = currentWeatherData.temp || 32;
+      legendLabels.innerHTML = `
+        <span>${Math.round(baseT - 4)}°C</span>
+        <span>${Math.round(baseT - 1)}°C</span>
+        <span>${Math.round(baseT + 1)}°C</span>
+        <span>${Math.round(baseT + 4)}°C+</span>
+      `;
+    }
+    if (legendDesc) legendDesc.textContent = t('heatmap_temp_desc');
+
+    const tempPoints = generateSpatialTempPoints();
+    liveHeatmapLayer = L.heatLayer(tempPoints, {
+      radius: 32,
+      blur: 24,
+      maxZoom: 14,
+      max: 1.0,
+      gradient: {
+        0.1: '#3B82F6', // Sejuk / Angin Laut
+        0.3: '#10B981', // Nyaman
+        0.5: '#F59E0B', // Hangat Sedang
+        0.7: '#F97316', // Panas Tropis
+        0.9: '#EF4444', // Sangat Panas
+        1.0: '#7F1D1D'  // Ekstrem
+      }
+    }).addTo(map);
+
+  } else if (mode === 'uv') {
+    // -------------------------------------------------------------
+    // 2. SOLAR UV RADIATION INTENSITY HEATMAP
+    // -------------------------------------------------------------
+    if (legendTitle) legendTitle.innerHTML = `<i data-lucide="sun" class="w-3.5 h-3.5 text-purple-500"></i> ${t('heatmap_uv_title')}`;
+    if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-emerald-500 via-amber-400 via-orange-500 via-red-500 to-purple-700 shadow-inner";
+    if (legendLabels) {
+      legendLabels.innerHTML = `
+        <span>UV 0-2</span>
+        <span>UV 3-5</span>
+        <span>UV 6-8</span>
+        <span>UV 11+</span>
+      `;
+    }
+    if (legendDesc) legendDesc.textContent = t('heatmap_uv_desc');
+
+    const uvPoints = generateSpatialUvPoints();
+    liveHeatmapLayer = L.heatLayer(uvPoints, {
+      radius: 34,
+      blur: 26,
+      maxZoom: 14,
+      max: 1.0,
+      gradient: {
+        0.1: '#10B981', // UV Rendah
+        0.35: '#FBBF24', // UV Sedang
+        0.6: '#F97316',  // UV Tinggi
+        0.8: '#EF4444',  // Sangat Tinggi
+        1.0: '#9333EA'   // Ekstrem Violet
+      }
+    }).addTo(map);
+  }
+
+  if (window.lucide) lucide.createIcons();
+}
+
+// Generate Biometeorological Spatial Heat Points for Celsius Temperature
+function generateSpatialTempPoints() {
+  const points = [];
+  const baseTemp = currentWeatherData.temp || 32;
+
+  // Add microclimate points around all active POI nodes
+  allNodes.forEach(node => {
+    let intensity = 0.5; // Base normal
+    
+    // Urban Heat Island: Magong City Center (Asphalt + concrete building radiation)
+    if (node.latitude >= 23.55 && node.latitude <= 23.58 && node.longitude >= 119.55 && node.longitude <= 119.59) {
+      intensity += 0.25;
+    }
+
+    // Shaded Banyan / Park cooling effect
+    if (node.title && (node.title.includes('榕') || node.title.includes('Banyan') || node.category === 'park')) {
+      intensity -= 0.25;
+    }
+
+    // Coastal breeze cooling
+    if (node.title && (node.title.includes('Beach') || node.title.includes('沙灘') || node.category === 'beach')) {
+      intensity -= 0.1;
+    }
+
+    // Outer Island solar concentration
+    if (node.latitude < 23.35 || node.latitude > 23.70) {
+      intensity += 0.15;
+    }
+
+    // Normalize intensity with base temp
+    const scaledIntensity = Math.min(1.0, Math.max(0.15, intensity * (baseTemp / 32)));
+    points.push([node.latitude, node.longitude, scaledIntensity]);
+  });
+
+  return points;
+}
+
+// Generate Biometeorological Spatial Heat Points for Solar UV Exposure
+function generateSpatialUvPoints() {
+  const points = [];
+  const baseUv = currentWeatherData.uvIndex || 8.0;
+
+  allNodes.forEach(node => {
+    let uvFactor = 0.6; // Base default
+
+    // Open coastal beaches, reefs, basalt cliffs have max UV albedo & zero shade
+    if (node.category === 'beach' || (node.title && (node.title.includes('沙灘') || node.title.includes('玄武岩') || node.title.includes('Basalt') || node.title.includes('石滬')))) {
+      uvFactor += 0.35;
+    }
+
+    // Indoor Air-conditioned stores and museums have minimal outdoor UV exposure
+    if (node.has_ac || node.category === 'store' || node.category === 'museum') {
+      uvFactor -= 0.25;
+    }
+
+    // Outer Islands (Qimei, Jibei, Mudouyu) high solar exposure
+    if (node.latitude < 23.35 || node.latitude > 23.70) {
+      uvFactor += 0.2;
+    }
+
+    const scaledUv = Math.min(1.0, Math.max(0.1, (uvFactor * (baseUv / 10))));
+    points.push([node.latitude, node.longitude, scaledUv]);
+  });
+
+  return points;
 }
 
 async function loadDataset() {
