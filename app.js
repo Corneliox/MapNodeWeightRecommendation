@@ -352,7 +352,8 @@ function setTheme(theme) {
 }
 
 function initMap() {
-  map = L.map('map', { zoomControl: false }).setView([23.5711, 119.5793], 11);
+  // Static Archipelago Overview centered at zoom 10
+  map = L.map('map', { zoomControl: false, minZoom: 9 }).setView([23.54, 119.58], 10);
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
@@ -389,7 +390,7 @@ function initMap() {
 
   routePolylineLayer = L.layerGroup().addTo(map);
 
-  // Dynamic Heatmap Resizing on Map Zoom
+  // Dynamic Heatmap Scaling on Zoom
   map.on('zoomend', () => {
     if (activeHeatmapMode !== 'normal') {
       setHeatmapMode(activeHeatmapMode);
@@ -519,141 +520,77 @@ function setHeatmapMode(mode) {
 
   if (legendEl) legendEl.classList.remove('hidden');
 
-  // Dynamic zoom-aware radius: scales with zoom to maintain continuous island coverage
-  const currentZoom = map ? map.getZoom() : 11;
-  const dynamicRadius = Math.round(44 * Math.pow(1.52, Math.max(0, currentZoom - 11)));
-  const dynamicBlur = Math.round(30 * Math.pow(1.42, Math.max(0, currentZoom - 11)));
-
-  const baseTemp = currentWeatherData.temp || 30;
-  const baseUv = currentWeatherData.uvIndex !== undefined ? currentWeatherData.uvIndex : 0.0;
-  const isNight = currentWeatherData.isDay === false || baseUv < 0.5;
+  // Compute Zoom-Proportional Dynamic Radius & Blur to prevent fragmentation when zooming in
+  const currentZoom = map ? map.getZoom() : 10;
+  const zoomDiff = Math.max(0, currentZoom - 10);
+  const dynamicRadius = Math.round(38 * Math.pow(1.60, zoomDiff));
+  const dynamicBlur = Math.round(26 * Math.pow(1.50, zoomDiff));
 
   if (mode === 'temp') {
     // -------------------------------------------------------------
     // 1. CELSIUS (°C) SPATIAL MICROCLIMATE HEATMAP
     // -------------------------------------------------------------
-    if (baseTemp <= 27 || !currentWeatherData.isDay) {
-      // Cool / Night Temperature Palette (Blues & Refreshing Greens, 0% Red)
-      if (legendTitle) legendTitle.innerHTML = `<i data-lucide="moon" class="w-3.5 h-3.5 text-cyan-400"></i> 🌡️ Suhu Udara Malam Hari (°C)`;
-      if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-blue-700 via-cyan-500 to-emerald-400 shadow-inner";
-      if (legendLabels) {
-        legendLabels.innerHTML = `
-          <span>≤23°C</span>
-          <span>25°C</span>
-          <span>27°C</span>
-          <span>29°C</span>
-        `;
-      }
-      if (legendDesc) legendDesc.textContent = "Suhu malam hari: Hembusan angin pesisir sejuk dengan beban termal fisiologis rendah.";
-
-      const tempPoints = generateSpatialTempPoints();
-      liveHeatmapLayer = L.heatLayer(tempPoints, {
-        radius: dynamicRadius,
-        blur: dynamicBlur,
-        maxZoom: 18,
-        max: 1.0,
-        minOpacity: 0.25,
-        gradient: {
-          0.20: '#1E40AF', // Biru Malam Sejuk
-          0.50: '#0284C7', // Biru Laut Pesisir
-          0.80: '#06D6A0', // Hijau Nyaman
-          1.00: '#10B981'  // Hijau
-        }
-      }).addTo(map);
-
-    } else {
-      // Daytime Tropical Thermal Palette
-      if (legendTitle) legendTitle.innerHTML = `<i data-lucide="thermometer" class="w-3.5 h-3.5 text-amber-500"></i> ${t('heatmap_temp_title')}`;
-      if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 via-orange-500 to-red-600 shadow-inner";
-      if (legendLabels) {
-        legendLabels.innerHTML = `
-          <span>${Math.round(baseTemp - 4)}°C</span>
-          <span>${Math.round(baseTemp - 1)}°C</span>
-          <span>${Math.round(baseTemp + 1)}°C</span>
-          <span>${Math.round(baseTemp + 4)}°C+</span>
-        `;
-      }
-      if (legendDesc) legendDesc.textContent = t('heatmap_temp_desc');
-
-      const tempPoints = generateSpatialTempPoints();
-      liveHeatmapLayer = L.heatLayer(tempPoints, {
-        radius: dynamicRadius,
-        blur: dynamicBlur,
-        maxZoom: 18,
-        max: 1.0,
-        minOpacity: 0.28,
-        gradient: {
-          0.20: '#3B82F6', // Sejuk / Angin Laut (Biru)
-          0.40: '#10B981', // Nyaman / Naungan (Hijau)
-          0.60: '#F59E0B', // Hangat Sedang (Kuning)
-          0.80: '#F97316', // Panas Tropis (Oranye)
-          1.00: '#EF4444'  // Panas Tinggi Perkotaan (Merah)
-        }
-      }).addTo(map);
+    if (legendTitle) legendTitle.innerHTML = `<i data-lucide="thermometer" class="w-3.5 h-3.5 text-amber-500"></i> ${t('heatmap_temp_title')}`;
+    if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 via-orange-500 to-red-600 shadow-inner";
+    if (legendLabels) {
+      legendLabels.innerHTML = `
+        <span>≤26°C</span>
+        <span>29°C</span>
+        <span>33°C</span>
+        <span>36°C+</span>
+      `;
     }
+    if (legendDesc) legendDesc.textContent = t('heatmap_temp_desc');
+
+    const tempPoints = generateSpatialTempPoints();
+    liveHeatmapLayer = L.heatLayer(tempPoints, {
+      radius: dynamicRadius,
+      blur: dynamicBlur,
+      maxZoom: 18,
+      max: 1.0,
+      minOpacity: 0.28,
+      gradient: {
+        0.15: '#3B82F6', // Sejuk / Angin Laut (Biru)
+        0.35: '#06D6A0', // Segar
+        0.50: '#10B981', // Nyaman / Naungan (Hijau)
+        0.65: '#F59E0B', // Hangat Sedang (Kuning)
+        0.80: '#F97316', // Panas Tropis (Oranye)
+        1.00: '#EF4444'  // Panas Tinggi (Merah)
+      }
+    }).addTo(map);
 
   } else if (mode === 'uv') {
     // -------------------------------------------------------------
     // 2. SOLAR UV RADIATION INTENSITY HEATMAP
     // -------------------------------------------------------------
-    if (isNight || baseUv <= 0.2) {
-      // Nighttime UV Palette: Pure calm night sky blues, NO yellow/orange!
-      if (legendTitle) legendTitle.innerHTML = `<i data-lucide="moon" class="w-3.5 h-3.5 text-cyan-400"></i> 🌙 Status Radiasi UV (Malam Hari)`;
-      if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-slate-900 via-sky-800 to-teal-500 shadow-inner";
-      if (legendLabels) {
-        legendLabels.innerHTML = `
-          <span>UV 0.0</span>
-          <span>Aman</span>
-          <span>Malam</span>
-          <span>0 Risiko</span>
-        `;
-      }
-      if (legendDesc) legendDesc.textContent = "Malam hari: Bebas dari radiasi ultraviolet matahari (UV 0.0). Aman berkendara tanpa tabir surya.";
-
-      const uvPoints = generateSpatialUvPoints();
-      liveHeatmapLayer = L.heatLayer(uvPoints, {
-        radius: dynamicRadius,
-        blur: dynamicBlur,
-        maxZoom: 18,
-        max: 1.0,
-        minOpacity: 0.20,
-        gradient: {
-          0.20: '#0F172A', // Slate Gelap Malam
-          0.60: '#0369A1', // Biru Langit Malam
-          1.00: '#06D6A0'  // Toska Tenang
-        }
-      }).addTo(map);
-
-    } else {
-      // Daytime Solar UV Risk Palette
-      if (legendTitle) legendTitle.innerHTML = `<i data-lucide="sun" class="w-3.5 h-3.5 text-purple-500"></i> ${t('heatmap_uv_title')}`;
-      if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-emerald-500 via-amber-400 via-orange-500 via-red-500 to-purple-700 shadow-inner";
-      if (legendLabels) {
-        legendLabels.innerHTML = `
-          <span>UV 0-2</span>
-          <span>UV 3-5</span>
-          <span>UV 6-8</span>
-          <span>UV 11+</span>
-        `;
-      }
-      if (legendDesc) legendDesc.textContent = t('heatmap_uv_desc');
-
-      const uvPoints = generateSpatialUvPoints();
-      liveHeatmapLayer = L.heatLayer(uvPoints, {
-        radius: dynamicRadius,
-        blur: dynamicBlur,
-        maxZoom: 18,
-        max: 1.0,
-        minOpacity: 0.28,
-        gradient: {
-          0.20: '#10B981', // UV Rendah (Hijau)
-          0.45: '#FBBF24', // UV Sedang (Kuning)
-          0.70: '#F97316', // UV Tinggi (Oranye)
-          0.88: '#EF4444', // Sangat Tinggi (Merah)
-          1.00: '#9333EA'  // Ekstrem Violet (Ungu Pantai/Pulau Terbuka)
-        }
-      }).addTo(map);
+    if (legendTitle) legendTitle.innerHTML = `<i data-lucide="sun" class="w-3.5 h-3.5 text-purple-500"></i> ${t('heatmap_uv_title')}`;
+    if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-emerald-500 via-amber-400 via-orange-500 via-red-500 to-purple-700 shadow-inner";
+    if (legendLabels) {
+      legendLabels.innerHTML = `
+        <span>UV 0-2 (Aman)</span>
+        <span>UV 3-5</span>
+        <span>UV 6-8</span>
+        <span>UV 11+</span>
+      `;
     }
+    if (legendDesc) legendDesc.textContent = t('heatmap_uv_desc');
+
+    const uvPoints = generateSpatialUvPoints();
+    liveHeatmapLayer = L.heatLayer(uvPoints, {
+      radius: dynamicRadius,
+      blur: dynamicBlur,
+      maxZoom: 18,
+      max: 1.0,
+      minOpacity: 0.28,
+      gradient: {
+        0.10: '#10B981', // UV Rendah / Malam (Hijau Aman)
+        0.30: '#06D6A0', // Rendah-Sedang
+        0.50: '#FBBF24', // UV Sedang (Kuning)
+        0.70: '#F97316', // UV Tinggi (Oranye)
+        0.88: '#EF4444', // Sangat Tinggi (Merah)
+        1.00: '#9333EA'  // Ekstrem Violet (Ungu)
+      }
+    }).addTo(map);
   }
 
   if (window.lucide) lucide.createIcons();
@@ -661,81 +598,72 @@ function setHeatmapMode(mode) {
 
 // Curated Meteorological Spatial Stations for Temperature (°C)
 function generateSpatialTempPoints() {
-  const baseTemp = currentWeatherData.temp || 30;
-  const isNight = currentWeatherData.isDay === false;
+  const baseTemp = currentWeatherData.temp || 28;
   
-  // Comprehensive stations covering island corridors and coastal boundaries
+  // Scaled physically: 20°C (0.0) to 38°C (1.0)
+  const tFactor = Math.min(1.0, Math.max(0.05, (baseTemp - 20) / 18));
+
+  // Regional stations across Penghu's distinct microclimates
   const tempStations = [
-    // Magong Urban Heat Island & Southern Coast
-    { lat: 23.565, lon: 119.566, weight: isNight ? 0.60 : 0.95 }, // Magong Port & Old Town
-    { lat: 23.570, lon: 119.580, weight: isNight ? 0.55 : 0.90 }, // Magong City Center
-    { lat: 23.541, lon: 119.544, weight: 0.45 }, // Fenggui Blowholes
-    { lat: 23.513, lon: 119.591, weight: 0.50 }, // Shanshui Beach
-    { lat: 23.535, lon: 119.580, weight: 0.45 }, // Suogang
+    // Magong Urban Heat Island (Asphalt/Concrete)
+    { lat: 23.565, lon: 119.566, weight: 0.95 }, // Magong Port & Old Town (Highest Urban Heat)
+    { lat: 23.570, lon: 119.580, weight: 0.90 }, // Magong City Center
+    { lat: 23.541, lon: 119.544, weight: 0.70 }, // Fenggui (Sea breeze moderated)
+    { lat: 23.513, lon: 119.591, weight: 0.75 }, // Shanshui Beach
 
-    // Huxi Plains & Airport Corridor
-    { lat: 23.580, lon: 119.635, weight: isNight ? 0.45 : 0.80 }, // Huxi Township
-    { lat: 23.569, lon: 119.629, weight: isNight ? 0.48 : 0.82 }, // Penghu Airport
-    { lat: 23.597, lon: 119.674, weight: 0.40 }, // Kuobishan
-    { lat: 23.575, lon: 119.660, weight: 0.45 }, // Lintou & Aimen Beach
-    { lat: 23.590, lon: 119.610, weight: 0.50 }, // Chenggong Reservoir
+    // Huxi Plains & Airport
+    { lat: 23.580, lon: 119.635, weight: 0.80 }, // Huxi Township
+    { lat: 23.569, lon: 119.629, weight: 0.82 }, // Penghu Airport
+    { lat: 23.597, lon: 119.674, weight: 0.65 }, // Kuobishan (Coastal breeze)
+    { lat: 23.575, lon: 119.660, weight: 0.70 }, // Lintou Beach
 
-    // Baisha Peninsula & Great Bridge Corridor
-    { lat: 23.615, lon: 119.590, weight: 0.40 }, // Zhongtun Wind Turbines
-    { lat: 23.635, lon: 119.575, weight: 0.45 }, // Baisha Township (Jiangmei)
-    { lat: 23.655, lon: 119.600, weight: 0.48 }, // Chikan Pier
-    { lat: 23.657, lon: 119.559, weight: 0.25 }, // Tongliang Great Banyan (Shade Cooling Oasis)
-    { lat: 23.650, lon: 119.539, weight: 0.30 }, // Penghu Great Bridge (Strong maritime wind)
+    // Baisha Peninsula & Bridge
+    { lat: 23.615, lon: 119.590, weight: 0.60 }, // Zhongtun Wind Turbines
+    { lat: 23.635, lon: 119.575, weight: 0.65 }, // Baisha Township
+    { lat: 23.655, lon: 119.600, weight: 0.68 }, // Chikan Pier
+    { lat: 23.657, lon: 119.559, weight: 0.35 }, // Tongliang Great Banyan (Shade Cooling Oasis - Green)
+    { lat: 23.650, lon: 119.539, weight: 0.50 }, // Penghu Great Bridge (Strong maritime sea wind)
 
-    // Xiyu Island Plateau & Historic Corridors
-    { lat: 23.593, lon: 119.516, weight: isNight ? 0.40 : 0.85 }, // Daguoye Basalt Face
-    { lat: 23.605, lon: 119.510, weight: 0.50 }, // Erkan Historic Village
-    { lat: 23.560, lon: 119.467, weight: 0.40 }, // Yuwengdao Lighthouse
-    { lat: 23.630, lon: 119.515, weight: 0.45 }, // Zhuwan
-    { lat: 23.575, lon: 119.490, weight: 0.45 }, // Chidong
+    // Xiyu Island (West)
+    { lat: 23.593, lon: 119.516, weight: 0.85 }, // Daguoye Basalt (Reflective rock face)
+    { lat: 23.605, lon: 119.510, weight: 0.75 }, // Erkan Historic Village
+    { lat: 23.560, lon: 119.467, weight: 0.65 }, // Yuwengdao Lighthouse (Coastal cliff)
+    { lat: 23.630, lon: 119.515, weight: 0.70 }, // Zhuwan
 
     // Outer Islands (North & South)
-    { lat: 23.738, lon: 119.598, weight: 0.50 }, // Jibei Sand Spit
-    { lat: 23.785, lon: 119.601, weight: 0.35 }, // Mudouyu Open Sea Lighthouse
-    { lat: 23.663, lon: 119.659, weight: 0.40 }, // Niaoyu
-    { lat: 23.510, lon: 119.518, weight: 0.50 }, // Tongpan Basalt Island
-    { lat: 23.492, lon: 119.524, weight: 0.48 }, // Hujing Island
-    { lat: 23.365, lon: 119.500, weight: 0.50 }, // Wang'an Island
-    { lat: 23.220, lon: 119.444, weight: 0.52 }, // Qimei Island
-    { lat: 23.256, lon: 119.671, weight: 0.45 }, // Dongji Marine Park
+    { lat: 23.738, lon: 119.598, weight: 0.75 }, // Jibei Sand Spit
+    { lat: 23.785, lon: 119.601, weight: 0.55 }, // Mudouyu (Open sea lighthouse)
+    { lat: 23.663, lon: 119.659, weight: 0.65 }, // Niaoyu
+    { lat: 23.510, lon: 119.518, weight: 0.80 }, // Tongpan Basalt Island
+    { lat: 23.492, lon: 119.524, weight: 0.75 }, // Hujing Island
+    { lat: 23.365, lon: 119.500, weight: 0.78 }, // Wang'an Island
+    { lat: 23.220, lon: 119.444, weight: 0.82 }, // Qimei Island
+    { lat: 23.256, lon: 119.671, weight: 0.70 }, // Dongji Island
 
-    // Surrounding Ocean Breezes (Cool Blue/Cyan Buffers)
-    { lat: 23.520, lon: 119.480, weight: 0.15 }, // South Sea Channel
-    { lat: 23.620, lon: 119.480, weight: 0.15 }, // West Sea Channel
-    { lat: 23.620, lon: 119.640, weight: 0.15 }, // East Sea Channel
-    { lat: 23.700, lon: 119.550, weight: 0.15 }  // North Sea Channel
+    // Surrounding Ocean Breezes (Cool Blue/Green Buffers)
+    { lat: 23.520, lon: 119.480, weight: 0.20 }, // South Sea Channel
+    { lat: 23.620, lon: 119.480, weight: 0.22 }, // West Sea Channel
+    { lat: 23.620, lon: 119.640, weight: 0.22 }, // East Sea Channel
+    { lat: 23.700, lon: 119.550, weight: 0.20 }  // North Sea Channel
   ];
 
   return tempStations.map(s => {
-    const normalized = Math.min(1.0, Math.max(0.05, s.weight * (baseTemp / 32)));
+    const normalized = Math.min(1.0, Math.max(0.05, s.weight * tFactor));
     return [s.lat, s.lon, normalized];
   });
 }
 
 // Curated Meteorological Spatial Stations for Solar UV Radiation
 function generateSpatialUvPoints() {
-  const baseUv = currentWeatherData.uvIndex !== undefined ? currentWeatherData.uvIndex : 8.0;
-  const isNight = currentWeatherData.isDay === false || baseUv < 0.5;
+  const baseUv = typeof currentWeatherData.uvIndex === 'number' ? currentWeatherData.uvIndex : 0.0;
 
-  if (isNight || baseUv <= 0.2) {
-    // Nighttime: Zero UV radiation (Calm minimal weights, NO yellow/red!)
-    return [
-      { lat: 23.565, lon: 119.566, weight: 0.02 },
-      { lat: 23.590, lon: 119.510, weight: 0.02 },
-      { lat: 23.650, lon: 119.560, weight: 0.02 },
-      { lat: 23.220, lon: 119.444, weight: 0.02 }
-    ].map(s => [s.lat, s.lon, s.weight]);
-  }
+  // Physical UV scaling from 0 (night) to 11+ (extreme midday)
+  const uvFactor = Math.min(1.0, Math.max(0.0, baseUv / 11.0));
 
   const uvStations = [
     // Open Coral Sand Beaches & Exposed Islands (Highest UV Reflection / Albedo)
     { lat: 23.220, lon: 119.444, weight: 1.00 }, // Qimei Twin Heart (Maximum Solar Exposure)
-    { lat: 23.738, lon: 119.598, weight: 0.98 }, // Jibei Sand Spit
+    { lat: 23.738, lon: 119.598, weight: 0.98 }, // Jibei Sand Spit (White coral sand albedo)
     { lat: 23.513, lon: 119.591, weight: 0.95 }, // Shanshui Beach
     { lat: 23.575, lon: 119.660, weight: 0.92 }, // Lintou & Aimen Beach
     { lat: 23.785, lon: 119.601, weight: 0.95 }, // Mudouyu Island
@@ -743,34 +671,28 @@ function generateSpatialUvPoints() {
     { lat: 23.256, lon: 119.671, weight: 0.90 }, // Dongji Eye
     { lat: 23.597, lon: 119.674, weight: 0.90 }, // Kuobishan Parting
 
-    // Highway Corridors & Road Spines across Penghu
-    { lat: 23.585, lon: 119.585, weight: 0.85 }, // Highway 203 Start
-    { lat: 23.615, lon: 119.590, weight: 0.88 }, // Zhongtun Windmills
-    { lat: 23.635, lon: 119.575, weight: 0.85 }, // Baisha Corridor
-    { lat: 23.650, lon: 119.539, weight: 0.88 }, // Penghu Great Bridge
-    { lat: 23.605, lon: 119.510, weight: 0.88 }, // Erkan Historic Corridor
-    { lat: 23.560, lon: 119.467, weight: 0.85 }, // Yuwengdao Lighthouse
-    { lat: 23.569, lon: 119.629, weight: 0.85 }, // Airport Tarmac
-
-    // Basalt Sea Cliffs
+    // Basalt Sea Cliffs & Open Roads
     { lat: 23.593, lon: 119.516, weight: 0.85 }, // Daguoye Basalt
     { lat: 23.510, lon: 119.518, weight: 0.88 }, // Tongpan Island
     { lat: 23.492, lon: 119.524, weight: 0.85 }, // Hujing Island
+    { lat: 23.560, lon: 119.467, weight: 0.80 }, // Yuwengdao Lighthouse
+    { lat: 23.650, lon: 119.539, weight: 0.78 }, // Penghu Great Bridge
+    { lat: 23.569, lon: 119.629, weight: 0.82 }, // Penghu Airport Tarmac
 
     // Urban & Shaded Canopy (Lower Solar Radiation / UV drop)
-    { lat: 23.565, lon: 119.566, weight: 0.45 }, // Magong Old Streets (Building shadows)
-    { lat: 23.657, lon: 119.559, weight: 0.20 }, // Tongliang Great Banyan (Dense foliage canopy)
+    { lat: 23.565, lon: 119.566, weight: 0.50 }, // Magong Old Streets (Building shadows)
+    { lat: 23.657, lon: 119.559, weight: 0.25 }, // Tongliang Great Banyan (Dense foliage canopy)
 
-    // Open Sea Surrounding Waters
-    { lat: 23.520, lon: 119.480, weight: 0.35 },
-    { lat: 23.620, lon: 119.480, weight: 0.35 },
-    { lat: 23.620, lon: 119.640, weight: 0.35 },
-    { lat: 23.700, lon: 119.550, weight: 0.35 }
+    // Open Sea Surrounding Waters (Moderate-High UV scatter)
+    { lat: 23.520, lon: 119.480, weight: 0.40 },
+    { lat: 23.620, lon: 119.480, weight: 0.40 },
+    { lat: 23.620, lon: 119.640, weight: 0.40 },
+    { lat: 23.700, lon: 119.550, weight: 0.40 }
   ];
 
   return uvStations.map(s => {
-    // True proportional scaling without false high minimum floors
-    const normalized = Math.min(1.0, Math.max(0.02, s.weight * (baseUv / 10)));
+    // When baseUv <= 0.2 (night), normalized value is near zero (0.01 - 0.02) -> Renders pure cool Emerald Green!
+    const normalized = Math.min(1.0, Math.max(0.01, s.weight * uvFactor));
     return [s.lat, s.lon, normalized];
   });
 }
