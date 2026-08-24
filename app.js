@@ -531,17 +531,18 @@ function setHeatmapMode(mode) {
 
     const tempPoints = generateSpatialTempPoints();
     liveHeatmapLayer = L.heatLayer(tempPoints, {
-      radius: 32,
-      blur: 24,
-      maxZoom: 14,
-      max: 1.0,
+      radius: 48,
+      blur: 32,
+      maxZoom: 12,
+      max: 0.85,
+      minOpacity: 0.38,
       gradient: {
-        0.1: '#3B82F6', // Sejuk / Angin Laut
-        0.3: '#10B981', // Nyaman
-        0.5: '#F59E0B', // Hangat Sedang
-        0.7: '#F97316', // Panas Tropis
-        0.9: '#EF4444', // Sangat Panas
-        1.0: '#7F1D1D'  // Ekstrem
+        0.15: '#3B82F6', // Sejuk / Angin Laut
+        0.35: '#10B981', // Nyaman
+        0.55: '#F59E0B', // Hangat Sedang
+        0.75: '#F97316', // Panas Tropis
+        0.90: '#EF4444', // Sangat Panas
+        1.00: '#7F1D1D'  // Ekstrem
       }
     }).addTo(map);
 
@@ -563,16 +564,17 @@ function setHeatmapMode(mode) {
 
     const uvPoints = generateSpatialUvPoints();
     liveHeatmapLayer = L.heatLayer(uvPoints, {
-      radius: 34,
-      blur: 26,
-      maxZoom: 14,
-      max: 1.0,
+      radius: 50,
+      blur: 34,
+      maxZoom: 12,
+      max: 0.85,
+      minOpacity: 0.38,
       gradient: {
-        0.1: '#10B981', // UV Rendah
-        0.35: '#FBBF24', // UV Sedang
-        0.6: '#F97316',  // UV Tinggi
-        0.8: '#EF4444',  // Sangat Tinggi
-        1.0: '#9333EA'   // Ekstrem Violet
+        0.15: '#10B981', // UV Rendah
+        0.40: '#FBBF24', // UV Sedang
+        0.65: '#F97316', // UV Tinggi
+        0.85: '#EF4444', // Sangat Tinggi
+        1.00: '#9333EA'  // Ekstrem Violet
       }
     }).addTo(map);
   }
@@ -580,68 +582,125 @@ function setHeatmapMode(mode) {
   if (window.lucide) lucide.createIcons();
 }
 
-// Generate Biometeorological Spatial Heat Points for Celsius Temperature
+// Generate Continuous Full-Map Spatial Grid for Celsius Temperature
 function generateSpatialTempPoints() {
   const points = [];
   const baseTemp = currentWeatherData.temp || 32;
 
-  // Add microclimate points around all active POI nodes
+  // Major Regional Thermal Centers across Penghu Archipelago
+  const thermalAnchors = [
+    { name: "Magong Urban Core", lat: 23.565, lon: 119.566, weight: 0.95, radiusKm: 3.5 },
+    { name: "Huxi Plains & Airport", lat: 23.575, lon: 119.630, weight: 0.85, radiusKm: 4.5 },
+    { name: "Baisha Mainland", lat: 23.630, lon: 119.570, weight: 0.75, radiusKm: 4.0 },
+    { name: "Xiyu Basalt Plateau", lat: 23.590, lon: 119.510, weight: 0.88, radiusKm: 4.0 },
+    { name: "Jibei Sand Island", lat: 23.740, lon: 119.600, weight: 0.80, radiusKm: 3.0 },
+    { name: "Wang'an Island", lat: 23.365, lon: 119.500, weight: 0.82, radiusKm: 3.5 },
+    { name: "Qimei Island", lat: 23.220, lon: 119.440, weight: 0.84, radiusKm: 3.5 },
+    { name: "Dongji / Marine Park", lat: 23.256, lon: 119.670, weight: 0.78, radiusKm: 3.0 },
+    { name: "Tongpan & Hujing", lat: 23.500, lon: 119.520, weight: 0.85, radiusKm: 2.5 }
+  ];
+
+  // 1. Generate Regular Full-Archipelago 2D Spatial Grid (~1.0 km step)
+  const latMin = 23.18, latMax = 23.82, latStep = 0.009;
+  const lonMin = 119.38, lonMax = 119.72, lonStep = 0.009;
+
+  for (let lat = latMin; lat <= latMax; lat += latStep) {
+    for (let lon = lonMin; lon <= lonMax; lon += lonStep) {
+      // Find nearest island thermal anchor
+      let maxAnchorInfluence = 0.25; // Base open sea baseline intensity
+
+      for (const anchor of thermalAnchors) {
+        const dKm = getDistanceKm(lat, lon, anchor.lat, anchor.lon);
+        if (dKm <= anchor.radiusKm * 2.2) {
+          const factor = Math.max(0, 1 - (dKm / (anchor.radiusKm * 2.2)));
+          const influence = 0.25 + (anchor.weight - 0.25) * Math.pow(factor, 1.4);
+          if (influence > maxAnchorInfluence) {
+            maxAnchorInfluence = influence;
+          }
+        }
+      }
+
+      // Scale intensity based on live temperature
+      const tempScale = Math.min(1.0, Math.max(0.15, maxAnchorInfluence * (baseTemp / 32)));
+      points.push([lat, lon, tempScale]);
+    }
+  }
+
+  // 2. Overlay Detailed POI Nodes for Microclimate Refinement
   allNodes.forEach(node => {
-    let intensity = 0.5; // Base normal
-    
-    // Urban Heat Island: Magong City Center (Asphalt + concrete building radiation)
+    let intensity = 0.55;
     if (node.latitude >= 23.55 && node.latitude <= 23.58 && node.longitude >= 119.55 && node.longitude <= 119.59) {
-      intensity += 0.25;
+      intensity += 0.3; // Magong Urban Core
     }
-
-    // Shaded Banyan / Park cooling effect
     if (node.title && (node.title.includes('榕') || node.title.includes('Banyan') || node.category === 'park')) {
-      intensity -= 0.25;
+      intensity -= 0.3; // Banyan Tree shade sink
     }
-
-    // Coastal breeze cooling
-    if (node.title && (node.title.includes('Beach') || node.title.includes('沙灘') || node.category === 'beach')) {
-      intensity -= 0.1;
+    if (node.category === 'beach' || (node.title && node.title.includes('沙灘'))) {
+      intensity += 0.1; // Direct beach solar absorption
     }
-
-    // Outer Island solar concentration
-    if (node.latitude < 23.35 || node.latitude > 23.70) {
-      intensity += 0.15;
-    }
-
-    // Normalize intensity with base temp
-    const scaledIntensity = Math.min(1.0, Math.max(0.15, intensity * (baseTemp / 32)));
-    points.push([node.latitude, node.longitude, scaledIntensity]);
+    const scaled = Math.min(1.0, Math.max(0.2, intensity * (baseTemp / 32)));
+    points.push([node.latitude, node.longitude, scaled]);
   });
 
   return points;
 }
 
-// Generate Biometeorological Spatial Heat Points for Solar UV Exposure
+// Generate Continuous Full-Map Spatial Grid for Solar UV Radiation
 function generateSpatialUvPoints() {
   const points = [];
   const baseUv = currentWeatherData.uvIndex || 8.0;
 
+  // Major UV Exposure Centers (High Albedo Beaches, Outer Reefs & Open Islands)
+  const uvAnchors = [
+    { lat: 23.220, lon: 119.440, weight: 1.0, radiusKm: 4.0 }, // Qimei (Highest UV)
+    { lat: 23.365, lon: 119.500, weight: 0.95, radiusKm: 4.0 }, // Wang'an
+    { lat: 23.740, lon: 119.600, weight: 0.98, radiusKm: 3.5 }, // Jibei Sand Spit
+    { lat: 23.785, lon: 119.601, weight: 0.95, radiusKm: 2.5 }, // Mudouyu
+    { lat: 23.256, lon: 119.670, weight: 0.95, radiusKm: 3.5 }, // Dongji Marine Park
+    { lat: 23.590, lon: 119.510, weight: 0.88, radiusKm: 4.5 }, // Xiyu Coastal Cliffs
+    { lat: 23.513, lon: 119.591, weight: 0.92, radiusKm: 3.0 }, // Shanshui Beach
+    { lat: 23.597, lon: 119.674, weight: 0.90, radiusKm: 3.0 }, // Kuobishan
+    { lat: 23.565, lon: 119.566, weight: 0.70, radiusKm: 3.0 }  // Magong City (Building Shade)
+  ];
+
+  // 1. Generate Regular Full-Archipelago 2D Spatial Grid
+  const latMin = 23.18, latMax = 23.82, latStep = 0.009;
+  const lonMin = 119.38, lonMax = 119.72, lonStep = 0.009;
+
+  for (let lat = latMin; lat <= latMax; lat += latStep) {
+    for (let lon = lonMin; lon <= lonMax; lon += lonStep) {
+      let maxUvInfluence = 0.40; // High baseline maritime solar scatter across open ocean
+
+      for (const anchor of uvAnchors) {
+        const dKm = getDistanceKm(lat, lon, anchor.lat, anchor.lon);
+        if (dKm <= anchor.radiusKm * 2.5) {
+          const factor = Math.max(0, 1 - (dKm / (anchor.radiusKm * 2.5)));
+          const influence = 0.40 + (anchor.weight - 0.40) * Math.pow(factor, 1.2);
+          if (influence > maxUvInfluence) {
+            maxUvInfluence = influence;
+          }
+        }
+      }
+
+      // Slight southern latitude UV boost (closer to equator)
+      const latBoost = (23.82 - lat) * 0.15;
+      const finalUvFactor = Math.min(1.0, maxUvInfluence + latBoost);
+      const uvScale = Math.min(1.0, Math.max(0.15, finalUvFactor * (baseUv / 10)));
+      points.push([lat, lon, uvScale]);
+    }
+  }
+
+  // 2. Overlay POI Nodes for Micro-exposure
   allNodes.forEach(node => {
-    let uvFactor = 0.6; // Base default
-
-    // Open coastal beaches, reefs, basalt cliffs have max UV albedo & zero shade
-    if (node.category === 'beach' || (node.title && (node.title.includes('沙灘') || node.title.includes('玄武岩') || node.title.includes('Basalt') || node.title.includes('石滬')))) {
-      uvFactor += 0.35;
+    let uvFactor = 0.65;
+    if (node.category === 'beach' || (node.title && (node.title.includes('沙灘') || node.title.includes('玄武岩') || node.title.includes('Basalt')))) {
+      uvFactor += 0.3;
     }
-
-    // Indoor Air-conditioned stores and museums have minimal outdoor UV exposure
     if (node.has_ac || node.category === 'store' || node.category === 'museum') {
-      uvFactor -= 0.25;
+      uvFactor -= 0.35; // Indoor UV drop
     }
-
-    // Outer Islands (Qimei, Jibei, Mudouyu) high solar exposure
-    if (node.latitude < 23.35 || node.latitude > 23.70) {
-      uvFactor += 0.2;
-    }
-
-    const scaledUv = Math.min(1.0, Math.max(0.1, (uvFactor * (baseUv / 10))));
-    points.push([node.latitude, node.longitude, scaledUv]);
+    const scaled = Math.min(1.0, Math.max(0.15, uvFactor * (baseUv / 10)));
+    points.push([node.latitude, node.longitude, scaled]);
   });
 
   return points;
