@@ -352,14 +352,15 @@ function setTheme(theme) {
 }
 
 function initMap() {
-  // Static Archipelago Overview centered at zoom 10
-  map = L.map('map', { zoomControl: false, minZoom: 9 }).setView([23.54, 119.58], 10);
+  // Static Archipelago Overview centered at zoom 10 with max zoom 18 to prevent tile dropout
+  map = L.map('map', { zoomControl: false, minZoom: 9, maxZoom: 18 }).setView([23.54, 119.58], 10);
   L.control.zoom({ position: 'bottomleft' }).addTo(map);
 
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors',
     subdomains: 'abcd',
-    maxZoom: 19
+    maxNativeZoom: 18,
+    maxZoom: 18
   }).addTo(map);
 
   // High-performance Marker Clustering with lazy chunk loading
@@ -607,9 +608,9 @@ function setHeatmapMode(mode) {
     if (legendDesc) legendDesc.textContent = t('heatmap_uv_desc');
   }
 
-  // Generate Continuous IDW Canvas Overlay Field
-  const bounds = [[23.15, 119.35], [23.85, 119.75]];
-  const width = 140;
+  // Generate Continuous IDW Canvas Overlay Field (Expanded to fully envelop Huayu and outer channels)
+  const bounds = [[23.05, 119.12], [23.92, 119.88]];
+  const width = 180;
   const height = 240;
   const canvas = document.createElement('canvas');
   canvas.width = width;
@@ -642,25 +643,30 @@ function setHeatmapMode(mode) {
     { lat: 23.605, lon: 119.510, temp: baseT + 0.1, uv: Number((baseUv * 1.00).toFixed(1)) },
     { lat: 23.560, lon: 119.467, temp: baseT - 0.2, uv: Number((baseUv * 1.00).toFixed(1)) },
 
-    // Outer Islands
+    // Outer Islands (Huayu, Jibei, Mudouyu, Wang'an, Qimei, Dongji)
+    { lat: 23.403, lon: 119.319, temp: baseT + 0.1, uv: Number((baseUv * 1.15).toFixed(1)) }, // Huayu Island (Westernmost)
     { lat: 23.738, lon: 119.598, temp: baseT - 0.2, uv: Number((baseUv * 1.25).toFixed(1)) }, // Jibei
     { lat: 23.785, lon: 119.601, temp: baseT - 0.6, uv: Number((baseUv * 1.20).toFixed(1)) }, // Mudouyu
     { lat: 23.365, lon: 119.500, temp: baseT + 0.0, uv: Number((baseUv * 1.15).toFixed(1)) }, // Wang'an
     { lat: 23.220, lon: 119.444, temp: baseT + 0.4, uv: Number((baseUv * 1.25).toFixed(1)) }, // Qimei
     { lat: 23.256, lon: 119.671, temp: baseT - 0.6, uv: Number((baseUv * 1.10).toFixed(1)) }, // Dongji
 
-    // Surrounding Ocean Breezes (Maritime Cooling Buffer)
-    { lat: 23.520, lon: 119.480, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
-    { lat: 23.620, lon: 119.480, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
-    { lat: 23.620, lon: 119.640, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
-    { lat: 23.700, lon: 119.550, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }
+    // Surrounding Ocean Breezes (Maritime Cooling Buffer across full perimeter)
+    { lat: 23.400, lon: 119.120, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // West Open Sea
+    { lat: 23.700, lon: 119.120, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // North West Sea
+    { lat: 23.100, lon: 119.120, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // South West Sea
+    { lat: 23.500, lon: 119.880, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // East Open Sea
+    { lat: 23.850, lon: 119.880, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // North East Sea
+    { lat: 23.100, lon: 119.880, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // South East Sea
+    { lat: 23.920, lon: 119.550, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // Far North Channel
+    { lat: 23.050, lon: 119.450, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }  // Far South Channel
   ];
 
   // Compute smooth continuous IDW scalar field
   for (let y = 0; y < height; y++) {
-    const lat = 23.85 - (y / height) * (23.85 - 23.15);
+    const lat = 23.92 - (y / height) * (23.92 - 23.05);
     for (let x = 0; x < width; x++) {
-      const lon = 119.35 + (x / width) * (119.75 - 119.35);
+      const lon = 119.12 + (x / width) * (119.88 - 119.12);
 
       let weightSum = 0;
       let valueSum = 0;
