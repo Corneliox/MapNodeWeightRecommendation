@@ -531,18 +531,17 @@ function setHeatmapMode(mode) {
 
     const tempPoints = generateSpatialTempPoints();
     liveHeatmapLayer = L.heatLayer(tempPoints, {
-      radius: 48,
-      blur: 32,
-      maxZoom: 12,
-      max: 0.85,
-      minOpacity: 0.38,
+      radius: 42,
+      blur: 28,
+      maxZoom: 13,
+      max: 1.0,
+      minOpacity: 0.28,
       gradient: {
-        0.15: '#3B82F6', // Sejuk / Angin Laut
-        0.35: '#10B981', // Nyaman
-        0.55: '#F59E0B', // Hangat Sedang
-        0.75: '#F97316', // Panas Tropis
-        0.90: '#EF4444', // Sangat Panas
-        1.00: '#7F1D1D'  // Ekstrem
+        0.20: '#3B82F6', // Sejuk / Angin Laut (Biru)
+        0.40: '#10B981', // Nyaman / Naungan (Hijau)
+        0.60: '#F59E0B', // Hangat Sedang (Kuning)
+        0.80: '#F97316', // Panas Tropis (Oranye)
+        1.00: '#EF4444'  // Panas Tinggi Perkotaan (Merah)
       }
     }).addTo(map);
 
@@ -564,17 +563,17 @@ function setHeatmapMode(mode) {
 
     const uvPoints = generateSpatialUvPoints();
     liveHeatmapLayer = L.heatLayer(uvPoints, {
-      radius: 50,
-      blur: 34,
-      maxZoom: 12,
-      max: 0.85,
-      minOpacity: 0.38,
+      radius: 44,
+      blur: 30,
+      maxZoom: 13,
+      max: 1.0,
+      minOpacity: 0.28,
       gradient: {
-        0.15: '#10B981', // UV Rendah
-        0.40: '#FBBF24', // UV Sedang
-        0.65: '#F97316', // UV Tinggi
-        0.85: '#EF4444', // Sangat Tinggi
-        1.00: '#9333EA'  // Ekstrem Violet
+        0.20: '#10B981', // UV Rendah (Hijau)
+        0.45: '#FBBF24', // UV Sedang (Kuning)
+        0.70: '#F97316', // UV Tinggi (Oranye)
+        0.88: '#EF4444', // Sangat Tinggi (Merah)
+        1.00: '#9333EA'  // Ekstrem Violet (Ungu Pantai/Pulau Terbuka)
       }
     }).addTo(map);
   }
@@ -582,128 +581,98 @@ function setHeatmapMode(mode) {
   if (window.lucide) lucide.createIcons();
 }
 
-// Generate Continuous Full-Map Spatial Grid for Celsius Temperature
+// Curated Meteorological Spatial Stations for Temperature (°C)
 function generateSpatialTempPoints() {
-  const points = [];
   const baseTemp = currentWeatherData.temp || 32;
+  
+  // Regional stations across Penghu's distinct microclimates
+  const tempStations = [
+    // Magong Urban Heat Island (Asphalt/Concrete)
+    { lat: 23.565, lon: 119.566, weight: 0.95 }, // Magong Port & Old Town (Highest Urban Heat)
+    { lat: 23.570, lon: 119.580, weight: 0.90 }, // Magong City Center
+    { lat: 23.541, lon: 119.544, weight: 0.70 }, // Fenggui (Sea breeze moderated)
+    { lat: 23.513, lon: 119.591, weight: 0.75 }, // Shanshui Beach
 
-  // Major Regional Thermal Centers across Penghu Archipelago
-  const thermalAnchors = [
-    { name: "Magong Urban Core", lat: 23.565, lon: 119.566, weight: 0.95, radiusKm: 3.5 },
-    { name: "Huxi Plains & Airport", lat: 23.575, lon: 119.630, weight: 0.85, radiusKm: 4.5 },
-    { name: "Baisha Mainland", lat: 23.630, lon: 119.570, weight: 0.75, radiusKm: 4.0 },
-    { name: "Xiyu Basalt Plateau", lat: 23.590, lon: 119.510, weight: 0.88, radiusKm: 4.0 },
-    { name: "Jibei Sand Island", lat: 23.740, lon: 119.600, weight: 0.80, radiusKm: 3.0 },
-    { name: "Wang'an Island", lat: 23.365, lon: 119.500, weight: 0.82, radiusKm: 3.5 },
-    { name: "Qimei Island", lat: 23.220, lon: 119.440, weight: 0.84, radiusKm: 3.5 },
-    { name: "Dongji / Marine Park", lat: 23.256, lon: 119.670, weight: 0.78, radiusKm: 3.0 },
-    { name: "Tongpan & Hujing", lat: 23.500, lon: 119.520, weight: 0.85, radiusKm: 2.5 }
+    // Huxi Plains & Airport
+    { lat: 23.580, lon: 119.635, weight: 0.80 }, // Huxi Township
+    { lat: 23.569, lon: 119.629, weight: 0.82 }, // Penghu Airport
+    { lat: 23.597, lon: 119.674, weight: 0.65 }, // Kuobishan (Coastal breeze)
+    { lat: 23.575, lon: 119.660, weight: 0.70 }, // Lintou Beach
+
+    // Baisha Peninsula & Bridge
+    { lat: 23.615, lon: 119.590, weight: 0.60 }, // Zhongtun Wind Turbines
+    { lat: 23.635, lon: 119.575, weight: 0.65 }, // Baisha Township
+    { lat: 23.655, lon: 119.600, weight: 0.68 }, // Chikan Pier
+    { lat: 23.657, lon: 119.559, weight: 0.35 }, // Tongliang Great Banyan (Shade Cooling Oasis - Green)
+    { lat: 23.650, lon: 119.539, weight: 0.50 }, // Penghu Great Bridge (Strong maritime sea wind)
+
+    // Xiyu Island (West)
+    { lat: 23.593, lon: 119.516, weight: 0.85 }, // Daguoye Basalt (Reflective rock face)
+    { lat: 23.605, lon: 119.510, weight: 0.75 }, // Erkan Historic Village
+    { lat: 23.560, lon: 119.467, weight: 0.65 }, // Yuwengdao Lighthouse (Coastal cliff)
+    { lat: 23.630, lon: 119.515, weight: 0.70 }, // Zhuwan
+
+    // Outer Islands (North & South)
+    { lat: 23.738, lon: 119.598, weight: 0.75 }, // Jibei Sand Spit
+    { lat: 23.785, lon: 119.601, weight: 0.55 }, // Mudouyu (Open sea lighthouse)
+    { lat: 23.663, lon: 119.659, weight: 0.65 }, // Niaoyu
+    { lat: 23.510, lon: 119.518, weight: 0.80 }, // Tongpan Basalt Island
+    { lat: 23.492, lon: 119.524, weight: 0.75 }, // Hujing Island
+    { lat: 23.365, lon: 119.500, weight: 0.78 }, // Wang'an Island
+    { lat: 23.220, lon: 119.444, weight: 0.82 }, // Qimei Island
+    { lat: 23.256, lon: 119.671, weight: 0.70 }, // Dongji Island
+
+    // Surrounding Ocean Breezes (Cool Blue/Green Buffers)
+    { lat: 23.520, lon: 119.480, weight: 0.20 }, // South Sea Channel
+    { lat: 23.620, lon: 119.480, weight: 0.22 }, // West Sea Channel
+    { lat: 23.620, lon: 119.640, weight: 0.22 }, // East Sea Channel
+    { lat: 23.700, lon: 119.550, weight: 0.20 }  // North Sea Channel
   ];
 
-  // 1. Generate Regular Full-Archipelago 2D Spatial Grid (~1.0 km step)
-  const latMin = 23.18, latMax = 23.82, latStep = 0.009;
-  const lonMin = 119.38, lonMax = 119.72, lonStep = 0.009;
-
-  for (let lat = latMin; lat <= latMax; lat += latStep) {
-    for (let lon = lonMin; lon <= lonMax; lon += lonStep) {
-      // Find nearest island thermal anchor
-      let maxAnchorInfluence = 0.25; // Base open sea baseline intensity
-
-      for (const anchor of thermalAnchors) {
-        const dKm = getDistanceKm(lat, lon, anchor.lat, anchor.lon);
-        if (dKm <= anchor.radiusKm * 2.2) {
-          const factor = Math.max(0, 1 - (dKm / (anchor.radiusKm * 2.2)));
-          const influence = 0.25 + (anchor.weight - 0.25) * Math.pow(factor, 1.4);
-          if (influence > maxAnchorInfluence) {
-            maxAnchorInfluence = influence;
-          }
-        }
-      }
-
-      // Scale intensity based on live temperature
-      const tempScale = Math.min(1.0, Math.max(0.15, maxAnchorInfluence * (baseTemp / 32)));
-      points.push([lat, lon, tempScale]);
-    }
-  }
-
-  // 2. Overlay Detailed POI Nodes for Microclimate Refinement
-  allNodes.forEach(node => {
-    let intensity = 0.55;
-    if (node.latitude >= 23.55 && node.latitude <= 23.58 && node.longitude >= 119.55 && node.longitude <= 119.59) {
-      intensity += 0.3; // Magong Urban Core
-    }
-    if (node.title && (node.title.includes('榕') || node.title.includes('Banyan') || node.category === 'park')) {
-      intensity -= 0.3; // Banyan Tree shade sink
-    }
-    if (node.category === 'beach' || (node.title && node.title.includes('沙灘'))) {
-      intensity += 0.1; // Direct beach solar absorption
-    }
-    const scaled = Math.min(1.0, Math.max(0.2, intensity * (baseTemp / 32)));
-    points.push([node.latitude, node.longitude, scaled]);
+  return tempStations.map(s => {
+    const normalized = Math.min(1.0, Math.max(0.15, s.weight * (baseTemp / 32)));
+    return [s.lat, s.lon, normalized];
   });
-
-  return points;
 }
 
-// Generate Continuous Full-Map Spatial Grid for Solar UV Radiation
+// Curated Meteorological Spatial Stations for Solar UV Radiation
 function generateSpatialUvPoints() {
-  const points = [];
   const baseUv = currentWeatherData.uvIndex || 8.0;
 
-  // Major UV Exposure Centers (High Albedo Beaches, Outer Reefs & Open Islands)
-  const uvAnchors = [
-    { lat: 23.220, lon: 119.440, weight: 1.0, radiusKm: 4.0 }, // Qimei (Highest UV)
-    { lat: 23.365, lon: 119.500, weight: 0.95, radiusKm: 4.0 }, // Wang'an
-    { lat: 23.740, lon: 119.600, weight: 0.98, radiusKm: 3.5 }, // Jibei Sand Spit
-    { lat: 23.785, lon: 119.601, weight: 0.95, radiusKm: 2.5 }, // Mudouyu
-    { lat: 23.256, lon: 119.670, weight: 0.95, radiusKm: 3.5 }, // Dongji Marine Park
-    { lat: 23.590, lon: 119.510, weight: 0.88, radiusKm: 4.5 }, // Xiyu Coastal Cliffs
-    { lat: 23.513, lon: 119.591, weight: 0.92, radiusKm: 3.0 }, // Shanshui Beach
-    { lat: 23.597, lon: 119.674, weight: 0.90, radiusKm: 3.0 }, // Kuobishan
-    { lat: 23.565, lon: 119.566, weight: 0.70, radiusKm: 3.0 }  // Magong City (Building Shade)
+  const uvStations = [
+    // Open Coral Sand Beaches & Exposed Islands (Highest UV Reflection / Albedo)
+    { lat: 23.220, lon: 119.444, weight: 1.00 }, // Qimei Twin Heart (Maximum Solar Exposure)
+    { lat: 23.738, lon: 119.598, weight: 0.98 }, // Jibei Sand Spit (White coral sand albedo)
+    { lat: 23.513, lon: 119.591, weight: 0.95 }, // Shanshui Beach
+    { lat: 23.575, lon: 119.660, weight: 0.92 }, // Lintou & Aimen Beach
+    { lat: 23.785, lon: 119.601, weight: 0.95 }, // Mudouyu Island
+    { lat: 23.365, lon: 119.500, weight: 0.92 }, // Wang'an Turtle Beach
+    { lat: 23.256, lon: 119.671, weight: 0.90 }, // Dongji Eye
+    { lat: 23.597, lon: 119.674, weight: 0.90 }, // Kuobishan Parting
+
+    // Basalt Sea Cliffs & Open Roads
+    { lat: 23.593, lon: 119.516, weight: 0.85 }, // Daguoye Basalt
+    { lat: 23.510, lon: 119.518, weight: 0.88 }, // Tongpan Island
+    { lat: 23.492, lon: 119.524, weight: 0.85 }, // Hujing Island
+    { lat: 23.560, lon: 119.467, weight: 0.80 }, // Yuwengdao Lighthouse
+    { lat: 23.650, lon: 119.539, weight: 0.78 }, // Penghu Great Bridge
+    { lat: 23.569, lon: 119.629, weight: 0.82 }, // Penghu Airport Tarmac
+
+    // Urban & Shaded Canopy (Lower Solar Radiation / UV drop)
+    { lat: 23.565, lon: 119.566, weight: 0.50 }, // Magong Old Streets (Building shadows)
+    { lat: 23.657, lon: 119.559, weight: 0.25 }, // Tongliang Great Banyan (Dense foliage canopy)
+
+    // Open Sea Surrounding Waters (Moderate-High UV scatter)
+    { lat: 23.520, lon: 119.480, weight: 0.40 },
+    { lat: 23.620, lon: 119.480, weight: 0.40 },
+    { lat: 23.620, lon: 119.640, weight: 0.40 },
+    { lat: 23.700, lon: 119.550, weight: 0.40 }
   ];
 
-  // 1. Generate Regular Full-Archipelago 2D Spatial Grid
-  const latMin = 23.18, latMax = 23.82, latStep = 0.009;
-  const lonMin = 119.38, lonMax = 119.72, lonStep = 0.009;
-
-  for (let lat = latMin; lat <= latMax; lat += latStep) {
-    for (let lon = lonMin; lon <= lonMax; lon += lonStep) {
-      let maxUvInfluence = 0.40; // High baseline maritime solar scatter across open ocean
-
-      for (const anchor of uvAnchors) {
-        const dKm = getDistanceKm(lat, lon, anchor.lat, anchor.lon);
-        if (dKm <= anchor.radiusKm * 2.5) {
-          const factor = Math.max(0, 1 - (dKm / (anchor.radiusKm * 2.5)));
-          const influence = 0.40 + (anchor.weight - 0.40) * Math.pow(factor, 1.2);
-          if (influence > maxUvInfluence) {
-            maxUvInfluence = influence;
-          }
-        }
-      }
-
-      // Slight southern latitude UV boost (closer to equator)
-      const latBoost = (23.82 - lat) * 0.15;
-      const finalUvFactor = Math.min(1.0, maxUvInfluence + latBoost);
-      const uvScale = Math.min(1.0, Math.max(0.15, finalUvFactor * (baseUv / 10)));
-      points.push([lat, lon, uvScale]);
-    }
-  }
-
-  // 2. Overlay POI Nodes for Micro-exposure
-  allNodes.forEach(node => {
-    let uvFactor = 0.65;
-    if (node.category === 'beach' || (node.title && (node.title.includes('沙灘') || node.title.includes('玄武岩') || node.title.includes('Basalt')))) {
-      uvFactor += 0.3;
-    }
-    if (node.has_ac || node.category === 'store' || node.category === 'museum') {
-      uvFactor -= 0.35; // Indoor UV drop
-    }
-    const scaled = Math.min(1.0, Math.max(0.15, uvFactor * (baseUv / 10)));
-    points.push([node.latitude, node.longitude, scaled]);
+  return uvStations.map(s => {
+    const normalized = Math.min(1.0, Math.max(0.15, s.weight * (baseUv / 10)));
+    return [s.lat, s.lon, normalized];
   });
-
-  return points;
 }
 
 async function loadDataset() {
