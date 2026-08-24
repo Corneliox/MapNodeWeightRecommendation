@@ -19,5 +19,7 @@ Thumbs.db
 .vscode/
 .idea/
 
-# Local logs
+# Local logs & Private Milestones
 *.log
+milestone_logs/
+private_docs/
