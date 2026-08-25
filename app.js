@@ -329,6 +329,8 @@ function updateUILanguage() {
   }
 
   updateRouterProviderUI();
+  if (isWeatherStationsEnabled) renderWeatherStationsMarkers();
+  if (isTempGridEnabled) renderGridCellsPolygons();
 }
 
 function changeLanguage(lang) {
@@ -530,6 +532,15 @@ function getTempHexColor(t) {
   return '#EF4444';                // Crimson
 }
 
+// Hex Color Code for Discrete Polygon Grid Cells for UV Index
+function getUvHexColor(uv) {
+  if (uv <= 2.5) return '#10B981'; // Emerald Green (Safe)
+  if (uv <= 5.5) return '#FBBF24'; // Amber (Moderate)
+  if (uv <= 7.5) return '#F97316'; // Orange (High)
+  if (uv <= 10.5) return '#EF4444'; // Red (Very High)
+  return '#9333EA';                 // Purple (Extreme)
+}
+
 // Smooth Piecewise Color Interpolator for UV Index
 function getInterpolatedUvRgba(uv) {
   // uv range: 0.0 to 12.0
@@ -558,48 +569,48 @@ function getInterpolatedUvRgba(uv) {
   return [147, 51, 234, 160];
 }
 
-// Shared Regional Weather Anchor Stations (Penghu Microclimates)
+// Shared Regional Weather Anchor Stations (Penghu Microclimates & CWA Sensors)
 function getRegionalWeatherStations(baseT, baseUv) {
   return [
     // Magong Urban & Peninsula
-    { lat: 23.565, lon: 119.566, temp: baseT + 1.5, uv: Number((baseUv * 0.85).toFixed(1)) },
-    { lat: 23.570, lon: 119.580, temp: baseT + 1.2, uv: Number((baseUv * 0.88).toFixed(1)) },
-    { lat: 23.541, lon: 119.544, temp: baseT + 0.4, uv: Number((baseUv * 1.05).toFixed(1)) },
-    { lat: 23.513, lon: 119.591, temp: baseT + 0.5, uv: Number((baseUv * 1.10).toFixed(1)) }, // Shanshui Beach
+    { name_zh: "馬公市區氣象觀測站", name_en: "Magong Central Weather Station", zone: "Urban / Asphalt", type: "CWA Automated Station", lat: 23.565, lon: 119.566, temp: baseT + 1.5, uv: Number((baseUv * 0.85).toFixed(1)) },
+    { name_zh: "馬公港客運碼頭站", name_en: "Magong Port Ferry Terminal Sensor", zone: "Urban / Port", type: "CWA Port Buoy", lat: 23.570, lon: 119.580, temp: baseT + 1.2, uv: Number((baseUv * 0.88).toFixed(1)) },
+    { name_zh: "風櫃洞玄武岩海角站", name_en: "Fenggui Blowholes Coastal Sensor", zone: "Coastal Rocks", type: "Coastal Weather Tower", lat: 23.541, lon: 119.544, temp: baseT + 0.4, uv: Number((baseUv * 1.05).toFixed(1)) },
+    { name_zh: "山水沙灘陽光監測站", name_en: "Shanshui Beach Solar Station", zone: "Sandy Beach", type: "UV & Microclimate Sensor", lat: 23.513, lon: 119.591, temp: baseT + 0.5, uv: Number((baseUv * 1.10).toFixed(1)) },
 
     // Huxi & Airport
-    { lat: 23.580, lon: 119.635, temp: baseT + 0.8, uv: Number((baseUv * 1.05).toFixed(1)) },
-    { lat: 23.597, lon: 119.674, temp: baseT + 0.2, uv: Number((baseUv * 1.05).toFixed(1)) },
-    { lat: 23.575, lon: 119.660, temp: baseT + 0.3, uv: Number((baseUv * 1.10).toFixed(1)) },
+    { name_zh: "澎湖航空站 (湖西測站)", name_en: "Penghu Airport (Huxi Station)", zone: "Airport Plains", type: "CWA Aviation Station", lat: 23.580, lon: 119.635, temp: baseT + 0.8, uv: Number((baseUv * 1.05).toFixed(1)) },
+    { name_zh: "奎壁山摩西分海潮汐站", name_en: "Kuobishan Moses Parting Station", zone: "Tidal Reef", type: "Coastal Oceanic Station", lat: 23.597, lon: 119.674, temp: baseT + 0.2, uv: Number((baseUv * 1.05).toFixed(1)) },
+    { name_zh: "菓葉日出觀測點", name_en: "Guoye Sunrise Coastal Station", zone: "East Coast", type: "Solar Radiation Sensor", lat: 23.575, lon: 119.660, temp: baseT + 0.3, uv: Number((baseUv * 1.10).toFixed(1)) },
 
     // Baisha & Tongliang
-    { lat: 23.615, lon: 119.590, temp: baseT - 0.4, uv: Number((baseUv * 0.95).toFixed(1)) },
-    { lat: 23.635, lon: 119.575, temp: baseT - 0.5, uv: Number((baseUv * 0.95).toFixed(1)) },
-    { lat: 23.657, lon: 119.559, temp: baseT - 1.6, uv: Number((baseUv * 0.35).toFixed(1)) }, // Tongliang Banyan Tree Shade Sink
-    { lat: 23.650, lon: 119.539, temp: baseT - 1.2, uv: Number((baseUv * 0.80).toFixed(1)) }, // Great Bridge
+    { name_zh: "白沙鄉赤崁碼頭站", name_en: "Baisha Chikan Pier Sensor", zone: "Harbor Pier", type: "Regional Sensor", lat: 23.615, lon: 119.590, temp: baseT - 0.4, uv: Number((baseUv * 0.95).toFixed(1)) },
+    { name_zh: "白沙中屯風力發電站", name_en: "Zhongtun Wind Turbine Station", zone: "Wind Corridor", type: "Anemometer Mast", lat: 23.635, lon: 119.575, temp: baseT - 0.5, uv: Number((baseUv * 0.95).toFixed(1)) },
+    { name_zh: "通梁古榕林蔭微氣候站", name_en: "Tongliang Banyan Tree Shade Sink", zone: "Natural Canopy", type: "Thermal Comfort Sink", lat: 23.657, lon: 119.559, temp: baseT - 1.6, uv: Number((baseUv * 0.35).toFixed(1)) },
+    { name_zh: "澎湖跨海大橋橋面站", name_en: "Penghu Great Bridge Deck Sensor", zone: "Open Sea Bridge", type: "Maritime Wind Sensor", lat: 23.650, lon: 119.539, temp: baseT - 1.2, uv: Number((baseUv * 0.80).toFixed(1)) },
 
     // Xiyu Island
-    { lat: 23.593, lon: 119.516, temp: baseT + 0.3, uv: Number((baseUv * 1.05).toFixed(1)) },
-    { lat: 23.605, lon: 119.510, temp: baseT + 0.1, uv: Number((baseUv * 1.00).toFixed(1)) },
-    { lat: 23.560, lon: 119.467, temp: baseT - 0.2, uv: Number((baseUv * 1.00).toFixed(1)) },
+    { name_zh: "大菓葉柱狀玄武岩測站", name_en: "Daguoye Basalt Plateau Station", zone: "Basalt Cliff", type: "Thermal Absorption Sensor", lat: 23.593, lon: 119.516, temp: baseT + 0.3, uv: Number((baseUv * 1.05).toFixed(1)) },
+    { name_zh: "西嶼池西玄武岩測站", name_en: "Xiyu Chixi Rock Station", zone: "Coastal Plateau", type: "Regional Station", lat: 23.605, lon: 119.510, temp: baseT + 0.1, uv: Number((baseUv * 1.00).toFixed(1)) },
+    { name_zh: "漁翁島燈塔西南極點站", name_en: "Yuwengdao Lighthouse Station", zone: "Southwest Cape", type: "CWA Marine Beacon", lat: 23.560, lon: 119.467, temp: baseT - 0.2, uv: Number((baseUv * 1.00).toFixed(1)) },
 
-    // Outer Islands (Huayu, Jibei, Mudouyu, Wang'an, Qimei, Dongji)
-    { lat: 23.403, lon: 119.319, temp: baseT + 0.1, uv: Number((baseUv * 1.15).toFixed(1)) }, // Huayu Island (Westernmost)
-    { lat: 23.738, lon: 119.598, temp: baseT - 0.2, uv: Number((baseUv * 1.25).toFixed(1)) }, // Jibei
-    { lat: 23.785, lon: 119.601, temp: baseT - 0.6, uv: Number((baseUv * 1.20).toFixed(1)) }, // Mudouyu
-    { lat: 23.365, lon: 119.500, temp: baseT + 0.0, uv: Number((baseUv * 1.15).toFixed(1)) }, // Wang'an
-    { lat: 23.220, lon: 119.444, temp: baseT + 0.4, uv: Number((baseUv * 1.25).toFixed(1)) }, // Qimei
-    { lat: 23.256, lon: 119.671, temp: baseT - 0.6, uv: Number((baseUv * 1.10).toFixed(1)) }, // Dongji
+    // Outer Islands
+    { name_zh: "花嶼極西海島測站", name_en: "Huayu Island Western Station", zone: "Westernmost Isle", type: "CWA Island Observatory", lat: 23.403, lon: 119.319, temp: baseT + 0.1, uv: Number((baseUv * 1.15).toFixed(1)) },
+    { name_zh: "吉貝沙尾海域測站", name_en: "Jibei Sand Spit Station", zone: "North Sand Island", type: "Water Sports Weather Post", lat: 23.738, lon: 119.598, temp: baseT - 0.2, uv: Number((baseUv * 1.25).toFixed(1)) },
+    { name_zh: "目斗嶼燈塔北極點站", name_en: "Mudouyu Lighthouse North Station", zone: "Far North Reef", type: "CWA Offshore Tower", lat: 23.785, lon: 119.601, temp: baseT - 0.6, uv: Number((baseUv * 1.20).toFixed(1)) },
+    { name_zh: "望安綠蠵龜保護區測站", name_en: "Wang'an Green Turtle Station", zone: "Southern Island", type: "Eco-Climate Sensor", lat: 23.365, lon: 119.500, temp: baseT + 0.0, uv: Number((baseUv * 1.15).toFixed(1)) },
+    { name_zh: "七美雙心石滬氣象站", name_en: "Qimei Twin-Heart Station", zone: "Far South Island", type: "CWA Southern Beacon", lat: 23.220, lon: 119.444, temp: baseT + 0.4, uv: Number((baseUv * 1.25).toFixed(1)) },
+    { name_zh: "東吉嶼南方四島國家公園站", name_en: "Dongji South Islands Marine Station", zone: "National Park", type: "Marine Weather Station", lat: 23.256, lon: 119.671, temp: baseT - 0.6, uv: Number((baseUv * 1.10).toFixed(1)) },
 
     // Surrounding Ocean Breezes (Maritime Cooling Buffer across full perimeter)
-    { lat: 23.400, lon: 119.120, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // West Open Sea
-    { lat: 23.700, lon: 119.120, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // North West Sea
-    { lat: 23.100, lon: 119.120, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // South West Sea
-    { lat: 23.500, lon: 119.880, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // East Open Sea
-    { lat: 23.850, lon: 119.880, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // North East Sea
-    { lat: 23.100, lon: 119.880, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // South East Sea
-    { lat: 23.920, lon: 119.550, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }, // Far North Channel
-    { lat: 23.050, lon: 119.450, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }  // Far South Channel
+    { name_zh: "澎湖西側外海氣象浮標", name_en: "West Outer Channel Buoy", zone: "Open Sea", type: "CWA Marine Buoy", lat: 23.400, lon: 119.120, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { name_zh: "西北外海海流氣象浮標", name_en: "Northwest Maritime Buoy", zone: "Open Sea", type: "CWA Marine Buoy", lat: 23.700, lon: 119.120, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { name_zh: "西南水道海洋氣象浮標", name_en: "Southwest Channel Buoy", zone: "Open Sea", type: "CWA Marine Buoy", lat: 23.100, lon: 119.120, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { name_zh: "東側台灣海峽深海浮標", name_en: "East Taiwan Strait Buoy", zone: "Open Sea", type: "CWA Marine Buoy", lat: 23.500, lon: 119.880, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { name_zh: "東北外海海峽氣象浮標", name_en: "Northeast Strait Buoy", zone: "Open Sea", type: "CWA Marine Buoy", lat: 23.850, lon: 119.880, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { name_zh: "東南海域深水氣象浮標", name_en: "Southeast Deep Water Buoy", zone: "Open Sea", type: "CWA Marine Buoy", lat: 23.100, lon: 119.880, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { name_zh: "北部外海航道氣象浮標", name_en: "Far North Channel Buoy", zone: "Open Sea", type: "CWA Marine Buoy", lat: 23.920, lon: 119.550, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) },
+    { name_zh: "南部外海深海氣象浮標", name_en: "Far South Channel Buoy", zone: "Open Sea", type: "CWA Marine Buoy", lat: 23.050, lon: 119.450, temp: baseT - 1.8, uv: Number((baseUv * 0.70).toFixed(1)) }
   ];
 }
 
@@ -615,6 +626,8 @@ function setHeatmapMode(mode) {
   const legendGradient = document.getElementById('heatmap-gradient-bar');
   const legendLabels = document.getElementById('heatmap-legend-labels');
   const legendDesc = document.getElementById('heatmap-legend-desc');
+  const gridToggle = document.getElementById('container-grid-toggle');
+  const gridLabel = document.getElementById('label-grid-metric');
 
   const baseInactive = "px-2 sm:px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1 opacity-70 hover:opacity-100 hover:bg-slate-100 dark:hover:bg-slate-800";
   const baseActive = "px-2 sm:px-2.5 py-1.5 rounded-xl text-[11px] sm:text-xs font-bold transition flex items-center gap-1 dynamic-btn-primary shadow-sm";
@@ -631,15 +644,24 @@ function setHeatmapMode(mode) {
 
   if (mode === 'normal') {
     if (legendEl) legendEl.classList.add('hidden');
+    if (gridToggle) gridToggle.classList.add('hidden');
+    if (tempGridLayerGroup && map && map.hasLayer(tempGridLayerGroup)) {
+      map.removeLayer(tempGridLayerGroup);
+    }
     return;
   }
 
   if (legendEl) legendEl.classList.remove('hidden');
+  if (gridToggle) gridToggle.classList.remove('hidden');
 
   const baseT = currentWeatherData.temp || 28;
   const baseUv = typeof currentWeatherData.uvIndex === 'number' ? currentWeatherData.uvIndex : 0.0;
 
   if (mode === 'temp') {
+    if (gridLabel) {
+      gridLabel.innerText = t('layer_grid_temp') || '🔲 Grid Sel Suhu (Ujicoba)';
+      gridLabel.setAttribute('data-i18n', 'layer_grid_temp');
+    }
     if (legendTitle) legendTitle.innerHTML = `<i data-lucide="thermometer" class="w-3.5 h-3.5 text-amber-500"></i> ${t('heatmap_temp_title')}`;
     if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-blue-500 via-emerald-400 via-amber-400 via-orange-500 to-red-600 shadow-inner";
     if (legendLabels) {
@@ -652,6 +674,10 @@ function setHeatmapMode(mode) {
     }
     if (legendDesc) legendDesc.textContent = t('heatmap_temp_desc');
   } else if (mode === 'uv') {
+    if (gridLabel) {
+      gridLabel.innerText = t('layer_grid_uv') || '🔲 Grid Sel Indeks UV (Ujicoba)';
+      gridLabel.setAttribute('data-i18n', 'layer_grid_uv');
+    }
     if (legendTitle) legendTitle.innerHTML = `<i data-lucide="sun" class="w-3.5 h-3.5 text-purple-500"></i> ${t('heatmap_uv_title')}`;
     if (legendGradient) legendGradient.className = "h-2.5 rounded-full w-full bg-gradient-to-r from-emerald-500 via-amber-400 via-orange-500 via-red-500 to-purple-700 shadow-inner";
     if (legendLabels) {
@@ -663,6 +689,11 @@ function setHeatmapMode(mode) {
       `;
     }
     if (legendDesc) legendDesc.textContent = t('heatmap_uv_desc');
+  }
+
+  // If grid checkbox is checked, dynamically render corresponding grid cells
+  if (isTempGridEnabled) {
+    renderGridCellsPolygons();
   }
 
   // Generate Continuous IDW Canvas Overlay Field (Expanded to fully envelop Huayu and outer channels)
@@ -723,11 +754,11 @@ function setHeatmapMode(mode) {
 }
 
 // ====================================================================
-// EXPERIMENTAL: DISCRETE POLYGON GRID CELL MESH (Ujicoba Kotak Suhu)
+// EXPERIMENTAL: DISCRETE POLYGON GRID CELL MESH (Dynamic Suhu / UV)
 // ====================================================================
-function toggleTempGridLayer(enabled) {
+function toggleGridCellsLayer(enabled) {
   isTempGridEnabled = !!enabled;
-  const checkbox = document.getElementById('check-temp-grid');
+  const checkbox = document.getElementById('check-grid-cells');
   if (checkbox) checkbox.checked = isTempGridEnabled;
 
   if (!isTempGridEnabled) {
@@ -737,19 +768,22 @@ function toggleTempGridLayer(enabled) {
     return;
   }
 
-  renderTempGridPolygons();
+  renderGridCellsPolygons();
 }
 
-function renderTempGridPolygons() {
+function renderGridCellsPolygons() {
   if (!map) return;
   if (tempGridLayerGroup && map.hasLayer(tempGridLayerGroup)) {
     map.removeLayer(tempGridLayerGroup);
   }
+  if (!isTempGridEnabled || activeHeatmapMode === 'normal') return;
+
   tempGridLayerGroup = L.layerGroup();
 
   const baseT = currentWeatherData.temp || 28;
   const baseUv = typeof currentWeatherData.uvIndex === 'number' ? currentWeatherData.uvIndex : 0.0;
   const stations = getRegionalWeatherStations(baseT, baseUv);
+  const isUvMode = activeHeatmapMode === 'uv';
 
   // Discrete Polygon Grid Matrix across Penghu Archipelago
   const latMin = 23.15, latMax = 23.82, latStep = 0.035;
@@ -768,10 +802,14 @@ function renderTempGridPolygons() {
         const d2 = dLat * dLat + dLon * dLon + 0.35;
         const w = 1.0 / (d2 * d2);
         weightSum += w;
-        valueSum += w * s.temp;
+        const sVal = isUvMode ? s.uv : s.temp;
+        valueSum += w * sVal;
       }
-      const cellTemp = Math.round((valueSum / weightSum) * 10) / 10;
-      const fillColor = getTempHexColor(cellTemp);
+      const cellVal = Math.round((valueSum / weightSum) * 10) / 10;
+      const fillColor = isUvMode ? getUvHexColor(cellVal) : getTempHexColor(cellVal);
+      const titleLabel = isUvMode ? '🔲 Grid Sel Indeks UV' : '🔲 Grid Sel Suhu';
+      const valDisplay = isUvMode ? `UV ${cellVal}` : `${cellVal}°C`;
+      const valColor = isUvMode ? 'text-purple-500' : 'text-amber-500';
 
       const cellPoly = L.polygon([
         [lat, lon],
@@ -788,8 +826,8 @@ function renderTempGridPolygons() {
       cellPoly.bindTooltip(`
         <div class="text-xs p-1">
           <div class="font-bold flex items-center gap-1.5">
-            <span>🔲 Grid Sel Suhu</span>
-            <span class="font-mono text-amber-500 font-extrabold text-sm">${cellTemp}°C</span>
+            <span>${titleLabel}</span>
+            <span class="font-mono ${valColor} font-extrabold text-sm">${valDisplay}</span>
           </div>
           <div class="text-[10px] opacity-75 mt-0.5 font-mono">
             Lat: ${latCenter.toFixed(3)}, Lon: ${lonCenter.toFixed(3)}
@@ -802,6 +840,107 @@ function renderTempGridPolygons() {
   }
 
   tempGridLayerGroup.addTo(map);
+}
+
+// ====================================================================
+// WEATHER STATIONS ANCHOR LAYER (Taiwan CWA & Marine Sensors)
+// ====================================================================
+let weatherStationsLayerGroup = null;
+let isWeatherStationsEnabled = false;
+
+function toggleWeatherStationsLayer(enabled) {
+  isWeatherStationsEnabled = !!enabled;
+  const checkbox = document.getElementById('check-weather-stations');
+  if (checkbox) checkbox.checked = isWeatherStationsEnabled;
+
+  if (!isWeatherStationsEnabled) {
+    if (weatherStationsLayerGroup && map && map.hasLayer(weatherStationsLayerGroup)) {
+      map.removeLayer(weatherStationsLayerGroup);
+    }
+    return;
+  }
+
+  renderWeatherStationsMarkers();
+}
+
+function renderWeatherStationsMarkers() {
+  if (!map) return;
+  if (weatherStationsLayerGroup && map.hasLayer(weatherStationsLayerGroup)) {
+    map.removeLayer(weatherStationsLayerGroup);
+  }
+  if (!isWeatherStationsEnabled) return;
+
+  weatherStationsLayerGroup = L.layerGroup();
+
+  const baseT = currentWeatherData.temp || 28;
+  const baseUv = typeof currentWeatherData.uvIndex === 'number' ? currentWeatherData.uvIndex : 0.0;
+  const stations = getRegionalWeatherStations(baseT, baseUv);
+
+  stations.forEach(s => {
+    const isSea = s.zone === 'Open Sea';
+    const markerColor = isSea ? '#0284C7' : '#00A8B5';
+    const iconSymbol = isSea ? '🌊' : '📡';
+
+    const customIcon = L.divIcon({
+      className: 'custom-weather-station-marker',
+      html: `
+        <div class="relative flex items-center justify-center cursor-pointer group">
+          <span class="absolute w-7 h-7 rounded-full bg-cyan-500/30 animate-ping"></span>
+          <div class="w-7 h-7 rounded-full shadow-lg flex items-center justify-center text-xs font-bold border-2 border-white text-white" style="background-color: ${markerColor};">
+            ${iconSymbol}
+          </div>
+        </div>
+      `,
+      iconSize: [28, 28],
+      iconAnchor: [14, 14],
+      popupAnchor: [0, -14]
+    });
+
+    const marker = L.marker([s.lat, s.lon], { icon: customIcon });
+
+    const titleZh = s.name_zh || "氣象觀測站點";
+    const titleEn = s.name_en || "Weather Station Anchor";
+    const bilingualTitle = currentLang === 'zh' ? titleZh : (currentLang === 'en' ? titleEn : `${titleZh} / ${titleEn}`);
+
+    const popupHtml = `
+      <div class="p-2 space-y-2 text-xs min-w-[220px]">
+        <div class="flex items-center gap-2 border-b pb-1.5 border-inherit">
+          <div class="w-6 h-6 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold">
+            ${iconSymbol}
+          </div>
+          <div>
+            <h4 class="font-extrabold leading-snug">${bilingualTitle}</h4>
+            <span class="text-[10px] opacity-70 font-mono">${s.zone} (${s.type})</span>
+          </div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2 text-center">
+          <div class="p-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-inherit">
+            <span class="text-[10px] opacity-70 block">${t('layer_temp') || 'Suhu'}</span>
+            <span class="font-bold text-amber-500 font-mono text-sm">${s.temp.toFixed(1)}°C</span>
+          </div>
+          <div class="p-1.5 rounded-lg bg-black/5 dark:bg-white/5 border border-inherit">
+            <span class="text-[10px] opacity-70 block">${t('layer_uv') || 'Indeks UV'}</span>
+            <span class="font-bold text-purple-500 font-mono text-sm">${s.uv.toFixed(1)}</span>
+          </div>
+        </div>
+
+        <div class="p-1.5 rounded-lg bg-cyan-500/10 text-[10px] space-y-0.5 border border-cyan-500/20">
+          <div class="font-bold text-primary-var flex items-center gap-1">
+            <span>🏛️ Sumber Asimilasi:</span>
+          </div>
+          <p class="opacity-80">
+            Taiwan CWA (Central Weather Admin) & Open-Meteo IDW Regional Mesh.
+          </p>
+        </div>
+      </div>
+    `;
+
+    marker.bindPopup(popupHtml, { maxWidth: 280, className: 'weather-station-popup' });
+    weatherStationsLayerGroup.addLayer(marker);
+  });
+
+  weatherStationsLayerGroup.addTo(map);
 }
 
 async function loadDataset() {
