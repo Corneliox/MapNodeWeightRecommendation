@@ -327,6 +327,8 @@ function updateUILanguage() {
     if (optOcean) optOcean.innerText = t('theme_ocean');
     themeSelect.value = curVal;
   }
+
+  updateRouterProviderUI();
 }
 
 function changeLanguage(lang) {
@@ -879,7 +881,113 @@ function renderPOIMarkers(nodes) {
   }
 }
 
-// 7. High-Precision Real Road Network Routing (OSRM Multi-Mirror Engine)
+// --- 7. Advanced Routing Engines: Google Routes API (New) & OSRM Multi-Mirror ---
+let currentRouterProvider = localStorage.getItem('penghu_router_provider') || 'google';
+let googleApiKey = localStorage.getItem('penghu_google_api_key') || "";
+
+// High-Performance Google Encoded Polyline Decoder
+function decodeGooglePolyline(encoded) {
+  if (!encoded) return [];
+  const poly = [];
+  let index = 0, len = encoded.length;
+  let lat = 0, lng = 0;
+
+  while (index < len) {
+    let b, shift = 0, result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlat = ((result & 1) ? ~(result >> 1) : (result >> 1));
+    lat += dlat;
+
+    shift = 0;
+    result = 0;
+    do {
+      b = encoded.charCodeAt(index++) - 63;
+      result |= (b & 0x1f) << shift;
+      shift += 5;
+    } while (b >= 0x20);
+    const dlng = ((result & 1) ? ~(result >> 1) : (result >> 1));
+    lng += dlng;
+
+    poly.push([lat / 1e5, lng / 1e5]);
+  }
+  return poly;
+}
+
+// Google Cloud Routes API (Directions v2 ComputeRoutes with TWO_WHEELER Mode)
+async function fetchGoogleRoutesAPI(coords, mode = 'scooter') {
+  if (!googleApiKey || coords.length < 2) return null;
+
+  const originCoord = coords[0];
+  const destCoord = coords[coords.length - 1];
+  const intermediateCoords = coords.slice(1, -1);
+
+  const payload = {
+    origin: {
+      location: { latLng: { latitude: originCoord[0], longitude: originCoord[1] } }
+    },
+    destination: {
+      location: { latLng: { latitude: destCoord[0], longitude: destCoord[1] } }
+    },
+    travelMode: mode === 'walk' ? 'WALK' : 'TWO_WHEELER',
+    routingPreference: mode === 'walk' ? undefined : 'TRAFFIC_AWARE',
+    computeAlternativeRoutes: false
+  };
+
+  if (intermediateCoords.length > 0) {
+    payload.intermediates = intermediateCoords.map(c => ({
+      location: { latLng: { latitude: c[0], longitude: c[1] } }
+    }));
+  }
+
+  const endpoint = 'https://routes.googleapis.com/directions/v2:computeRoutes';
+  const res = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': googleApiKey,
+      'X-Goog-FieldMask': 'routes.duration,routes.distanceMeters,routes.polyline.encodedPolyline,routes.legs'
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!res.ok) {
+    const errText = await res.text();
+    console.warn(`Google Routes API returned status ${res.status}:`, errText);
+    return null;
+  }
+
+  const data = await res.json();
+  if (data.routes && data.routes.length > 0) {
+    const route = data.routes[0];
+    const polylineCoords = decodeGooglePolyline(route.polyline?.encodedPolyline);
+    const distanceKm = Math.round(((route.distanceMeters || 0) / 1000) * 10) / 10;
+    
+    let durationSeconds = 0;
+    if (route.duration) {
+      durationSeconds = parseInt(route.duration.replace('s', ''), 10) || 0;
+    }
+    let travelMinutes = Math.round(durationSeconds / 60);
+    if (travelMinutes <= 0) {
+      const speed = mode === 'scooter' ? 35 : 4.5;
+      travelMinutes = Math.max(1, Math.round((distanceKm / speed) * 60));
+    }
+
+    return {
+      coords: polylineCoords.length > 0 ? polylineCoords : coords,
+      distanceKm: distanceKm > 0 ? distanceKm : 1.0,
+      travelMinutes: travelMinutes,
+      provider: 'Google Routes (Live Traffic)'
+    };
+  }
+
+  return null;
+}
+
+// High-Precision Real Road Network Routing (OSRM Multi-Mirror Engine)
 async function fetchRoadRouteOSRM(coords, mode = 'scooter') {
   const profile = mode === 'walk' ? 'routed-foot' : 'routed-car';
   const coordString = coords.map(c => `${c[1].toFixed(6)},${c[0].toFixed(6)}`).join(';');
@@ -898,7 +1006,7 @@ async function fetchRoadRouteOSRM(coords, mode = 'scooter') {
           const route = data.routes[0];
           // Leaflet expects [lat, lon], GeoJSON returns [lon, lat]
           const polylineCoords = route.geometry.coordinates.map(c => [c[1], c[0]]);
-          const distanceKm = route.distance / 1000;
+          const distanceKm = Math.round((route.distance / 1000) * 10) / 10;
           
           let travelMinutes = Math.round(route.duration / 60);
           if (mode === 'scooter') {
@@ -908,7 +1016,8 @@ async function fetchRoadRouteOSRM(coords, mode = 'scooter') {
           return {
             coords: polylineCoords,
             distanceKm,
-            travelMinutes
+            travelMinutes,
+            provider: 'OSRM Engine (Open-Source)'
           };
         }
       }
@@ -918,13 +1027,33 @@ async function fetchRoadRouteOSRM(coords, mode = 'scooter') {
   }
 
   // Graceful road-aware fallback if all external networks are blocked
-  const fallbackDistanceKm = getDistanceKm(coords[0][0], coords[0][1], coords[coords.length - 1][0], coords[coords.length - 1][1]) * 1.25;
+  const fallbackDistanceKm = Math.round((getDistanceKm(coords[0][0], coords[0][1], coords[coords.length - 1][0], coords[coords.length - 1][1]) * 1.25) * 10) / 10;
   const speed = mode === 'scooter' ? 35 : 4.5;
   return {
     coords: coords,
     distanceKm: fallbackDistanceKm,
-    travelMinutes: Math.round((fallbackDistanceKm / speed) * 60)
+    travelMinutes: Math.round((fallbackDistanceKm / speed) * 60),
+    provider: 'Heuristic Distance Fallback'
   };
+}
+
+// Unified Smart Road Router with Instant Fallback
+async function fetchSmartRoadRoute(coords, mode = 'scooter') {
+  if (currentRouterProvider === 'google' && googleApiKey) {
+    try {
+      const googleResult = await fetchGoogleRoutesAPI(coords, mode);
+      if (googleResult) {
+        return googleResult;
+      }
+      console.info('Google Routes API returned empty or failed. Auto-falling back to OSRM Engine...');
+    } catch (err) {
+      console.warn('Google Routes API network error, falling back to OSRM:', err);
+    }
+  }
+
+  // Seamless OSRM fallback
+  const osrmResult = await fetchRoadRouteOSRM(coords, mode);
+  return osrmResult;
 }
 
 let currentRouteCache = null;
@@ -1080,7 +1209,7 @@ async function calculateSmartRoute() {
     const arrPort = { lat: ferryRoute.arrival_port_coords[0], lon: ferryRoute.arrival_port_coords[1] };
 
     // Leg 1: Road to Departure Pier
-    const leg1Route = await fetchRoadRouteOSRM([[start.lat, start.lon], [depPort.lat, depPort.lon]], currentTravelMode);
+    const leg1Route = await fetchSmartRoadRoute([[start.lat, start.lon], [depPort.lat, depPort.lon]], currentTravelMode);
     
     // Leg 2: Nautical Ferry Line
     const nauticalCoords = ferryRoute.nautical_waypoints;
@@ -1088,9 +1217,9 @@ async function calculateSmartRoute() {
     const nauticalMins = ferryRoute.duration_minutes;
 
     // Leg 3: Island Road from Arrival Pier to Target POI
-    const leg3Route = await fetchRoadRouteOSRM([[arrPort.lat, arrPort.lon], [destination.lat, destination.lon]], currentTravelMode);
+    const leg3Route = await fetchSmartRoadRoute([[arrPort.lat, arrPort.lon], [destination.lat, destination.lon]], currentTravelMode);
 
-    const totalDistanceKm = leg1Route.distanceKm + nauticalDistKm + leg3Route.distanceKm;
+    const totalDistanceKm = Math.round((leg1Route.distanceKm + nauticalDistKm + leg3Route.distanceKm) * 10) / 10;
     const totalTravelMinutes = leg1Route.travelMinutes + 15 + nauticalMins + leg3Route.travelMinutes;
 
     multiModalData = {
@@ -1109,13 +1238,14 @@ async function calculateSmartRoute() {
     directRouteData = {
       coords: [...leg1Route.coords, ...nauticalCoords, ...leg3Route.coords],
       distanceKm: totalDistanceKm,
-      travelMinutes: totalTravelMinutes
+      travelMinutes: totalTravelMinutes,
+      provider: leg1Route.provider || 'Smart Route Dispatcher'
     };
     safeRouteData = directRouteData;
 
   } else {
     // --- STANDARD MAIN ISLAND ROAD ROUTING ---
-    directRouteData = await fetchRoadRouteOSRM(
+    directRouteData = await fetchSmartRoadRoute(
       [[start.lat, start.lon], [destination.lat, destination.lon]],
       currentTravelMode
     );
@@ -1127,7 +1257,7 @@ async function calculateSmartRoute() {
         ...recommendedShelters.map(s => [s.latitude, s.longitude]),
         [destination.lat, destination.lon]
       ];
-      safeRouteData = await fetchRoadRouteOSRM(waypoints, currentTravelMode);
+      safeRouteData = await fetchSmartRoadRoute(waypoints, currentTravelMode);
     } else {
       safeRouteData = directRouteData;
     }
@@ -2064,4 +2194,91 @@ function closeApiScheduleModal() {
   if (modal) {
     modal.classList.add('hidden');
   }
+}
+
+// Router Provider Switcher & Google API Key Modal Handlers
+function updateRouterProviderUI() {
+  const labelEl = document.getElementById('active-router-label');
+  const btnEl = document.getElementById('btn-toggle-router');
+  if (!labelEl) return;
+
+  const isGoogle = currentRouterProvider === 'google' && googleApiKey;
+  if (isGoogle) {
+    labelEl.className = "font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1";
+    labelEl.innerHTML = `<i data-lucide="zap" class="w-3.5 h-3.5"></i> <span>${t('router_google_name') || 'Google Routes (Traffic)'}</span>`;
+    if (btnEl) btnEl.innerText = "Switch OSRM";
+  } else {
+    labelEl.className = "font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1";
+    labelEl.innerHTML = `<i data-lucide="compass" class="w-3.5 h-3.5"></i> <span>${t('router_osrm_name') || 'OSRM Open-Source'}</span>`;
+    if (btnEl) btnEl.innerText = "Switch Google";
+  }
+
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+}
+
+function toggleRouterProvider() {
+  if (currentRouterProvider === 'google') {
+    currentRouterProvider = 'osrm';
+  } else {
+    if (!googleApiKey) {
+      openApiKeyModal();
+      return;
+    }
+    currentRouterProvider = 'google';
+  }
+  localStorage.setItem('penghu_router_provider', currentRouterProvider);
+  updateRouterProviderUI();
+  calculateSmartRoute();
+}
+
+function openApiKeyModal() {
+  const modal = document.getElementById('api-key-modal');
+  const input = document.getElementById('input-google-api-key');
+  if (modal) {
+    if (input) input.value = googleApiKey;
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    if (window.lucide) lucide.createIcons();
+  }
+}
+
+function closeApiKeyModal() {
+  const modal = document.getElementById('api-key-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+  }
+}
+
+function saveGoogleApiKey() {
+  const input = document.getElementById('input-google-api-key');
+  if (!input) return;
+  const key = input.value.trim();
+  if (key) {
+    googleApiKey = key;
+    localStorage.setItem('penghu_google_api_key', key);
+    currentRouterProvider = 'google';
+    localStorage.setItem('penghu_router_provider', 'google');
+    alert(t('modal_api_saved_alert') || "Google Routes API Key successfully saved and activated!");
+  } else {
+    clearGoogleApiKey();
+  }
+  closeApiKeyModal();
+  updateRouterProviderUI();
+  calculateSmartRoute();
+}
+
+function clearGoogleApiKey() {
+  googleApiKey = "";
+  localStorage.removeItem('penghu_google_api_key');
+  currentRouterProvider = 'osrm';
+  localStorage.setItem('penghu_router_provider', 'osrm');
+  const input = document.getElementById('input-google-api-key');
+  if (input) input.value = "";
+  alert(t('modal_api_cleared_alert') || "Google Routes API Key removed. Reverting to OSRM Engine.");
+  closeApiKeyModal();
+  updateRouterProviderUI();
+  calculateSmartRoute();
 }
