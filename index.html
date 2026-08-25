@@ -672,6 +672,12 @@
         <button onclick="selectSchemeDetail(4)" id="scheme-tab-4" class="px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold glass-card-inner border opacity-75 hover:opacity-100 transition-all">
           <span data-i18n="scheme_tab_4">Bi-Objective Pareto</span>
         </button>
+        <button onclick="selectSchemeDetail(5)" id="scheme-tab-5" class="px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold glass-card-inner border opacity-75 hover:opacity-100 transition-all">
+          <span data-i18n="scheme_tab_5">Taiwan PET (Subtropis)</span>
+        </button>
+        <button onclick="selectSchemeDetail(6)" id="scheme-tab-6" class="px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold glass-card-inner border opacity-75 hover:opacity-100 transition-all">
+          <span data-i18n="scheme_tab_6">Convective Heat-Blast</span>
+        </button>
       </div>
 
       <!-- Active Scheme Detail Card (Fluid Width) -->
@@ -687,11 +693,11 @@
               Hasil Uji Simulasi Benchmark di Jalur Populer Penghu
             </h3>
             <p class="text-xs sm:text-sm opacity-75" data-i18n="scheme_benchmark_desc">
-              Kondisi simulasi terik siang (Suhu 35.2°C, Feels Like 39.8°C, WBGT 31.4°C, UV 10.5)
+              Kondisi simulasi terik siang (Suhu 35.2°C, Feels Like 39.8°C, WBGT 31.4°C, UV 10.5, Angin 4.5 m/s)
             </p>
           </div>
           <span class="text-[10px] sm:text-xs font-mono font-bold px-3 py-1 rounded-full bg-cyan-500/10 text-primary-var border border-cyan-500/30">
-            N = 4 ROUTE BENCHMARKS
+            N = 6 SCHEMES BENCHMARK
           </span>
         </div>
 
@@ -714,7 +720,7 @@
                 <td class="py-4 px-3 text-center font-mono">17.0 min</td>
                 <td class="py-4 px-3 text-center font-mono text-emerald-500 font-bold">12.0 min (7-11)</td>
                 <td class="py-4 px-3 text-center font-mono">29.0 min</td>
-                <td class="py-4 px-3 text-right font-extrabold text-emerald-500">-65.0%</td>
+                <td class="py-4 px-3 text-right font-extrabold text-emerald-500">-62.0% s/d -72.0%</td>
               </tr>
               <tr>
                 <td class="py-4 px-3 font-bold">Xiyu Exploration (Magong ➔ Daguoye Columnar Basalt)</td>
@@ -1400,6 +1406,36 @@
           { name: "Detour <= 1.20", desc: "Jaminan jarak rute tidak memutar lebih dari 20%" },
           { name: "Pareto Front", desc: "Titik kompromi rute tercepat sekaligus paling sejuk" }
         ]
+      },
+      5: {
+        title_id: "Skema 5: Taiwan Subtropical PET (Physiological Equivalent Temperature) Model",
+        title_en: "Scheme 5: Taiwan Subtropical PET Model (Höppe, 1999; Lin et al., 2010)",
+        title_zh: "方案五：台灣亞熱帶生理等效溫度 (PET 模型 - Lin et al., 2010)",
+        citation: "Höppe (1999) / Lin et al. (2010), Building and Environment",
+        formula_latex: "\\text{PET} = T_a + 0.33 \\cdot (e - 10) - 0.70 \\cdot v_{\\text{wind}} + \\frac{R_{\\text{abs}}}{100}",
+        desc_id: "Model kenyamanan termal fisiologis luar ruangan yang telah dikalibrasi khusus untuk respon fisiologis populasi subtropis Taiwan. Menggabungkan suhu udara, kelembaban uap air aktual (e), kecepatan angin pantai, dan radiasi serapan matahari. Jeda AC diwajibkan saat PET >= 38°C (Extreme Heat Stress).",
+        desc_en: "Physiological Equivalent Temperature model calibrated specifically for the outdoor thermal comfort and acclimation of Taiwan's subtropical population. Integrates ambient temperature, vapor pressure (e), wind speed, and absorbed solar radiation. Mandates AC cooling stops when PET >= 38°C.",
+        desc_zh: "專為台灣亞熱帶氣候族群熱舒適度校準之生理等效溫度模型。綜合考量氣溫、實際水氣壓（e）、沿海風速及人體吸收輻射量。當 PET >= 38°C（極端熱應力）時強制進入超商冷氣中繼站降溫。",
+        params: [
+          { name: "e [hPa]", desc: "Tekanan uap air aktual e = (RH/100) * 6.112 * exp(17.67*Ta / (Ta+243.5))" },
+          { name: "v_wind [m/s]", desc: "Kecepatan angin ambien pesisir Penghu sebagai faktor pendinginan alami" },
+          { name: "PET >= 38°C", desc: "Ambang batas bahaya heat stress ekstrem yang memicu injeksi shelter AC" }
+        ]
+      },
+      6: {
+        title_id: "Skema 6: Scooter Convective Heat-Blast & Apparent Wind Model",
+        title_en: "Scheme 6: Scooter Convective Heat-Blast & Apparent Wind Model",
+        title_zh: "方案六：機車動態對流熱風灌注模型 (ISO 9920 / de Freitas, 1985)",
+        citation: "ISO 9920:2007 / de Freitas et al. (1985) / Campbell & Norman (1998)",
+        formula_latex: "Q_{\\text{conv}} = 8.6 \\cdot (v_{\\text{app}})^{0.6} \\cdot (T_a - 34.0) \\quad [\\text{W/m}^2]",
+        desc_id: "Model aerodinamika termal perpindahan panas konvektif dinamis pada kecepatan berkendara motor (35 km/jam). Ketika suhu udara melampaui suhu kulit normal manusia (Ta > 34°C), hembusan angin motor TIDAK mendinginkan, melainkan MEMASUKKAN panas secara paksa (Heat-Blast Influx) ke tubuh pengendara (Q_conv > 15 W/m²).",
+        desc_en: "Dynamic convective heat transfer aerodynamic model at scooter riding speeds (35 km/h). When air temperature exceeds normal human skin temperature (Ta > 34°C), the apparent headwind DOES NOT cool the rider, but forcibly injects convective thermal energy (Heat-Blast Influx) into the body (Q_conv > 15 W/m²).",
+        desc_zh: "針對機車騎乘速度（35 km/h）之動態對流熱傳導空氣動力學模型。當大氣溫度高於人體正常體表皮溫（Ta > 34°C）時，迎面體感強風不但無法散熱，反而會將大量對流熱能強制灌入人體（Q_conv > 15 W/m²），引發急性熱衰竭。",
+        params: [
+          { name: "v_app [m/s]", desc: "Kecepatan angin nyata hasil kombinasi laju motor dan sudut datang angin" },
+          { name: "Ta - 34.0", desc: "Gradien termal terhadap suhu kulit rata-rata manusia (34.0°C)" },
+          { name: "Q_conv > 15", desc: "Fluks panas konvektif masuk ke tubuh pengendara yang memicu wajib istirahat AC" }
+        ]
       }
     };
 
@@ -1655,7 +1691,7 @@
     // --- 4. Scientific Scheme Detail Renderer ---
     function selectSchemeDetail(id) {
       activeScheme = id;
-      for (let i = 1; i <= 4; i++) {
+      for (let i = 1; i <= 6; i++) {
         const btn = document.getElementById(`scheme-tab-${i}`);
         if (btn) {
           if (i === id) {

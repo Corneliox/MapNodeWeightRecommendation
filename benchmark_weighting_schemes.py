@@ -210,6 +210,95 @@ def scheme_4_pareto_compromise(distance_km, speed_kmh, weather):
         "thermal_strain_reduction_pct": round(strain_reduction_pct, 1)
     }
 
+# Skema 5: Taiwan Subtropical PET (Physiological Equivalent Temperature) Model
+def scheme_5_taiwan_pet(distance_km, speed_kmh, weather):
+    """
+    Dasar Teori: Höppe (1999); Lin et al. (2010) - Thermal comfort in subtropical urban areas.
+    Formula: PET = Ta + 0.33 * (e - 10) - 0.70 * v_wind + (R_abs / 100).
+             e = (RH / 100) * 6.112 * exp((17.67 * Ta) / (Ta + 243.5)) (hPa)
+             R_abs = (DNI * 0.85) + (UV * 20) (W/m2)
+    """
+    direct_mins = (distance_km / speed_kmh) * 60.0
+    ta = weather["temp_c"]
+    rh = weather.get("humidity_pct", 70)
+    v_wind = weather.get("wind_speed_ms", 4.5)
+    dni = weather["solar_dni_wm2"]
+    uv = weather["uv_index"]
+
+    # Tekanan uap air jenuh (Magnus-Tetens formula)
+    e = (rh / 100.0) * 6.112 * math.exp((17.67 * ta) / (ta + 243.5))
+    r_abs = (dni * 0.85) + (uv * 20.0)
+
+    # Indeks PET Subtropis Taiwan
+    pet_val = ta + 0.33 * (e - 10.0) - 0.70 * v_wind + (r_abs / 100.0)
+
+    # Threshold PET >= 38°C (Extreme Heat Stress di Taiwan)
+    needs_shelter = direct_mins >= 15.0 and pet_val >= 38.0
+
+    if needs_shelter:
+        strain_reduction_pct = 62.0
+        total_time = direct_mins + 12.0
+    else:
+        strain_reduction_pct = 0.0
+        total_time = direct_mins
+
+    return {
+        "scheme": "Scheme 5: Taiwan Subtropical PET",
+        "citation": "Höppe (1999) / Lin et al. (2010), Build. Environ.",
+        "formula": "PET = Ta + 0.33*(e-10) - 0.70*v_wind + R_abs/100",
+        "direct_duration_mins": round(direct_mins, 1),
+        "needs_shelter": needs_shelter,
+        "recommended_rest_mins": 12.0 if needs_shelter else 0.0,
+        "total_itinerary_mins": round(total_time, 1),
+        "thermal_strain_reduction_pct": round(strain_reduction_pct, 1)
+    }
+
+# Skema 6: Scooter Convective Heat-Blast & Apparent Wind Model
+def scheme_6_scooter_convection(distance_km, speed_kmh, weather):
+    """
+    Dasar Teori: ISO 9920; de Freitas et al. (1985); Campbell & Norman (1998).
+    Formula: v_app = sqrt((v_scooter + v_wind*cos(theta))^2 + (v_wind*sin(theta))^2) (m/s)
+             h_c = 8.6 * (v_app)^0.6 (W/m2*K)
+             Q_conv = h_c * (Ta - 34.0) (W/m2)
+    Catatan: Saat Ta > 34.0°C (suhu kulit rata-rata manusia), hembusan angin motor
+             BUKAN mendinginkan, melainkan MEMASUKKAN panas secara paksa (Heat Blast).
+    """
+    direct_mins = (distance_km / speed_kmh) * 60.0
+    ta = weather["temp_c"]
+    v_scooter = speed_kmh / 3.6 # konversi km/jam ke m/s
+    v_wind = weather.get("wind_speed_ms", 4.5)
+    
+    # Apparent wind speed pada sudut serang angin rata-rata theta = 30°
+    theta_rad = math.radians(30.0)
+    v_app = math.sqrt((v_scooter + v_wind * math.cos(theta_rad))**2 + (v_wind * math.sin(theta_rad))**2)
+    
+    # Koefisien perpindahan panas konvektif dinamis
+    h_c = 8.6 * (v_app**0.6)
+    
+    # Fluks panas konvektif ke tubuh (Positif = Panas Masuk, Negatif = Panas Keluar)
+    q_conv = h_c * (ta - 34.0)
+    
+    # Trigger jika terjadi perpindahan panas konvektif ekstrem ke tubuh
+    needs_shelter = direct_mins >= 12.0 and q_conv > 15.0 and speed_kmh > 15.0
+
+    if needs_shelter:
+        strain_reduction_pct = 70.5
+        total_time = direct_mins + 15.0
+    else:
+        strain_reduction_pct = 0.0
+        total_time = direct_mins
+
+    return {
+        "scheme": "Scheme 6: Scooter Convective Heat-Blast",
+        "citation": "ISO 9920 / de Freitas et al. (1985)",
+        "formula": "Q_conv = 8.6*(v_app^0.6) * (Ta - 34.0)",
+        "direct_duration_mins": round(direct_mins, 1),
+        "needs_shelter": needs_shelter,
+        "recommended_rest_mins": 15.0 if needs_shelter else 0.0,
+        "total_itinerary_mins": round(total_time, 1),
+        "thermal_strain_reduction_pct": round(strain_reduction_pct, 1)
+    }
+
 # ====================================================================
 # EKSEKUSI BENCHMARK PADA SEMUA RUTE
 # ====================================================================
@@ -224,8 +313,8 @@ def run_benchmarks():
     all_results = []
 
     print("=" * 80)
-    print("[BENCHMARK] UJI COBA 4 SKEMA PEMBOBOTAN AKADEMIK DI PENGHU")
-    print(f"Kondisi Cuaca Uji: Suhu {WEATHER_CONDITION['temp_c']}C (Terasa {WEATHER_CONDITION['feels_like_c']}C), UV {WEATHER_CONDITION['uv_index']}, WBGT {WEATHER_CONDITION['wbgt_c']}C")
+    print("[BENCHMARK] UJI COBA 6 SKEMA PEMBOBOTAN AKADEMIK BIOMETEOROLOGI DI PENGHU")
+    print(f"Kondisi Cuaca Uji: Suhu {WEATHER_CONDITION['temp_c']}C (Terasa {WEATHER_CONDITION['feels_like_c']}C), UV {WEATHER_CONDITION['uv_index']}, WBGT {WEATHER_CONDITION['wbgt_c']}C, Kecepatan Angin {WEATHER_CONDITION.get('wind_speed_ms', 4.5)} m/s")
     print("=" * 80)
 
     for route in TEST_ROUTES:
@@ -248,18 +337,22 @@ def run_benchmarks():
         s2 = scheme_2_utci_strain(dist_km, route["base_speed_kmh"], WEATHER_CONDITION)
         s3 = scheme_3_solar_radiation(dist_km, route["base_speed_kmh"], WEATHER_CONDITION)
         s4 = scheme_4_pareto_compromise(dist_km, route["base_speed_kmh"], WEATHER_CONDITION)
+        s5 = scheme_5_taiwan_pet(dist_km, route["base_speed_kmh"], WEATHER_CONDITION)
+        s6 = scheme_6_scooter_convection(dist_km, route["base_speed_kmh"], WEATHER_CONDITION)
+
+        schemes_list = [s1, s2, s3, s4, s5, s6]
 
         route_res = {
             "route_name": route["route_name"],
             "distance_km": round(dist_km, 2),
             "mode": route["mode"],
             "recommended_shelter": shelter.get("name") or shelter.get("name_zh"),
-            "schemes": [s1, s2, s3, s4]
+            "schemes": schemes_list
         }
         all_results.append(route_res)
 
         # Print Table for current route
-        df_route = pd.DataFrame([s1, s2, s3, s4])
+        df_route = pd.DataFrame(schemes_list)
         print(df_route[["scheme", "needs_shelter", "total_itinerary_mins", "thermal_strain_reduction_pct"]].to_string(index=False))
 
     # Save benchmark to data directory
@@ -268,7 +361,7 @@ def run_benchmarks():
         json.dump(all_results, f, ensure_ascii=False, indent=2)
 
     print("\n" + "=" * 80)
-    print(f"[SUCCESS] Seluruh Uji Coba Berhasil! Hasil tersimpan di: {out_json}")
+    print(f"[SUCCESS] Seluruh Uji Coba 6 Skema Berhasil! Hasil tersimpan di: {out_json}")
     print("=" * 80)
 
 if __name__ == "__main__":

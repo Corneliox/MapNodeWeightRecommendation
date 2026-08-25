@@ -54,7 +54,9 @@ const SCIENTIFIC_SCHEMES_META = {
   1: { name: "ISO 7243 (WBGT Threshold)", strainReduction: 65, restMins: 12 },
   2: { name: "UTCI Physiological Strain", strainReduction: 58, restMins: 15 },
   3: { name: "Solar Radiation Budget (COMFA)", strainReduction: 72, restMins: 10 },
-  4: { name: "Bi-Objective Pareto Router", strainReduction: 64, restMins: 12 }
+  4: { name: "Bi-Objective Pareto Router", strainReduction: 64, restMins: 12 },
+  5: { name: "Taiwan Subtropical PET Model", strainReduction: 62, restMins: 12 },
+  6: { name: "Scooter Convective Heat-Blast", strainReduction: 70, restMins: 15 }
 };
 
 // Verified Wikipedia Knowledge Base

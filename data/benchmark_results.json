@@ -3,7 +3,7 @@
     "route_name": "Beihuan North Ring (Magong -> Penghu Great Bridge)",
     "distance_km": 9.9,
     "mode": "scooter",
-    "recommended_shelter": "Tanpa Nama",
+    "recommended_shelter": "澎湖公共涼亭 / 休息站",
     "schemes": [
       {
         "scheme": "Scheme 1: ISO 7243 (WBGT Threshold)",
@@ -44,6 +44,26 @@
         "recommended_rest_mins": 12.0,
         "total_itinerary_mins": 30.3,
         "thermal_strain_reduction_pct": 64.5
+      },
+      {
+        "scheme": "Scheme 5: Taiwan Subtropical PET",
+        "citation": "Höppe (1999) / Lin et al. (2010), Build. Environ.",
+        "formula": "PET = Ta + 0.33*(e-10) - 0.70*v_wind + R_abs/100",
+        "direct_duration_mins": 17.0,
+        "needs_shelter": true,
+        "recommended_rest_mins": 12.0,
+        "total_itinerary_mins": 29.0,
+        "thermal_strain_reduction_pct": 62.0
+      },
+      {
+        "scheme": "Scheme 6: Scooter Convective Heat-Blast",
+        "citation": "ISO 9920 / de Freitas et al. (1985)",
+        "formula": "Q_conv = 8.6*(v_app^0.6) * (Ta - 34.0)",
+        "direct_duration_mins": 17.0,
+        "needs_shelter": true,
+        "recommended_rest_mins": 15.0,
+        "total_itinerary_mins": 32.0,
+        "thermal_strain_reduction_pct": 70.5
       }
     ]
   },
@@ -51,7 +71,7 @@
     "route_name": "Xiyu Exploration (Magong -> Daguoye Columnar Basalt)",
     "distance_km": 6.02,
     "mode": "scooter",
-    "recommended_shelter": "Tanpa Nama",
+    "recommended_shelter": "澎湖公共涼亭 / 休息站",
     "schemes": [
       {
         "scheme": "Scheme 1: ISO 7243 (WBGT Threshold)",
@@ -87,6 +107,26 @@
         "scheme": "Scheme 4: Bi-Objective Pareto Router",
         "citation": "Raith & Ehrgott (2009), Comput. & Oper. Res.",
         "formula": "Min [w1*T + w2*Strain] s.t. Detour <= 1.20",
+        "direct_duration_mins": 10.3,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 10.3,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 5: Taiwan Subtropical PET",
+        "citation": "Höppe (1999) / Lin et al. (2010), Build. Environ.",
+        "formula": "PET = Ta + 0.33*(e-10) - 0.70*v_wind + R_abs/100",
+        "direct_duration_mins": 10.3,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 10.3,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 6: Scooter Convective Heat-Blast",
+        "citation": "ISO 9920 / de Freitas et al. (1985)",
+        "formula": "Q_conv = 8.6*(v_app^0.6) * (Ta - 34.0)",
         "direct_duration_mins": 10.3,
         "needs_shelter": false,
         "recommended_rest_mins": 0.0,
@@ -140,6 +180,26 @@
         "recommended_rest_mins": 0.0,
         "total_itinerary_mins": 9.5,
         "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 5: Taiwan Subtropical PET",
+        "citation": "Höppe (1999) / Lin et al. (2010), Build. Environ.",
+        "formula": "PET = Ta + 0.33*(e-10) - 0.70*v_wind + R_abs/100",
+        "direct_duration_mins": 9.5,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 9.5,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 6: Scooter Convective Heat-Blast",
+        "citation": "ISO 9920 / de Freitas et al. (1985)",
+        "formula": "Q_conv = 8.6*(v_app^0.6) * (Ta - 34.0)",
+        "direct_duration_mins": 9.5,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 9.5,
+        "thermal_strain_reduction_pct": 0.0
       }
     ]
   },
@@ -183,6 +243,26 @@
         "scheme": "Scheme 4: Bi-Objective Pareto Router",
         "citation": "Raith & Ehrgott (2009), Comput. & Oper. Res.",
         "formula": "Min [w1*T + w2*Strain] s.t. Detour <= 1.20",
+        "direct_duration_mins": 6.1,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 6.1,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 5: Taiwan Subtropical PET",
+        "citation": "Höppe (1999) / Lin et al. (2010), Build. Environ.",
+        "formula": "PET = Ta + 0.33*(e-10) - 0.70*v_wind + R_abs/100",
+        "direct_duration_mins": 6.1,
+        "needs_shelter": false,
+        "recommended_rest_mins": 0.0,
+        "total_itinerary_mins": 6.1,
+        "thermal_strain_reduction_pct": 0.0
+      },
+      {
+        "scheme": "Scheme 6: Scooter Convective Heat-Blast",
+        "citation": "ISO 9920 / de Freitas et al. (1985)",
+        "formula": "Q_conv = 8.6*(v_app^0.6) * (Ta - 34.0)",
         "direct_duration_mins": 6.1,
         "needs_shelter": false,
         "recommended_rest_mins": 0.0,

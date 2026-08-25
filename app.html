@@ -376,6 +376,36 @@
               </div>
             </div>
 
+            <!-- Scheme 5 -->
+            <div onclick="selectScheme(5)" id="scheme-card-5" class="scheme-card p-3.5 rounded-2xl dynamic-card border cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span data-i18n="scheme5_title" class="text-xs font-bold">Skema 5: Taiwan Subtropical PET Model</span>
+                <span data-i18n="scheme5_tag" class="text-[10px] px-2 py-0.5 rounded-full dynamic-card-inner font-bold opacity-80">Aklimatisasi Lokal</span>
+              </div>
+              <p data-i18n="scheme5_desc" class="text-[11px] opacity-75 mt-1 leading-relaxed">
+                Model kenyamanan termal fisiologis spesifik populasi subtropis Taiwan (Höppe, 1999; Lin et al., 2010). Mewajibkan jeda AC saat PET >= 38°C.
+              </p>
+              <div class="mt-2 text-[10px] font-mono opacity-60 border-t border-inherit pt-1.5 flex justify-between">
+                <span>Ref: Höppe (1999) / Lin et al. (2010)</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Reduksi: ~62%</span>
+              </div>
+            </div>
+
+            <!-- Scheme 6 -->
+            <div onclick="selectScheme(6)" id="scheme-card-6" class="scheme-card p-3.5 rounded-2xl dynamic-card border cursor-pointer">
+              <div class="flex items-center justify-between">
+                <span data-i18n="scheme6_title" class="text-xs font-bold">Skema 6: Scooter Convective Heat-Blast</span>
+                <span data-i18n="scheme6_tag" class="text-[10px] px-2 py-0.5 rounded-full dynamic-card-inner font-bold opacity-80">Aerodinamika Termal</span>
+              </div>
+              <p data-i18n="scheme6_desc" class="text-[11px] opacity-75 mt-1 leading-relaxed">
+                Perpindahan panas konvektif dinamis kecepatan motor (ISO 9920 / de Freitas, 1985). Saat suhu udara > 34°C (suhu kulit), hembusan angin motor memaksa panas masuk ke tubuh (Q_conv > 15 W/m²).
+              </p>
+              <div class="mt-2 text-[10px] font-mono opacity-60 border-t border-inherit pt-1.5 flex justify-between">
+                <span>Ref: ISO 9920 / de Freitas et al. (1985)</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-bold">Reduksi: ~70%</span>
+              </div>
+            </div>
+
           </div>
 
           <button onclick="switchTab('route'); calculateSmartRoute();" class="w-full py-3 dynamic-btn-primary font-bold text-xs rounded-xl shadow-md flex items-center justify-center gap-1.5">

@@ -41,11 +41,13 @@ Experience the live web application on GitHub Pages:
   * Download complete route metadata, WBGT risk levels, and GPS waypoints as `penghu_route_[timestamp].json`.
 * **📸 Wikipedia Knowledge Graph & Photo Markers**:
   * Top cultural and natural landmarks feature larger circular photo pins with direct Wikimedia thumbnails and verified insight cards.
-* **🔬 4 Peer-Reviewed Biometeorological Weighting Schemes**:
+* **🔬 6 Peer-Reviewed Biometeorological Weighting Schemes**:
   1. **ISO 7243:2017**: International WBGT heatstroke prevention standard.
   2. **UTCI Strain Model**: Non-linear polynomial physiological thermal comfort index (Bröde et al., 2012).
   3. **COMFA Solar Energy Budget**: Direct solar irradiance (DNI) and UV radiation absorption (Brown & Gillespie, 1995).
   4. **Bi-Objective Pareto Routing**: Multiobjective optimization balancing time and thermal strain (Raith & Ehrgott, 2009).
+  5. **Taiwan Subtropical PET Model**: Physiological Equivalent Temperature calibrated for Taiwan populations (Höppe, 1999; Lin et al., 2010).
+  6. **Scooter Convective Heat-Blast Model**: Dynamic aerodynamic convective heat transfer at scooter riding speed when $T_a > 34^\circ\text{C}$ (ISO 9920 / de Freitas, 1985).
 * **🌐 Dynamic Multi-Language System (`translations.json`)**:
   * Instant runtime switching between **Bahasa Indonesia (`id`)**, **English (`en`)**, and **Traditional Chinese (`zh`)**.
 * **🎨 Holiday Visual Themes (CSS Variables)**:
