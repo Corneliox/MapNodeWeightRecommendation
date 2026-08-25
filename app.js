@@ -878,15 +878,15 @@ function renderWeatherStationsMarkers() {
 
   stations.forEach(s => {
     const isSea = s.zone === 'Open Sea';
-    const markerColor = isSea ? '#0284C7' : '#00A8B5';
+    const markerColor = isSea ? '#38220F' : '#4B3621'; // Cafe Noir palette
     const iconSymbol = isSea ? '🌊' : '📡';
 
     const customIcon = L.divIcon({
       className: 'custom-weather-station-marker',
       html: `
         <div class="relative flex items-center justify-center cursor-pointer group">
-          <span class="absolute w-7 h-7 rounded-full bg-cyan-500/30 animate-ping"></span>
-          <div class="w-7 h-7 rounded-full shadow-lg flex items-center justify-center text-xs font-bold border-2 border-white text-white" style="background-color: ${markerColor};">
+          <span class="absolute w-7 h-7 rounded-full animate-ping" style="background-color: rgba(75, 54, 33, 0.35);"></span>
+          <div class="w-7 h-7 rounded-full shadow-lg flex items-center justify-center text-xs font-bold border-2 border-[#FFF8F0] text-white transition-transform group-hover:scale-110" style="background-color: ${markerColor}; box-shadow: 0 4px 10px rgba(75, 54, 33, 0.45);">
             ${iconSymbol}
           </div>
         </div>
@@ -905,7 +905,7 @@ function renderWeatherStationsMarkers() {
     const popupHtml = `
       <div class="p-2 space-y-2 text-xs min-w-[220px]">
         <div class="flex items-center gap-2 border-b pb-1.5 border-inherit">
-          <div class="w-6 h-6 rounded-lg bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 flex items-center justify-center font-bold">
+          <div class="w-6 h-6 rounded-lg bg-[#4B3621]/15 text-[#4B3621] dark:text-[#E8C49E] flex items-center justify-center font-bold">
             ${iconSymbol}
           </div>
           <div>
@@ -925,8 +925,8 @@ function renderWeatherStationsMarkers() {
           </div>
         </div>
 
-        <div class="p-1.5 rounded-lg bg-cyan-500/10 text-[10px] space-y-0.5 border border-cyan-500/20">
-          <div class="font-bold text-primary-var flex items-center gap-1">
+        <div class="p-1.5 rounded-lg bg-[#4B3621]/10 text-[10px] space-y-0.5 border border-[#4B3621]/20">
+          <div class="font-bold text-[#4B3621] dark:text-[#E8C49E] flex items-center gap-1">
             <span>${t('station_source_label') || '🏛️ Sumber Asimilasi:'}</span>
           </div>
           <p class="opacity-80">
