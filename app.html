@@ -509,16 +509,16 @@
 
           <!-- Dynamic Grid Cells Checkbox (Only visible when Temp or UV is active) -->
           <div id="container-grid-toggle" class="hidden pt-1.5 border-t border-inherit flex items-center justify-between px-1 text-[11px]">
-            <label for="check-grid-cells" class="flex items-center gap-1.5 cursor-pointer font-bold opacity-85 hover:opacity-100 select-none">
-              <input type="checkbox" id="check-grid-cells" onchange="toggleGridCellsLayer(this.checked)" class="w-3.5 h-3.5 rounded text-amber-500 focus:ring-amber-400 accent-amber-500 cursor-pointer">
+            <label for="check-grid-cells" class="flex items-center gap-2 cursor-pointer font-bold opacity-85 hover:opacity-100 select-none py-0.5">
+              <input type="checkbox" id="check-grid-cells" onchange="toggleGridCellsLayer(this.checked)" class="w-4 h-4 rounded-full text-amber-500 focus:ring-amber-400 accent-amber-500 cursor-pointer transition-transform active:scale-90">
               <span id="label-grid-metric" data-i18n="layer_grid_temp">🔲 Grid Sel Suhu (Ujicoba)</span>
             </label>
           </div>
 
           <!-- Global Weather Stations Checkbox (Always visible) -->
           <div class="pt-1.5 border-t border-inherit flex items-center justify-between px-1 text-[11px]">
-            <label for="check-weather-stations" class="flex items-center gap-1.5 cursor-pointer font-bold opacity-85 hover:opacity-100 select-none">
-              <input type="checkbox" id="check-weather-stations" onchange="toggleWeatherStationsLayer(this.checked)" class="w-3.5 h-3.5 rounded text-cyan-500 focus:ring-cyan-400 accent-cyan-500 cursor-pointer">
+            <label for="check-weather-stations" class="flex items-center gap-2 cursor-pointer font-bold opacity-85 hover:opacity-100 select-none py-0.5">
+              <input type="checkbox" id="check-weather-stations" onchange="toggleWeatherStationsLayer(this.checked)" class="w-4 h-4 rounded-full text-cyan-500 focus:ring-cyan-400 accent-cyan-500 cursor-pointer transition-transform active:scale-90">
               <span data-i18n="layer_weather_stations">📡 Stasiun Cuaca Anchor</span>
             </label>
           </div>

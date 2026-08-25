@@ -1,6 +1,6 @@
 # 🏝️ Penghu Cool-Ride: Smart Climate-Aware Tourism & Node-Weight Routing Engine
 
-[![Version](https://img.shields.io/badge/Release-v2.2.0--Stable-06D6A0?style=for-the-badge&logo=git)](https://github.com/Corneliox/MapNodeWeightRecommendation/releases)
+[![Version](https://img.shields.io/badge/Release-v2.4.0--Stable-06D6A0?style=for-the-badge&logo=git)](https://github.com/Corneliox/MapNodeWeightRecommendation/releases)
 [![Live Demo](https://img.shields.io/badge/Live_Demo-GitHub_Pages-00A8B5?style=for-the-badge&logo=github)](https://corneliox.github.io/MapNodeWeightRecommendation/)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![Leaflet](https://img.shields.io/badge/Leaflet-1.9.4-199900?style=for-the-badge&logo=leaflet&logoColor=white)](https://leafletjs.com/)
@@ -21,26 +21,20 @@ Experience the live web application on GitHub Pages:
 
 ---
 
-## 🚀 Key Stable Features (v2.2.0)
+## 🚀 Key Stable Features (v2.4.0)
 
-* **🗺️ Interactive Clustered POI Map (2,190 Cleaned Nodes)**:
-  * Powered by **Leaflet.js** and **Leaflet.markercluster** with chunked lazy loading, providing smooth 60 FPS performance on both mobile phones and desktop browsers.
-  * Universal bilingual formatting for all landmarks: `[Chinese Name] / [English Name]`.
-  * Deep zoom stabilization (`maxNativeZoom: 18, maxZoom: 18`) preventing tile dropouts on ultra-close inspection.
+* **🛵 Dual Routing Engine Architecture (Google Routes API + OSRM Multi-Mirror)**:
+  * Seamless support for Google Cloud Routes API with `TWO_WHEELER` mode and `TRAFFIC_AWARE` real-time congestion data.
+  * Instant automatic fallback to multi-mirror open-source OSRM routing with zero user disruption.
+* **🌊 Continuous 2D IDW Radar Heatmap & Adaptive Grid Mesh**:
+  * Real-time 2D Inverse Distance Weighting (IDW) scalar field overlay smoothly blending temperatures (calibrated 26°C–32°C for sharp microclimate contrast) and solar UV index across the entire archipelago.
+  * **Dynamic Polygon Grid Cells (Beta)**: Switchable discrete mesh displaying cell-by-cell spatial temperatures or UV radiation with rounded toggle controls.
+* **📡 28 Weather Station Anchor Markers**:
+  * Visual anchor points representing Taiwan Central Weather Administration (CWA) automated observatories, island towers, and maritime buoys with interactive telemetry popups.
 * **🚢 Multi-Modal Inter-Island Ferry Routing**:
   * Seamless cross-island routing automatically segmenting trips: `Origin Ride ➔ AC Departure Lounge ➔ Scenic Ferry Sailing ➔ Arrival Island Ride`.
-  * Live operating schedules, ticket prices (NTD), and real-time ferry closing alerts.
 * **❄️ Road-Polyline Aware Multi-Stage Cooling Pit-Stops**:
-  * Calculates cumulative road mileage along Highway 203 curves instead of deceptive straight-line Euclidean distance.
-  * Staged cooling stops: 1 stop for routes $<14\text{ km}$, **2 sequential cooling waypoints (`❄️1` & `❄️2`)** for long journeys ($\ge 14\text{ km}$).
-* **🌊 Continuous 2D IDW Meteorological Radar Heatmap (Windy/CWA Style)**:
-  * Real-time 2D Inverse Distance Weighting (IDW) scalar field overlay smoothly blending Celsius temperatures and UV index across the entire archipelago (including western Huayu Island).
-  * 100% physically accurate nighttime rendering (pure calm Emerald Green when UV $\le 0.1$).
-* **📱 Universal Google Maps Deep-Link & JSON Route Export**:
-  * One-click hand-off with sequential multi-waypoints: `&waypoints=stop1|stop2`.
-  * Download complete route metadata, WBGT risk levels, and GPS waypoints as `penghu_route_[timestamp].json`.
-* **📸 Wikipedia Knowledge Graph & Photo Markers**:
-  * Top cultural and natural landmarks feature larger circular photo pins with direct Wikimedia thumbnails and verified insight cards.
+  * Cumulative road-mileage pit-stop placement along Highway 203 curves with staged waypoints (`❄️1` & `❄️2`).
 * **🔬 6 Peer-Reviewed Biometeorological Weighting Schemes**:
   1. **ISO 7243:2017**: International WBGT heatstroke prevention standard.
   2. **UTCI Strain Model**: Non-linear polynomial physiological thermal comfort index (Bröde et al., 2012).
