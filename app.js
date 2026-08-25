@@ -927,10 +927,10 @@ function renderWeatherStationsMarkers() {
 
         <div class="p-1.5 rounded-lg bg-cyan-500/10 text-[10px] space-y-0.5 border border-cyan-500/20">
           <div class="font-bold text-primary-var flex items-center gap-1">
-            <span>🏛️ Sumber Asimilasi:</span>
+            <span>${t('station_source_label') || '🏛️ Sumber Asimilasi:'}</span>
           </div>
           <p class="opacity-80">
-            Taiwan CWA (Central Weather Admin) & Open-Meteo IDW Regional Mesh.
+            ${t('station_source_desc') || 'Taiwan CWA (Central Weather Admin) & Open-Meteo IDW Regional Mesh.'}
           </p>
         </div>
       </div>
@@ -1925,9 +1925,9 @@ function renderSafeTimeline(startTitle, destTitle, shelters, routeData, schemeMe
       <div class="flex items-start gap-3 p-2.5 rounded-xl dynamic-card-inner border">
         <span class="w-6 h-6 rounded-full dynamic-btn-primary font-extrabold flex items-center justify-center text-xs shrink-0 mt-0.5">${legNum}</span>
         <div class="space-y-0.5 flex-1">
-          <p class="font-extrabold text-xs leading-snug">${idx === 0 ? t('step_origin') : 'Melanjutkan etape:'} <span class="text-primary-var">${idx === 0 ? startTitle : getUniversalBilingualTitle(shelters[idx - 1])}</span></p>
+          <p class="font-extrabold text-xs leading-snug">${idx === 0 ? t('step_origin') : (t('step_continue') || 'Melanjutkan etape dari:')} <span class="text-primary-var">${idx === 0 ? startTitle : getUniversalBilingualTitle(shelters[idx - 1])}</span></p>
           <p class="text-[11px] opacity-75 leading-relaxed">
-            ${t('step_via_highway')} sejauh <b>~${legDistance} km</b> (${legMinutes} menit berkendara).
+            ${t('step_via_highway')} sejauh <b>~${legDistance} km</b> (${legMinutes} ${t('step_mins_riding') || 'menit berkendara'}).
           </p>
         </div>
       </div>
@@ -1940,11 +1940,11 @@ function renderSafeTimeline(startTitle, destTitle, shelters, routeData, schemeMe
             <p class="font-extrabold text-xs text-emerald-600 dark:text-emerald-400">
               ${numShelters > 1 ? `Pit-Stop ${idx + 1}: ` : ''}${t('step_rest')} (${schemeMeta ? schemeMeta.restMins : 12} Min)
             </p>
-            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">AC + Rehidrasi</span>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">${t('step_rest_cooling') || 'AC + Rehidrasi'}</span>
           </div>
           <p class="text-xs font-bold">${shelterTitle}</p>
           <p class="text-[11px] opacity-80 leading-relaxed">
-            ${t('step_rest_desc')} <b>${shelterTitle}</b> untuk menurunkan suhu inti tubuh dan beban termal sebesar <b class="text-emerald-600 dark:text-emerald-400">-${schemeMeta ? schemeMeta.strainReduction : 65}%</b> ${t('step_rest_desc_end')}
+            ${t('step_rest_desc')} <b>${shelterTitle}</b> ${t('step_reduce_heat') || 'untuk menurunkan suhu inti tubuh dan beban termal sebesar'} <b class="text-emerald-600 dark:text-emerald-400">-${schemeMeta ? schemeMeta.strainReduction : 65}%</b> ${t('step_rest_desc_end')}
           </p>
         </div>
       </div>
@@ -1962,7 +1962,7 @@ function renderSafeTimeline(startTitle, destTitle, shelters, routeData, schemeMe
       <div class="space-y-0.5 flex-1">
         <p class="font-extrabold text-xs leading-snug">${t('step_cross_bridge')}</p>
         <p class="text-[11px] opacity-75 leading-relaxed">
-          Menempuh etape terakhir sejauh <b>~${finalLegDistance} km</b> (${finalLegMinutes} menit) menuju destinasi.
+          ${t('step_final_desc') || 'Menempuh etape terakhir sejauh'} <b>~${finalLegDistance} km</b> (${finalLegMinutes} ${t('step_mins_riding') || 'menit'}) ${t('step_to_dest') || 'menuju destinasi'}.
         </p>
       </div>
     </div>
@@ -1973,7 +1973,7 @@ function renderSafeTimeline(startTitle, destTitle, shelters, routeData, schemeMe
       <div class="space-y-0.5 flex-1">
         <p class="font-extrabold text-xs leading-snug">${t('step_dest')} <span class="text-amber-500">${destTitle}</span></p>
         <p class="text-[11px] opacity-75 leading-relaxed">
-          Total perjalanan <b>${totalMins + totalRestMins} menit</b> (${totalMins} mnt berkendara + ${totalRestMins} mnt pendinginan di ${numShelters} titik perhentian AC). Suhu tubuh terlindungi dari sengatan dehidrasi dan heatstroke.
+          ${t('step_final_summary') || 'Total perjalanan'} <b>${totalMins + totalRestMins} ${t('time_minutes') || 'menit'}</b> (${totalMins} ${t('step_final_summary_desc') || 'mnt berkendara +'} ${totalRestMins} ${t('step_final_summary_rest') || 'mnt pendinginan di'} ${numShelters} ${t('step_final_summary_end') || 'titik perhentian AC). Suhu tubuh terlindungi dari sengatan dehidrasi dan heatstroke.'}
         </p>
       </div>
     </div>
@@ -2226,6 +2226,11 @@ function setTravelMode(mode) {
   } else {
     walkBtn.className = 'py-2.5 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 dynamic-btn-primary shadow-sm';
     scooterBtn.className = 'py-2.5 px-3 rounded-xl text-xs font-bold border flex items-center justify-center gap-2 dynamic-card-inner border-inherit opacity-75 hover:opacity-100';
+  }
+
+  // Reactive UX: Auto-recalculate active route when switching between Scooter and Walk
+  if (currentRouteCache && selectedStart && selectedDestination) {
+    calculateOptimalRoute();
   }
 }
 

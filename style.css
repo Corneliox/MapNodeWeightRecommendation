@@ -144,12 +144,13 @@ body {
   color: white;
   font-size: 10px;
   box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
-  transition: transform 0.2s ease;
+  transition: filter 0.2s ease, box-shadow 0.2s ease;
   cursor: pointer;
 }
 
 .custom-pin:hover {
-  transform: scale(1.25);
+  filter: brightness(1.2) drop-shadow(0 0 6px rgba(0, 168, 181, 0.8));
+  box-shadow: 0 0 14px rgba(0, 168, 181, 0.7), 0 4px 12px rgba(0, 0, 0, 0.5);
   z-index: 1000 !important;
 }
 

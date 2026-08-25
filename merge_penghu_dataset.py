@@ -289,19 +289,84 @@ def merge_datasets():
             "weight_scale": 1.6 if has_wiki else 1.0
         })
 
+    # 3. Spatial Deduplication (Menghilangkan Titik Ganda Antara OSM & Gov OpenData)
+    print("      Melakukan spatial deduplication untuk mencegah double marker...")
+    import math
+
+    def haversine_dist_m(lat1, lon1, lat2, lon2):
+        R = 6371000  # radius bumi (meter)
+        phi1 = math.radians(lat1)
+        phi2 = math.radians(lat2)
+        dphi = math.radians(lat2 - lat1)
+        dlam = math.radians(lon2 - lon1)
+        a = math.sin(dphi / 2)**2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2)**2
+        return 2 * R * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+
+    deduped_nodes = []
+    removed_count = 0
+
+    for item in master_nodes:
+        matched = False
+        zh = (item.get("name_zh") or "").strip()
+        en = (item.get("name_en") or "").strip()
+        lat = item.get("latitude")
+        lon = item.get("longitude")
+
+        if not lat or not lon:
+            continue
+
+        for existing in deduped_nodes:
+            e_zh = (existing.get("name_zh") or "").strip()
+            e_en = (existing.get("name_en") or "").strip()
+            e_lat = existing.get("latitude")
+            e_lon = existing.get("longitude")
+
+            # Hitung jarak spasial
+            dist = haversine_dist_m(lat, lon, e_lat, e_lon)
+            if dist <= 55:  # Jarak toleransi 55 meter
+                # Cek kemiripan nama
+                name_match = (
+                    (zh and e_zh and (zh in e_zh or e_zh in zh or zh[:3] == e_zh[:3])) or
+                    (en and e_en and (en.lower() == e_en.lower()))
+                )
+                if name_match and zh != "澎湖便利商店" and e_zh != "澎湖便利商店":
+                    # Gabungkan metadata secara cerdas
+                    if not existing.get("description") and item.get("description"):
+                        existing["description"] = item["description"]
+                    if not existing.get("fee_info") and item.get("fee_info"):
+                        existing["fee_info"] = item["fee_info"]
+                    if not existing.get("opening_hours") and item.get("opening_hours"):
+                        existing["opening_hours"] = item["opening_hours"]
+                    if not existing.get("image_url") and item.get("image_url"):
+                        existing["image_url"] = item["image_url"]
+                    if item.get("has_wikipedia") and not existing.get("has_wikipedia"):
+                        existing["has_wikipedia"] = True
+                        existing["wiki_url_zh"] = item.get("wiki_url_zh")
+                        existing["wiki_url_en"] = item.get("wiki_url_en")
+                        existing["image_url"] = item.get("image_url") or existing.get("image_url")
+                        existing["weight_scale"] = 1.6
+                    matched = True
+                    removed_count += 1
+                    break
+
+        if not matched:
+            deduped_nodes.append(item)
+
+    print(f"      Berhasil membersihkan {removed_count} double markers!")
+
     # Simpan Master Dataset Bersih
     master_json = os.path.join("data", "penghu_master_nodes.json")
     master_csv = os.path.join("data", "penghu_master_nodes.csv")
 
     with open(master_json, "w", encoding="utf-8") as f:
-        json.dump(master_nodes, f, ensure_ascii=False, indent=2)
+        json.dump(deduped_nodes, f, ensure_ascii=False, indent=2)
 
-    df = pd.DataFrame(master_nodes)
+    df = pd.DataFrame(deduped_nodes)
     df.to_csv(master_csv, index=False, encoding="utf-8-sig")
 
     print("[2/3] Master dataset Penghu berhasil diperbarui!")
-    print(f"      Total Nodes   : {len(master_nodes)}")
-    print(f"      Wikipedia POIs: {len([n for n in master_nodes if n.get('has_wikipedia')])}")
+    print(f"      Total Nodes   : {len(deduped_nodes)} (setelah deduplikasi)")
+    print(f"      Wikipedia POIs: {len([n for n in deduped_nodes if n.get('has_wikipedia')])}")
     print(f"      JSON Output   : {master_json}")
     print(f"      CSV Output    : {master_csv}")
 
