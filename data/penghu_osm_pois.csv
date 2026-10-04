@@ -10,7 +10,7 @@
 3665944280,node,tourist_attraction,媽宮城遺址 (順承門),媽宮城遺址 (順承門),,,,,,23.5630831,119.5622204
 3665944283,node,tourist_attraction,摸乳巷,摸乳巷,,,,,,23.5644061,119.5648723
 3665944284,node,tourist_attraction,施公祠,施公祠,,,,,,23.5646016,119.5642454
-3665944287,node,food_and_drink,王冠嫩仙草,王冠嫩仙草,,,Mo-Su 10:00-22:00,,,23.5660682,119.5685402
+3665944287,node,food_and_drink,王冠嫩仙草,王冠嫩仙草,YUGUAN Grass Jelly,,Mo-Su 10:00-22:00,,,23.5660682,119.5685402
 3665944317,node,tourist_attraction,萬軍井,萬軍井,,,,,,23.5644841,119.5642579
 3665944318,node,tourist_attraction,西瀛虹橋,西瀛虹橋,,,,,,23.5683072,119.5600665
 3679147942,node,tourist_attraction,南寮古厝群,南寮古厝群,,,,,,23.5847884,119.6707021
@@ -139,7 +139,7 @@
 5843377846,node,shelter,Tanpa Nama,,,,,,,23.6172235,119.5694333
 5843379322,node,shelter,Tanpa Nama,,,,,,,23.6175012,119.5695422
 5843379859,node,shelter,Tanpa Nama,,,,,,,23.6178241,119.5680133
-5843502385,node,food_and_drink,阿姨仙人掌冰,阿姨仙人掌冰,,,,,,23.6567401,119.5574949
+5843502385,node,food_and_drink,阿姨仙人掌冰,阿姨仙人掌冰,,,07:00-18:00,,,23.6567401,119.5574949
 5843502386,node,food_and_drink,彩韻榕園,彩韻榕園,,,,,,23.6566204,119.557381
 5843502387,node,food_and_drink,阿虹の店,阿虹の店,,,,,,23.6532704,119.5176725
 5843502389,node,food_and_drink,阿挺海鮮小吃部,阿挺海鮮小吃部,,,,,,23.6529008,119.5172632
@@ -226,7 +226,7 @@
 9709528637,node,tourist_attraction,灶籠,灶籠,,,,,,23.2511332,119.6093721
 9709602457,node,shelter,Tanpa Nama,,,,,,,23.2580502,119.6692587
 9709708297,node,tourist_attraction,Tanpa Nama,,,,,,,23.3807809,119.4938
-9719732457,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.5664469,119.5722171
+9719732457,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,07:00-23:00,,yes,23.5664469,119.5722171
 9749314468,node,tourist_attraction,Tanpa Nama,,,,,,,23.737347,119.5970483
 9749383736,node,tourist_attraction,東方龍馬,東方龍馬,,,,,,23.7416545,119.6191603
 9750756681,node,tourist_attraction,三石壁,三石壁,,,,,,23.5974926,119.5150735
@@ -309,7 +309,7 @@
 13111265470,node,food_and_drink,麥當勞,麥當勞,McDonald's,麥當勞,,,,23.5663501,119.5655238
 13111353601,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.6323328,119.5993637
 13111684601,node,food_and_drink,逸茶嶼,逸茶嶼,Yicha.Yu,,Mo-Su 10:00-19:00,,,23.6619824,119.5704643
-13111851062,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.5945201,119.5169899
+13111851062,node,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,09:00-18:00,,yes,23.5945201,119.5169899
 13112287801,node,food_and_drink,Tanpa Nama,,,,,,,23.5664053,119.5691921
 13112287901,node,food_and_drink,可不可熟成紅茶,可不可熟成紅茶,Kebuke,可不可熟成紅茶,,,,23.5670668,119.5682148
 13114079701,node,tourist_attraction,絕美嗨景,絕美嗨景,Grand Beauty View,,,,,23.6010318,119.6711062
@@ -336,6 +336,10 @@
 14051293002,node,food_and_drink,Toko Debby,Toko Debby,,,Mo-Su 18:00-21:00,,,23.564653,119.4833828
 14063653817,node,shelter,Tanpa Nama,,,,,,,23.4901244,119.5114867
 14065705583,node,shelter,Tanpa Nama,,,,,,,23.6616907,119.665627
+14231704083,node,convenience_store,7-Eleven,7-Eleven,,7-Eleven,06:00-21:00,,yes,23.5599888,119.6294148
+14231908527,node,food_and_drink,星月灣田媽媽餐廳,星月灣田媽媽餐廳,,,,,yes,23.6148618,119.5141017
+14235218963,node,food_and_drink,七美小棧,七美小棧,,,08:00-20:00,,,23.1961195,119.4202396
+14239618019,node,food_and_drink,阿華海鮮,阿華海鮮,,,17:00-22:00; Tu off,,yes,23.5651058,119.5671217
 225400813,way,tourist_attraction,小門地質探索館,小門地質探索館,Xiaomen Geology Gallery,,,,,23.6539816,119.517318
 257946566,way,tourist_attraction,綠蠵龜觀光保育中心,綠蠵龜觀光保育中心,,,,yes,,23.3650304,119.506859
 257946578,way,tourist_attraction,望安納骨塔,望安納骨塔,,,,,,23.3559191,119.5087878
@@ -345,8 +349,8 @@
 332797863,way,tourist_attraction,中央街,中央街,Zhongyang Street,,,,,23.564771,119.5647636
 334405192,way,shelter,Tanpa Nama,,,,,,,23.5794318,119.5806962
 378467416,way,shelter,Tanpa Nama,,,,,,,23.568635,119.5624355
-383635710,way,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,,,,23.19606,119.4195749
-383636297,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,,,,23.1961875,119.4198891
+383635710,way,convenience_store,全家便利商店,全家便利商店,FamilyMart,全家便利商店,07:00-23:00,,yes,23.19606,119.4195749
+383636297,way,convenience_store,7-Eleven,7-Eleven,,7-Eleven,06:00-23:00,,yes,23.1961875,119.4198891
 418982216,way,food_and_drink,及林村咖啡,及林村咖啡,Gilly Primavera,,Mo-Su 10:00-19:00,,,23.5593426,119.64281
 418982404,way,shelter,Tanpa Nama,,,,,,,23.5589075,119.6424598
 480843348,way,tourist_attraction,吉貝石滬文化館,吉貝石滬文化館,,,,,,23.7384756,119.6127115
